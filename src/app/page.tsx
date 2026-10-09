@@ -8,6 +8,7 @@ import FeaturesRibbon from "@/components/FeaturesRibbon";
 import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 import OrderModal from "@/components/OrderModal";
+import PolicyModal from "@/components/PolicyModal";
 import { MessageCircle } from "lucide-react";
 
 export default function Home() {
@@ -15,10 +16,18 @@ export default function Home() {
   const [selectedPlan, setSelectedPlan] = useState("منصة التجارة المتقدمة (Advanced SaaS)");
   const [selectedPrice, setSelectedPrice] = useState("5000 درهم");
 
+  const [policyModalOpen, setPolicyModalOpen] = useState(false);
+  const [policyType, setPolicyType] = useState<"privacy" | "terms" | "guarantee">("privacy");
+
   const handleOpenOrder = (plan = "منصة التجارة المتقدمة (Advanced SaaS)", price = "5000 درهم") => {
     setSelectedPlan(plan);
     setSelectedPrice(price);
     setModalOpen(true);
+  };
+
+  const handleOpenPolicy = (type: "privacy" | "terms" | "guarantee") => {
+    setPolicyType(type);
+    setPolicyModalOpen(true);
   };
 
   return (
@@ -31,7 +40,7 @@ export default function Home() {
       {/* Top Bar */}
       <TopBar />
 
-      {/* Main Navbar */}
+      {/* Main Navbar with Crisp Vector Logo */}
       <Navbar onOpenOrderModal={handleOpenOrder} />
 
       {/* Hero Section */}
@@ -43,8 +52,11 @@ export default function Home() {
       {/* Services & Pricing Section */}
       <PricingSection onSelectPlan={handleOpenOrder} />
 
-      {/* Bottom Unified Footer Bar matching original-design.jpg */}
-      <Footer onOpenOrderModal={() => handleOpenOrder("استشارة مجانية وبدء المشروع", "مجاناً")} />
+      {/* Redesigned Luxury Master Footer Suite */}
+      <Footer
+        onOpenOrderModal={handleOpenOrder}
+        onOpenPolicyModal={handleOpenPolicy}
+      />
 
       {/* Interactive Order Modal */}
       <OrderModal
@@ -52,6 +64,13 @@ export default function Home() {
         onClose={() => setModalOpen(false)}
         selectedPlan={selectedPlan}
         selectedPrice={selectedPrice}
+      />
+
+      {/* Interactive Policy & Guarantees Modal */}
+      <PolicyModal
+        isOpen={policyModalOpen}
+        onClose={() => setPolicyModalOpen(false)}
+        type={policyType}
       />
 
       {/* Floating WhatsApp Quick Action Button */}

@@ -1,161 +1,565 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { MessageCircle, Phone, Mail, ChevronLeft } from "lucide-react";
+import {
+  MessageCircle,
+  Phone,
+  Mail,
+  ChevronLeft,
+  ShieldCheck,
+  CreditCard,
+  Lock,
+  Check,
+  Copy,
+  Sparkles,
+  Gift,
+  Clock,
+  Award,
+  ArrowUpRight,
+  ExternalLink,
+} from "lucide-react";
+import Logo from "@/components/Logo";
 
 interface FooterProps {
-  onOpenOrderModal?: () => void;
+  onOpenOrderModal?: (plan?: string, price?: string) => void;
+  onOpenPolicyModal?: (type: "privacy" | "terms" | "guarantee") => void;
 }
 
-export default function Footer({ onOpenOrderModal }: FooterProps) {
+export default function Footer({
+  onOpenOrderModal,
+  onOpenPolicyModal,
+}: FooterProps) {
   const WHATSAPP_NUMBER = "+212 7 62 35 74 91";
-  const WHATSAPP_LINK = "https://wa.me/212762357491?text=مرحباً%20Ecom%20Speed%20Pro%20أريد%20الاستفسار%20عن%20خدماتكم";
+  const WHATSAPP_LINK =
+    "https://wa.me/212762357491?text=مرحباً%20Ecom%20Speed%20Pro%20أريد%20الاستفسار%20عن%20خدماتكم%20وبدء%20المشروع";
   const PHONE_LINK = "tel:+212762357491";
   const EMAIL_LINK = "mailto:support@ecomspeedpro.com";
 
+  const [copiedType, setCopiedType] = useState<string | null>(null);
+
+  const handleCopy = (text: string, type: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedType(type);
+    setTimeout(() => {
+      setCopiedType(null);
+    }, 2500);
+  };
+
   return (
-    <footer className="w-full mt-auto relative z-20 overflow-hidden pt-2 pb-6">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-4">
-        
-        {/* ======================================================== */}
-        {/* BAR 1: CONTACT BAR (شريط تواصل معنا - مقاس مثالي وأنيق)   */}
-        {/* ======================================================== */}
-        <div className="relative w-full max-w-[1100px] rounded-[40px] overflow-hidden drop-shadow-[0_10px_30px_rgba(37,99,235,0.18)] transition-all duration-300 hover:drop-shadow-[0_14px_40px_rgba(37,99,235,0.28)]">
-          <Image
-            src="/images/bar_contact_clean.png"
-            alt="تواصل معنا - واتساب، اتصال مباشر، بريد إلكتروني Ecom Speed Pro"
-            width={1672}
-            height={480}
-            priority
-            className="w-full h-auto object-contain block"
-          />
+    <footer className="w-full mt-10 relative z-20 overflow-hidden pb-8 pt-4">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
 
-          {/* Interactive Button 1: WhatsApp (Left in visual layout / LTR coordinates) */}
-          <a
-            href={WHATSAPP_LINK}
-            target="_blank"
-            rel="noreferrer"
-            className="group absolute top-[62%] left-[8.5%] w-[25.5%] h-[23%] rounded-full bg-gradient-to-r from-[#0088ff] to-[#7928ca] text-white text-[10px] sm:text-xs md:text-[13px] font-black flex items-center justify-between px-2 sm:px-3.5 shadow-[0_0_12px_rgba(0,136,255,0.5)] hover:shadow-[0_0_20px_rgba(121,40,202,0.8)] hover:scale-[1.03] active:scale-[0.97] transition-all cursor-pointer z-10"
-            title={`تواصل معنا عبر واتساب (${WHATSAPP_NUMBER})`}
-          >
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <MessageCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
-              <span dir="ltr" className="font-extrabold tracking-wide">{WHATSAPP_NUMBER}</span>
+        {/* ======================================================== */}
+        {/* 1. VIP PROMO CTA BANNER (ابدأ مشروعك الآن مع ECOM SPEED PRO) */}
+        {/* ======================================================== */}
+        <div className="relative w-full rounded-3xl bg-gradient-to-r from-[#071333] via-[#0d2259] to-[#0a1840] border border-blue-500/30 p-5 sm:p-7 shadow-[0_12px_40px_rgba(13,34,89,0.35)] overflow-hidden">
+          {/* Ambient Glows */}
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6">
+            
+            {/* Right side in RTL: Gift / Rocket 3D icon + Headline */}
+            <div className="flex items-center gap-4 sm:gap-5 text-right w-full lg:w-auto">
+              <div className="relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-[2px] shadow-[0_0_25px_rgba(59,130,246,0.6)] animate-pulse">
+                <div className="w-full h-full bg-[#08173d] rounded-2xl flex items-center justify-center">
+                  <Gift className="w-7 h-7 sm:w-8 sm:h-8 text-cyan-300" />
+                </div>
+              </div>
+
+              <div>
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-cyan-300 text-xs font-black mb-1.5 shadow-inner">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>انطلاقة سريعة ومضمونة لمتجرك</span>
+                </div>
+                <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight">
+                  ابدأ مشروعك الآن مع{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-fuchsia-400">
+                    ECOM SPEED PRO
+                  </span>
+                </h3>
+                <p className="text-blue-200/80 text-xs sm:text-sm font-semibold mt-1">
+                  خطوتك الأولى نحو النجاح الرقمي ومضاعفة أرباحك مع تسليم قياسي ودعم فني متواصل
+                </p>
+              </div>
             </div>
-            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/90 shrink-0" />
-          </a>
 
-          {/* WhatsApp Orb Hotspot */}
-          <a
-            href={WHATSAPP_LINK}
-            target="_blank"
-            rel="noreferrer"
-            className="absolute top-[35%] left-[2.5%] w-[12%] h-[45%] rounded-full cursor-pointer hover:bg-emerald-500/10 active:scale-95 transition-all z-10"
-            title={`محادثة فورية على واتساب: ${WHATSAPP_NUMBER}`}
-          />
+            {/* Left side in RTL: Action Buttons */}
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
+              <button
+                onClick={() =>
+                  onOpenOrderModal?.("استشارة مجانية وبدء المشروع", "مجاناً")
+                }
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(58,134,255,0.6)] hover:shadow-[0_0_30px_rgba(58,134,255,0.9)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+              >
+                <span>اكتشف جميع الخدمات واستشرنا مجاناً</span>
+                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+              </button>
 
-          {/* Interactive Button 2: Direct Call (Center) */}
-          <a
-            href={PHONE_LINK}
-            className="group absolute top-[62%] left-[41.5%] w-[25.5%] h-[23%] rounded-full bg-gradient-to-r from-[#0088ff] to-[#7928ca] text-white text-[10px] sm:text-xs md:text-[13px] font-black flex items-center justify-between px-2 sm:px-3.5 shadow-[0_0_12px_rgba(0,136,255,0.5)] hover:shadow-[0_0_20px_rgba(121,40,202,0.8)] hover:scale-[1.03] active:scale-[0.97] transition-all cursor-pointer z-10"
-            title={`اتصل بنا هاتفياً (${WHATSAPP_NUMBER})`}
-          >
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <Phone className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
-              <span dir="ltr" className="font-extrabold tracking-wide">{WHATSAPP_NUMBER}</span>
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 font-bold text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                <span>واتساب فوري</span>
+              </a>
             </div>
-            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/90 shrink-0" />
-          </a>
 
-          {/* Call Orb Hotspot */}
-          <a
-            href={PHONE_LINK}
-            className="absolute top-[35%] left-[34%] w-[12%] h-[45%] rounded-full cursor-pointer hover:bg-blue-500/10 active:scale-95 transition-all z-10"
-            title={`اتصال مباشر: ${WHATSAPP_NUMBER}`}
-          />
-
-          {/* Interactive Button 3: Email (Right in visual layout / LTR coordinates) */}
-          <a
-            href={EMAIL_LINK}
-            className="group absolute top-[62%] left-[71.5%] w-[25.5%] h-[23%] rounded-full bg-gradient-to-r from-[#0088ff] to-[#7928ca] text-white text-[10px] sm:text-xs md:text-[13px] font-black flex items-center justify-between px-2 sm:px-3.5 shadow-[0_0_12px_rgba(0,136,255,0.5)] hover:shadow-[0_0_20px_rgba(121,40,202,0.8)] hover:scale-[1.03] active:scale-[0.97] transition-all cursor-pointer z-10"
-            title="راسلنا عبر البريد الإلكتروني (support@ecomspeedpro.com)"
-          >
-            <div className="flex items-center gap-1 sm:gap-1.5 truncate">
-              <Mail className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
-              <span dir="ltr" className="font-extrabold tracking-tight truncate">support@ecomspeedpro.com</span>
-            </div>
-            <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/90 shrink-0" />
-          </a>
-
-          {/* Email Orb Hotspot */}
-          <a
-            href={EMAIL_LINK}
-            className="absolute top-[35%] left-[65%] w-[12%] h-[45%] rounded-full cursor-pointer hover:bg-blue-500/10 active:scale-95 transition-all z-10"
-            title="راسلنا عبر البريد: support@ecomspeedpro.com"
-          />
-        </div>
-
-        {/* ======================================================== */}
-        {/* BAR 2: TRUST & PAYMENT BAR (شريط الدفع والأمان - مقاس مثالي) */}
-        {/* ======================================================== */}
-        <div className="relative w-full max-w-[1250px] rounded-[36px] overflow-hidden drop-shadow-[0_10px_30px_rgba(37,99,235,0.16)] transition-all duration-300 hover:drop-shadow-[0_14px_40px_rgba(37,99,235,0.25)]">
-          <Image
-            src="/images/bar_payment_clean.png"
-            alt="دفع آمن ومضمون، ابدأ مشروعك الآن مع Ecom Speed Pro، بوابات الدفع YouCan Pay, CMI, Visa, Mastercard"
-            width={1672}
-            height={175}
-            priority
-            className="w-full h-auto object-contain block"
-          />
-
-          {/* Center Promo CTA Hotspot 'اكتشف جميع الخدمات' */}
-          <button
-            onClick={onOpenOrderModal}
-            className="group absolute top-[24%] left-[56%] w-[15%] h-[54%] rounded-full cursor-pointer hover:shadow-[0_0_25px_rgba(0,180,255,0.9)] hover:bg-white/10 active:scale-[0.96] transition-all flex items-center justify-center z-10"
-            title="اكتشف جميع الخدمات - ابدأ مشروعك الآن"
-          >
-            <span className="sr-only">اكتشف جميع الخدمات</span>
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 bg-blue-600 text-white text-xs font-bold py-1 px-3 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
-              طلب استشارة وبدء المشروع ✨
-            </span>
-          </button>
-
-          {/* Left Trust Badge Hotspot */}
-          <div
-            className="group absolute top-[15%] left-[2%] w-[22%] h-[70%] rounded-full cursor-pointer flex items-center justify-center hover:bg-blue-400/10 transition-colors z-10"
-            title="حماية متقدمة وتشفير أمني SSL 256-bit لجميع المعاملات"
-          >
-            <span className="sr-only">دفع آمن ومضمون مع تشفير وحماية متقدمة</span>
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 bg-[#0b1739] text-white text-xs font-bold py-1 px-3 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
-              حماية وتشفير معتمد 100% 🛡️
-            </span>
-          </div>
-
-          {/* Right Payment Logos Hotspot */}
-          <div
-            className="group absolute top-[15%] left-[73%] w-[25%] h-[70%] rounded-full cursor-pointer flex items-center justify-center hover:bg-blue-400/10 transition-colors z-10"
-            title="طرق الدفع المتاحة: YouCan Pay, CMI, VISA, Mastercard"
-          >
-            <span className="sr-only">طرق الدفع المعتمدة: YouCan Pay, CMI, VISA, Mastercard</span>
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 bg-[#0b1739] text-white text-xs font-bold py-1 px-3 rounded-full shadow-lg pointer-events-none whitespace-nowrap">
-              بوابات دفع مغربية ودولية آمنة 💳
-            </span>
           </div>
         </div>
 
-        {/* Footer Sub-bar Copyright and Trust info */}
-        <div className="flex flex-col sm:flex-row items-center justify-between text-xs font-bold text-[#1e293b]/70 px-4 py-0.5 w-full max-w-[1250px]">
-          <p>© 2026 ECOM SPEED PRO - جميع الحقوق محفوظة لشركة حلول التجارة الإلكترونية والتسويق الرقمي.</p>
-          <div className="flex items-center gap-4 mt-2 sm:mt-0">
-            <a href="#privacy" className="hover:text-blue-600 transition-colors">سياسة الخصوصية</a>
-            <span>•</span>
-            <a href="#terms" className="hover:text-blue-600 transition-colors">شروط الاستخدام</a>
-            <span>•</span>
-            <a href={`https://wa.me/212762357491`} target="_blank" rel="noreferrer" className="hover:text-emerald-600 transition-colors flex items-center gap-1">
-              <span>الدعم الفني:</span>
-              <span dir="ltr">{WHATSAPP_NUMBER}</span>
-            </a>
+        {/* ======================================================== */}
+        {/* 2. LUXURY 3D CONTACT & SUPPORT SUITE (قنوات التواصل المباشرة) */}
+        {/* ======================================================== */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          
+          {/* Card 1: WhatsApp VIP Chat */}
+          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-emerald-200/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(16,185,129,0.12)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.22)] transition-all duration-300 flex flex-col justify-between group">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-3 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                  <MessageCircle className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-block mb-1">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
+                    <span>رد فوري خلال دقائق</span>
+                  </div>
+                  <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
+                    محادثة واتساب الرسمية
+                  </h4>
+                </div>
+              </div>
+            </div>
+
+            <div className="my-2 bg-emerald-50/60 rounded-2xl p-3 border border-emerald-100/70 flex items-center justify-between">
+              <div className="text-right">
+                <span className="text-[10px] text-slate-500 font-bold block">الرقم المعتمد:</span>
+                <span dir="ltr" className="text-sm sm:text-base font-black text-emerald-900 tracking-wide font-mono">
+                  {WHATSAPP_NUMBER}
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopy(WHATSAPP_NUMBER, "whatsapp")}
+                className="p-2 rounded-xl bg-white hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold"
+                title="نسخ الرقم"
+              >
+                {copiedType === "whatsapp" ? (
+                  <>
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span className="text-[10px]">تم النسخ!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span className="text-[10px]">نسخ</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="pt-2">
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_22px_rgba(16,185,129,0.5)] transition-all cursor-pointer"
+              >
+                <span>بدء المحادثة على واتساب</span>
+                <ChevronLeft className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+          {/* Card 2: Direct Phone Call */}
+          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-blue-200/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(37,99,235,0.12)] hover:shadow-[0_12px_40px_rgba(37,99,235,0.22)] transition-all duration-300 flex flex-col justify-between group">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 p-3 text-white shadow-[0_6px_20px_rgba(37,99,235,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                  <Phone className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 inline-block mb-1">
+                    <Clock className="w-3 h-3 inline-block" />
+                    <span>09:00 ص - 10:00 م</span>
+                  </div>
+                  <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
+                    اتصال هاتفي مباشر
+                  </h4>
+                </div>
+              </div>
+            </div>
+
+            <div className="my-2 bg-blue-50/60 rounded-2xl p-3 border border-blue-100/70 flex items-center justify-between">
+              <div className="text-right">
+                <span className="text-[10px] text-slate-500 font-bold block">مستشار التجارة الإلكترونية:</span>
+                <span dir="ltr" className="text-sm sm:text-base font-black text-blue-950 tracking-wide font-mono">
+                  {WHATSAPP_NUMBER}
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopy(WHATSAPP_NUMBER, "phone")}
+                className="p-2 rounded-xl bg-white hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold"
+                title="نسخ الرقم"
+              >
+                {copiedType === "phone" ? (
+                  <>
+                    <Check className="w-4 h-4 text-blue-600" />
+                    <span className="text-[10px]">تم النسخ!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span className="text-[10px]">نسخ</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="pt-2 flex gap-2">
+              <a
+                href={PHONE_LINK}
+                className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[0_4px_15px_rgba(37,99,235,0.35)] hover:shadow-[0_6px_22px_rgba(37,99,235,0.5)] transition-all cursor-pointer"
+              >
+                <Phone className="w-4 h-4" />
+                <span>اتصل بنا الآن</span>
+              </a>
+              <button
+                onClick={() =>
+                  onOpenOrderModal?.("طلب استشارة هاتفية سريعة", "مجاناً")
+                }
+                className="px-3.5 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-xs transition-colors"
+                title="طلب معاودة الاتصال"
+              >
+                معاودة الاتصال
+              </button>
+            </div>
+          </div>
+
+          {/* Card 3: Official VIP Email */}
+          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-purple-200/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(147,51,234,0.12)] hover:shadow-[0_12px_40px_rgba(147,51,234,0.22)] transition-all duration-300 flex flex-col justify-between group">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 p-3 text-white shadow-[0_6px_20px_rgba(147,51,234,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                  <Mail className="w-7 h-7" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-black text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200 inline-block mb-1">
+                    <Award className="w-3 h-3 inline-block" />
+                    <span>مراسلات وعقود رسمية</span>
+                  </div>
+                  <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
+                    البريد الإلكتروني المعتمد
+                  </h4>
+                </div>
+              </div>
+            </div>
+
+            <div className="my-2 bg-purple-50/60 rounded-2xl p-3 border border-purple-100/70 flex items-center justify-between">
+              <div className="text-right truncate ml-2">
+                <span className="text-[10px] text-slate-500 font-bold block">بريد الدعم والمشاريع:</span>
+                <span dir="ltr" className="text-xs sm:text-sm font-black text-purple-950 tracking-tight font-mono truncate block">
+                  support@ecomspeedpro.com
+                </span>
+              </div>
+              <button
+                onClick={() => handleCopy("support@ecomspeedpro.com", "email")}
+                className="p-2 rounded-xl bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold shrink-0"
+                title="نسخ البريد"
+              >
+                {copiedType === "email" ? (
+                  <>
+                    <Check className="w-4 h-4 text-purple-600" />
+                    <span className="text-[10px]">تم النسخ!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="w-4 h-4" />
+                    <span className="text-[10px]">نسخ</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="pt-2">
+              <a
+                href={EMAIL_LINK}
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-[0_4px_15px_rgba(147,51,234,0.35)] hover:shadow-[0_6px_22px_rgba(147,51,234,0.5)] transition-all cursor-pointer"
+              >
+                <span>إرسال بريد إلكتروني مباشر</span>
+                <ChevronLeft className="w-4 h-4" />
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        {/* ======================================================== */}
+        {/* 3. TRUST, GUARANTEE & PAYMENT METHODS PILL RIBBON        */}
+        {/* ======================================================== */}
+        <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-blue-100 p-5 sm:p-6 shadow-[0_10px_35px_rgba(37,99,235,0.1)] flex flex-col lg:flex-row items-center justify-between gap-6">
+          
+          {/* Pillar 1: Bank-Grade Security & Guarantee */}
+          <div className="flex items-center gap-3.5 w-full lg:w-auto">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0 shadow-inner">
+              <ShieldCheck className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-black text-[#0a193c]">
+                  دفع آمن وحماية معتمدة 100%
+                </span>
+                <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                  SSL 256-Bit
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-semibold mt-0.5">
+                تشفير بنكي كامل لبياناتك وحرية استرجاع مضمونة
+              </p>
+            </div>
+          </div>
+
+          {/* Pillar 2: Crisp Payment Provider Badges */}
+          <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 py-1">
+            {/* YouCan Pay Badge */}
+            <div
+              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              title="YouCan Pay - بوابات الدفع الإلكتروني المغربية"
+            >
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="text-xs font-black text-slate-800">YouCan Pay</span>
+            </div>
+
+            {/* CMI Badge */}
+            <div
+              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              title="CMI - Centre Monétique Interbancaire Maroc"
+            >
+              <span className="text-xs font-black text-[#0066b2]">CMI</span>
+              <span className="text-[10px] font-bold text-slate-500">المغرب</span>
+            </div>
+
+            {/* VISA Badge */}
+            <div
+              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1 transition-all hover:scale-105"
+              title="بطاقات Visa العالمية"
+            >
+              <span className="text-xs font-black tracking-wider text-[#1a1f71]">VISA</span>
+            </div>
+
+            {/* Mastercard Badge */}
+            <div
+              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              title="بطاقات Mastercard العالمية"
+            >
+              <div className="flex -space-x-1">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#eb001b] inline-block opacity-90" />
+                <span className="w-3.5 h-3.5 rounded-full bg-[#f79e1b] inline-block opacity-90" />
+              </div>
+              <span className="text-[11px] font-extrabold text-slate-800">mastercard</span>
+            </div>
+
+            {/* Cash on Delivery Badge */}
+            <div
+              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              title="الدفع نقداً عند استلام أرباحك وتوصيل الطلبات"
+            >
+              <span className="text-xs font-black text-emerald-800">
+                💵 الدفع عند الاستلام (COD)
+              </span>
+            </div>
+          </div>
+
+          {/* Pillar 3: Interactive Policy & Guarantee Buttons */}
+          <div className="flex items-center gap-2 w-full lg:w-auto justify-center lg:justify-end">
+            <button
+              onClick={() => onOpenPolicyModal?.("privacy")}
+              className="px-3.5 py-2 rounded-xl bg-blue-50/80 hover:bg-blue-100 text-blue-700 border border-blue-200/80 text-xs font-bold transition-all hover:scale-105"
+            >
+              سياسة الخصوصية
+            </button>
+            <button
+              onClick={() => onOpenPolicyModal?.("terms")}
+              className="px-3.5 py-2 rounded-xl bg-blue-50/80 hover:bg-blue-100 text-blue-700 border border-blue-200/80 text-xs font-bold transition-all hover:scale-105"
+            >
+              شروط الاستخدام
+            </button>
+            <button
+              onClick={() => onOpenPolicyModal?.("guarantee")}
+              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-all hover:scale-105"
+            >
+              الضمان الذهبي 🛡️
+            </button>
+          </div>
+
+        </div>
+
+        {/* ======================================================== */}
+        {/* 4. MASTER LUXURY FOOTER (التذييل الشامل للموقع)           */}
+        {/* ======================================================== */}
+        <div className="rounded-3xl bg-[#071333] border border-blue-950 text-white p-7 sm:p-10 shadow-2xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 pb-8 border-b border-blue-900/40">
+            
+            {/* Col 1: Brand & Mission */}
+            <div className="space-y-4">
+              <div className="bg-white/95 rounded-2xl p-2.5 inline-block shadow-lg">
+                <Logo size="md" />
+              </div>
+              <p className="text-xs text-blue-200/70 leading-relaxed font-medium">
+                المنصة المتكاملة الرائدة في إطلاق وتطوير المتاجر الإلكترونية وحلول التجارة الرقمية. نوفر لك تصميمات استثنائية، سرعة تحميل خارقة، ودعماً فنياً على مدار الساعة لضمان نمو تجارتك ومضاعفة مبيعاتك.
+              </p>
+              
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>الخوادم تعمل بكفاءة 100% وبسرعة فائقة</span>
+              </div>
+            </div>
+
+            {/* Col 2: Services & Packages */}
+            <div className="space-y-3">
+              <h5 className="text-sm font-black text-cyan-300 tracking-wide">
+                الباقات والخدمات
+              </h5>
+              <ul className="space-y-2 text-xs font-bold text-slate-300">
+                <li>
+                  <button
+                    onClick={() =>
+                      onOpenOrderModal?.("صفحة الهبوط (Landing Page)", "500 درهم")
+                    }
+                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                  >
+                    <span>• صفحة الهبوط السريعة (500 درهم)</span>
+                    <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded">الأكثر طلباً</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() =>
+                      onOpenOrderModal?.("المتجر القياسي (Standard Store)", "1500 درهم")
+                    }
+                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                  >
+                    <span>• المتجر القياسي متعدد المنتجات (1500 درهم)</span>
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() =>
+                      onOpenOrderModal?.("منصة التجارة المتقدمة (SaaS)", "5000 درهم")
+                    }
+                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                  >
+                    <span>• منصة التجارة المتقدمة SaaS (5000 درهم)</span>
+                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded">VIP</span>
+                  </button>
+                </li>
+                <li>
+                  <a
+                    href="#features"
+                    className="hover:text-cyan-400 transition-colors block"
+                  >
+                    • مزايا وضمانات الأداء الفائق
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 3: Direct Navigation */}
+            <div className="space-y-3">
+              <h5 className="text-sm font-black text-cyan-300 tracking-wide">
+                روابط سريعة
+              </h5>
+              <ul className="space-y-2 text-xs font-bold text-slate-300">
+                <li>
+                  <a href="#" className="hover:text-cyan-400 transition-colors">
+                    • الصفحة الرئيسية
+                  </a>
+                </li>
+                <li>
+                  <a href="#services" className="hover:text-cyan-400 transition-colors">
+                    • مقارنة الباقات والأسعار
+                  </a>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onOpenPolicyModal?.("privacy")}
+                    className="hover:text-cyan-400 transition-colors text-right"
+                  >
+                    • سياسة الخصوصية وحماية البيانات
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onOpenPolicyModal?.("terms")}
+                    className="hover:text-cyan-400 transition-colors text-right"
+                  >
+                    • شروط الخدمة والاتفاقية
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onOpenPolicyModal?.("guarantee")}
+                    className="hover:text-cyan-400 transition-colors text-right"
+                  >
+                    • الضمان الذهبي واسترجاع الأموال
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Col 4: Contact & Working Hours */}
+            <div className="space-y-3">
+              <h5 className="text-sm font-black text-cyan-300 tracking-wide">
+                مركز المساعدة والمبيعات
+              </h5>
+              <div className="space-y-2 text-xs font-semibold text-slate-300">
+                <p className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span dir="ltr" className="font-mono font-bold text-white">
+                    {WHATSAPP_NUMBER}
+                  </span>
+                </p>
+                <p className="flex items-center gap-2">
+                  <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <a
+                    href={WHATSAPP_LINK}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-emerald-300 transition-colors"
+                  >
+                    دعم واتساب المباشر 24/7
+                  </a>
+                </p>
+                <p className="flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-purple-400 shrink-0" />
+                  <a
+                    href={EMAIL_LINK}
+                    className="hover:text-purple-300 transition-colors"
+                  >
+                    support@ecomspeedpro.com
+                  </a>
+                </p>
+                <p className="flex items-center gap-2 text-blue-200/70 pt-1">
+                  <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
+                  <span>طيلة أيام الأسبوع: 09:00 - 22:00</span>
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          {/* Bottom Bar: Copyright & Location */}
+          <div className="flex flex-col sm:flex-row items-center justify-between text-xs font-bold text-blue-200/60 gap-3">
+            <p>
+              © 2026 ECOM SPEED PRO • جميع الحقوق محفوظة لشركة حلول التجارة الإلكترونية والتسويق الرقمي بالمغرب.
+            </p>
+            <div className="flex items-center gap-2 text-slate-300">
+              <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
+              <span>🇲🇦</span>
+            </div>
           </div>
         </div>
 

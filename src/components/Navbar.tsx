@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Search, ShoppingCart, Heart, User, ChevronDown, Menu, X } from "lucide-react";
+import Logo from "@/components/Logo";
 
 interface NavbarProps {
   onOpenOrderModal?: (plan?: string) => void;
@@ -22,15 +23,8 @@ export default function Navbar({ onOpenOrderModal, onOpenCart }: NavbarProps) {
           
           {/* Right in RTL: Logo */}
           <div className="flex items-center">
-            <a href="#" className="flex items-center group">
-              <Image
-                src="/images/logo_exact_clean.png"
-                alt="ECOM SPEED PRO"
-                width={250}
-                height={50}
-                priority
-                className="h-10 w-auto object-contain transition-transform group-hover:scale-[1.02]"
-              />
+            <a href="#" className="flex items-center" title="ECOM SPEED PRO">
+              <Logo size="md" />
             </a>
           </div>
 
