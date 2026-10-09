@@ -36,7 +36,10 @@ export default function Footer({
     "https://wa.me/212762357491?text=مرحباً%20Ecom%20Speed%20Pro%20أريد%20الاستفسار%20عن%20خدماتكم%20وبدء%20المشروع";
   const PHONE_LINK = "tel:+212762357491";
   const EMAIL_LINK = "mailto:support@ecomspeedpro.com";
-  const FACEBOOK_LINK = "https://facebook.com/ecomspeedpro";
+  const FACEBOOK_LINK =
+    "https://www.facebook.com/people/Ecom-Speed-Pro/61595388710709/?rdid=XmASTJaHpZvxdwJi&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1DjRWQFryH%2F";
+  const YOUTUBE_LINK = "https://www.youtube.com/@EcomSpeedPro";
+  const INSTAGRAM_LINK = "https://www.instagram.com/ecom_speed_pro";
 
   const [copiedType, setCopiedType] = useState<string | null>(null);
 

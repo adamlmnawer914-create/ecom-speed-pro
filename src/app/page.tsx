@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FeaturesRibbon from "@/components/FeaturesRibbon";
 import PricingSection from "@/components/PricingSection";
+import SocialSection from "@/components/SocialSection";
 import Footer from "@/components/Footer";
 import OrderModal from "@/components/OrderModal";
 import PolicyModal from "@/components/PolicyModal";
@@ -51,6 +52,9 @@ export default function Home() {
 
       {/* Services & Pricing Section */}
       <PricingSection onSelectPlan={handleOpenOrder} />
+
+      {/* Futuristic 3D Social Media Stage Section matching user attachment */}
+      <SocialSection />
 
       {/* Redesigned Luxury Master Footer Suite */}
       <Footer
