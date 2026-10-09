@@ -83,12 +83,18 @@ export default function Home() {
         href="https://wa.me/212762357491?text=مرحباً%20Ecom%20Speed%20Pro%20أريد%20الاستفسار%20عن%20خدماتكم"
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 to-green-500 text-white flex items-center justify-center shadow-[0_4px_25px_rgba(16,185,129,0.5)] hover:shadow-[0_4px_35px_rgba(16,185,129,0.7)] hover:scale-110 active:scale-95 transition-all duration-300 group cursor-pointer"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 sm:w-15 sm:h-15 rounded-full bg-gradient-to-tr from-[#059669] via-[#10b981] to-[#34d399] text-white flex items-center justify-center shadow-[0_8px_30px_rgba(16,185,129,0.5),0_0_15px_rgba(52,211,153,0.35)] hover:shadow-[0_12px_45px_rgba(16,185,129,0.7),0_0_25px_rgba(52,211,153,0.6)] hover:scale-110 active:scale-95 transition-all duration-300 group cursor-pointer border-2 border-white/40"
         title="تواصل معنا عبر واتساب"
       >
-        <WhatsAppIcon size={30} />
-        <span className="absolute right-16 bg-slate-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg">
-          تحدث معنا الآن
+        {/* Soft Radar Pulse Ring */}
+        <span className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-30 pointer-events-none" />
+
+        {/* Crisp Pure White Vector WhatsApp Icon */}
+        <WhatsAppIcon size={30} color="white" />
+
+        {/* Luxury Glass Hover Tooltip */}
+        <span className="absolute right-16 sm:right-18 bg-[#0a193d]/95 backdrop-blur-md text-white text-xs font-bold py-2 px-3.5 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none shadow-xl border border-blue-400/30">
+          تحدث معنا عبر واتساب الآن
         </span>
       </a>
     </main>

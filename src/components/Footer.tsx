@@ -554,7 +554,7 @@ export default function Footer({
                   </span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <WhatsAppIcon size={16} />
+                  <WhatsAppIcon size={16} color="#34d399" />
                   <a
                     href={WHATSAPP_LINK}
                     target="_blank"

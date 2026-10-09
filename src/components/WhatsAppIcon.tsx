@@ -1,30 +1,51 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 
 interface WhatsAppIconProps {
   className?: string;
   size?: number;
+  variant?: "glyph" | "badge";
+  color?: string;
 }
 
 export default function WhatsAppIcon({
   className = "",
   size = 28,
+  variant = "glyph",
+  color = "currentColor",
 }: WhatsAppIconProps) {
+  if (variant === "badge") {
+    return (
+      <div
+        className={`relative inline-flex items-center justify-center shrink-0 rounded-[22%] bg-gradient-to-tr from-[#059669] via-[#10b981] to-[#34d399] p-[2px] shadow-[0_6px_20px_rgba(16,185,129,0.45),inset_0_1px_2px_rgba(255,255,255,0.6)] select-none transition-transform duration-200 hover:scale-105 ${className}`}
+        style={{ width: size, height: size }}
+      >
+        {/* Top Gloss Arc */}
+        <div className="absolute top-0 inset-x-1 h-1/2 bg-gradient-to-b from-white/35 to-transparent rounded-t-[20%] pointer-events-none" />
+        
+        {/* Vector SVG inside */}
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-[68%] h-[68%] fill-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)] relative z-10"
+        >
+          <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.04 14.69 2 12.04 2ZM12.05 20.15C10.57 20.15 9.12 19.75 7.85 19L7.55 18.82L4.43 19.64L5.26 16.6L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.8 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.05 20.15ZM16.57 14.39C16.32 14.27 15.1 13.67 14.87 13.58C14.65 13.5 14.48 13.46 14.32 13.71C14.15 13.96 13.68 14.51 13.54 14.67C13.4 14.84 13.26 14.86 13.01 14.73C12.76 14.61 11.97 14.35 11.03 13.51C10.3 12.86 9.8 12.05 9.66 11.81C9.52 11.56 9.65 11.43 9.77 11.3C9.88 11.19 10.02 11.01 10.15 10.86C10.27 10.72 10.31 10.61 10.39 10.45C10.47 10.28 10.43 10.14 10.37 10.02C10.31 9.9 9.81 8.67 9.6 8.17C9.4 7.68 9.2 7.75 9.05 7.74C8.91 7.73 8.75 7.73 8.58 7.73C8.42 7.73 8.15 7.79 7.92 8.04C7.7 8.28 7.07 8.87 7.07 10.07C7.07 11.27 7.94 12.43 8.07 12.59C8.19 12.76 9.79 15.22 12.23 16.28C12.81 16.53 13.26 16.68 13.62 16.79C14.2 16.98 14.73 16.95 15.15 16.89C15.62 16.82 16.59 16.3 16.79 15.73C17 15.16 17 14.67 16.94 14.57C16.88 14.47 16.73 14.41 16.57 14.39Z" />
+        </svg>
+      </div>
+    );
+  }
+
   return (
-    <div
-      className={`inline-flex items-center justify-center shrink-0 filter drop-shadow-[0_4px_12px_rgba(37,211,102,0.45)] transition-transform hover:scale-110 duration-200 select-none ${className}`}
+    <svg
+      viewBox="0 0 24 24"
+      fill={color === "currentColor" ? "currentColor" : color}
+      xmlns="http://www.w3.org/2000/svg"
+      className={`shrink-0 select-none drop-shadow-[0_2px_6px_rgba(0,0,0,0.25)] transition-transform duration-200 ${className}`}
       style={{ width: size, height: size }}
     >
-      <Image
-        src="/images/whatsapp_exact_icon.png"
-        alt="واتساب Ecom Speed Pro"
-        width={120}
-        height={120}
-        priority
-        className="w-full h-full object-contain pointer-events-none"
-      />
-    </div>
+      <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.36 3.45 16.86L2.05 22L7.3 20.62C8.75 21.41 10.38 21.83 12.04 21.83C17.5 21.83 21.95 17.38 21.95 11.92C21.95 9.27 20.92 6.78 19.05 4.91C17.18 3.04 14.69 2 12.04 2ZM12.05 20.15C10.57 20.15 9.12 19.75 7.85 19L7.55 18.82L4.43 19.64L5.26 16.6L5.06 16.29C4.24 14.99 3.8 13.47 3.8 11.91C3.8 7.37 7.5 3.67 12.05 3.67C14.25 3.67 16.31 4.53 17.87 6.09C19.42 7.65 20.28 9.72 20.28 11.92C20.28 16.46 16.58 20.15 12.05 20.15ZM16.57 14.39C16.32 14.27 15.1 13.67 14.87 13.58C14.65 13.5 14.48 13.46 14.32 13.71C14.15 13.96 13.68 14.51 13.54 14.67C13.4 14.84 13.26 14.86 13.01 14.73C12.76 14.61 11.97 14.35 11.03 13.51C10.3 12.86 9.8 12.05 9.66 11.81C9.52 11.56 9.65 11.43 9.77 11.3C9.88 11.19 10.02 11.01 10.15 10.86C10.27 10.72 10.31 10.61 10.39 10.45C10.47 10.28 10.43 10.14 10.37 10.02C10.31 9.9 9.81 8.67 9.6 8.17C9.4 7.68 9.2 7.75 9.05 7.74C8.91 7.73 8.75 7.73 8.58 7.73C8.42 7.73 8.15 7.79 7.92 8.04C7.7 8.28 7.07 8.87 7.07 10.07C7.07 11.27 7.94 12.43 8.07 12.59C8.19 12.76 9.79 15.22 12.23 16.28C12.81 16.53 13.26 16.68 13.62 16.79C14.2 16.98 14.73 16.95 15.15 16.89C15.62 16.82 16.59 16.3 16.79 15.73C17 15.16 17 14.67 16.94 14.57C16.88 14.47 16.73 14.41 16.57 14.39Z" />
+    </svg>
   );
 }
