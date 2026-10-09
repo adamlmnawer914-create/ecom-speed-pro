@@ -54,7 +54,7 @@ export default function SearchModal({
       price: "مضمنة مجاناً",
       badge: "ميزة حصرية ✨",
       desc: "تصاميم عصرية جاهزة ومتوافقة بنسبة 100% مع الهواتف الذكية",
-      image: "/images/hero_cutout_master.png",
+      image: "/images/hero_showcase_master.png",
     },
     {
       id: "payment",
