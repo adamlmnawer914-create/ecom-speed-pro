@@ -109,7 +109,7 @@ export default function HeroSection({ onOpenOrderModal }: HeroSectionProps) {
                 {/* Image Container inside Card */}
                 <div className="relative rounded-[24px] sm:rounded-[32px] overflow-hidden bg-gradient-to-tr from-sky-100 via-sky-50 to-blue-100 border border-blue-100/80 shadow-inner">
                   <Image
-                    src="/images/hero_showcase_master.png"
+                    src="/images/hero_showcase_luxury.png"
                     alt="متجر إلكتروني احترافي متكامل Ecom Speed Pro"
                     width={1024}
                     height={683}
