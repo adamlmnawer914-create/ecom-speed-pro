@@ -111,10 +111,10 @@ export default function HeroSection({ onOpenOrderModal }: HeroSectionProps) {
                   <Image
                     src="/images/hero_showcase_master.png"
                     alt="متجر إلكتروني احترافي متكامل Ecom Speed Pro"
-                    width={1365}
-                    height={855}
+                    width={1024}
+                    height={683}
                     priority
-                    className="w-full h-auto object-cover transform group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                    className="w-full h-auto object-cover transform group-hover:scale-[1.02] transition-transform duration-700 ease-out"
                   />
                 </div>
 
