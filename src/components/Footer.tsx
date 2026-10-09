@@ -18,6 +18,10 @@ import {
   FileText,
   Shield,
   HelpCircle,
+  Flame,
+  Zap,
+  Crown,
+  ArrowLeft,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -422,168 +426,286 @@ export default function Footer({
         </div>
 
         {/* ======================================================== */}
-        {/* 4. MASTER LUXURY FOOTER (التذييل الشامل للموقع)           */}
+        {/* 4. MASTER LUXURY FOOTER (التذييل الشامل فائق التنظيم والفخامة) */}
         {/* ======================================================== */}
-        <div className="rounded-3xl bg-[#061230] border border-blue-950 text-white p-7 sm:p-10 shadow-2xl">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 pb-8 border-b border-blue-900/40">
+        <div className="relative rounded-[32px] sm:rounded-[44px] bg-gradient-to-b from-[#05112e] via-[#030b22] to-[#01040f] border border-blue-500/30 text-white p-7 sm:p-10 lg:p-12 shadow-[0_30px_80px_rgba(1,4,15,0.9)] overflow-hidden">
+          
+          {/* Top Ambient Laser Streamline & Glows */}
+          <div className="absolute top-0 inset-x-8 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/90 via-blue-500/80 to-transparent pointer-events-none" />
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-28 bg-cyan-500/15 blur-3xl rounded-full pointer-events-none" />
+          <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-600/10 blur-3xl rounded-full pointer-events-none" />
+
+          {/* 4 Main Columns Grid */}
+          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-8 pb-8 border-b border-blue-900/50">
             
-            {/* Col 1: Brand & Mission */}
-            <div className="space-y-4">
-              <div className="bg-white/95 rounded-2xl p-2.5 inline-block shadow-lg">
-                <Logo size="md" />
+            {/* ---------------- Col 1: Brand & Mission ---------------- */}
+            <div className="flex flex-col justify-between space-y-4">
+              <div className="space-y-4">
+                <div className="bg-white rounded-2xl p-2.5 sm:p-3 inline-flex shadow-[0_8px_30px_rgba(58,134,255,0.25)] border border-white/80">
+                  <Logo size="md" />
+                </div>
+                
+                <p className="text-xs sm:text-[13px] text-blue-100/85 leading-relaxed font-semibold text-justify sm:text-right">
+                  المنصة المتكاملة الرائدة في إطلاق وتطوير المتاجر الإلكترونية وحلول التجارة الرقمية. نوفر لك تصميمات استثنائية، سرعة تحميل خارقة، ودعماً فنياً على مدار الساعة لضمان نمو تجارتك ومضاعفة مبيعاتك.
+                </p>
               </div>
-              <p className="text-xs text-blue-200/70 leading-relaxed font-medium">
-                المنصة المتكاملة الرائدة في إطلاق وتطوير المتاجر الإلكترونية وحلول التجارة الرقمية. نوفر لك تصميمات استثنائية، سرعة تحميل خارقة، ودعماً فنياً على مدار الساعة لضمان نمو تجارتك ومضاعفة مبيعاتك.
-              </p>
-              
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>الخوادم تعمل بكفاءة 100% وبسرعة فائقة</span>
+
+              {/* Server Status Live Widget */}
+              <div className="pt-2">
+                <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#081a44]/90 border border-emerald-400/40 shadow-[0_4px_20px_rgba(16,185,129,0.18)] backdrop-blur-md">
+                  <span className="relative flex h-3 w-3 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-[12px] font-black text-emerald-300">
+                      الخوادم تعمل بكفاءة 100% وبسرعة فائقة
+                    </span>
+                    <span className="text-[10px] text-emerald-400/80 font-bold">
+                      جاهزية متواصلة 99.9% • استجابة فورية
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Col 2: Services & Packages */}
+            {/* ---------------- Col 2: Packages & Services ---------------- */}
             <div className="space-y-3">
-              <h5 className="text-sm font-black text-cyan-300 tracking-wide">
-                الباقات والخدمات
-              </h5>
-              <ul className="space-y-2 text-xs font-bold text-slate-300">
+              <div className="flex items-center gap-2 pb-2 border-b border-blue-900/50 mb-3.5">
+                <div className="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
+                  <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
+                </div>
+                <h5 className="text-sm sm:text-base font-black text-white tracking-wide">
+                  الباقات والخدمات
+                </h5>
+              </div>
+
+              <div className="space-y-2.5">
+                {/* 1. Fast Landing Page */}
+                <a
+                  href="#services"
+                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-rose-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(244,63,94,0.25)] hover:-translate-y-0.5"
+                >
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-100 group-hover:text-white">
+                      • صفحة الهبوط السريعة
+                    </span>
+                    <span className="text-cyan-300 font-mono text-[11px] font-black tracking-wide">
+                      (500 درهم)
+                    </span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] font-black flex items-center gap-1 shadow-[0_2px_8px_rgba(225,29,72,0.4)] shrink-0">
+                    <Flame className="w-3 h-3" />
+                    <span>الأكثر طلباً</span>
+                  </span>
+                </a>
+
+                {/* 2. Standard Multi-product Store */}
+                <a
+                  href="#services"
+                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-cyan-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(6,182,212,0.25)] hover:-translate-y-0.5"
+                >
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-100 group-hover:text-white">
+                      • المتجر القياسي متعدد المنتجات
+                    </span>
+                    <span className="text-cyan-300 font-mono text-[11px] font-black tracking-wide">
+                      (1500 درهم)
+                    </span>
+                  </div>
+                  <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[10px] font-black flex items-center gap-1 shadow-[0_2px_8px_rgba(6,182,212,0.4)] shrink-0">
+                    <Zap className="w-3 h-3" />
+                    <span>الأكثر مبيعاً</span>
+                  </span>
+                </a>
+
+                {/* 3. Advanced SaaS Platform */}
+                <a
+                  href="#services"
+                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-amber-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(245,158,11,0.25)] hover:-translate-y-0.5"
+                >
+                  <div className="flex flex-col text-right">
+                    <span className="text-xs font-bold text-slate-100 group-hover:text-white">
+                      • منصة التجارة المتقدمة SaaS
+                    </span>
+                    <span className="text-amber-300 font-mono text-[11px] font-black tracking-wide">
+                      (5000 درهم)
+                    </span>
+                  </div>
+                  <span className="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 text-[10px] font-black flex items-center gap-1 shadow-[0_2px_8px_rgba(245,158,11,0.45)] shrink-0">
+                    <Crown className="w-3 h-3 text-slate-950" />
+                    <span>VIP</span>
+                  </span>
+                </a>
+
+                {/* 4. Features & Guarantees Link */}
+                <a
+                  href="#features"
+                  className="pt-1.5 px-3 py-2 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 border border-blue-800/40 hover:border-cyan-400/50 text-xs font-bold text-cyan-300 hover:text-white flex items-center justify-between transition-all group cursor-pointer"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                    <span>• مزايا وضمانات الأداء الفائق</span>
+                  </span>
+                  <ChevronLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
+                </a>
+              </div>
+            </div>
+
+            {/* ---------------- Col 3: Quick Links ---------------- */}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 pb-2 border-b border-blue-900/50 mb-3.5">
+                <div className="w-6 h-6 rounded-lg bg-blue-500/20 border border-blue-400/40 flex items-center justify-center">
+                  <FileText className="w-3.5 h-3.5 text-blue-300" />
+                </div>
+                <h5 className="text-sm sm:text-base font-black text-white tracking-wide">
+                  روابط سريعة
+                </h5>
+              </div>
+
+              <ul className="space-y-2.5 text-xs sm:text-[13px] font-bold text-slate-200">
                 <li>
-                  <button
-                    onClick={() =>
-                      onOpenOrderModal?.("صفحة الهبوط (Landing Page)", "500 درهم")
-                    }
-                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer"
+                  <a
+                    href="#"
+                    className="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-cyan-400/40 hover:text-cyan-300 transition-all flex items-center justify-between group"
                   >
-                    <span>• صفحة الهبوط السريعة (500 درهم)</span>
-                    <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded font-black">الأكثر طلباً</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() =>
-                      onOpenOrderModal?.("المتجر القياسي (Standard Store)", "1500 درهم")
-                    }
-                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <span>• المتجر القياسي متعدد المنتجات (1500 درهم)</span>
-                    <span className="text-[10px] bg-blue-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-black">الأكثر مبيعاً</span>
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() =>
-                      onOpenOrderModal?.("منصة التجارة المتقدمة (SaaS)", "5000 درهم")
-                    }
-                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <span>• منصة التجارة المتقدمة SaaS (5000 درهم)</span>
-                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-black">VIP</span>
-                  </button>
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-cyan-400 group-hover:scale-125 transition-transform" />
+                      <span>• الصفحة الرئيسية</span>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-300 group-hover:-translate-x-0.5 transition-transform" />
+                  </a>
                 </li>
                 <li>
                   <a
-                    href="#features"
-                    className="hover:text-cyan-400 transition-colors block"
+                    href="#services"
+                    className="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-blue-400/40 hover:text-blue-300 transition-all flex items-center justify-between group"
                   >
-                    • مزايا وضمانات الأداء الفائق
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            {/* Col 3: Direct Navigation */}
-            <div className="space-y-3">
-              <h5 className="text-sm font-black text-cyan-300 tracking-wide">
-                روابط سريعة
-              </h5>
-              <ul className="space-y-2 text-xs font-bold text-slate-300">
-                <li>
-                  <a href="#" className="hover:text-cyan-400 transition-colors">
-                    • الصفحة الرئيسية
-                  </a>
-                </li>
-                <li>
-                  <a href="#services" className="hover:text-cyan-400 transition-colors">
-                    • مقارنة الباقات والأسعار
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-400 group-hover:scale-125 transition-transform" />
+                      <span>• مقارنة الباقات والأسعار</span>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-300 group-hover:-translate-x-0.5 transition-transform" />
                   </a>
                 </li>
                 <li>
                   <button
                     onClick={() => onOpenPolicyModal?.("privacy")}
-                    className="hover:text-cyan-400 transition-colors text-right cursor-pointer"
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-emerald-400/40 hover:text-emerald-300 transition-all flex items-center justify-between group text-right cursor-pointer"
                   >
-                    • سياسة الخصوصية وحماية البيانات
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform" />
+                      <span>• سياسة الخصوصية وحماية البيانات</span>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-300 group-hover:-translate-x-0.5 transition-transform" />
                   </button>
                 </li>
                 <li>
                   <button
                     onClick={() => onOpenPolicyModal?.("terms")}
-                    className="hover:text-cyan-400 transition-colors text-right cursor-pointer"
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-indigo-400/40 hover:text-indigo-300 transition-all flex items-center justify-between group text-right cursor-pointer"
                   >
-                    • شروط الخدمة والاتفاقية
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-indigo-400 group-hover:scale-125 transition-transform" />
+                      <span>• شروط الخدمة والاتفاقية</span>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-300 group-hover:-translate-x-0.5 transition-transform" />
                   </button>
                 </li>
                 <li>
                   <button
                     onClick={() => onOpenPolicyModal?.("guarantee")}
-                    className="hover:text-cyan-400 transition-colors text-right cursor-pointer"
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-amber-400/40 hover:text-amber-300 transition-all flex items-center justify-between group text-right cursor-pointer"
                   >
-                    • الضمان الذهبي واسترجاع الأموال
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 group-hover:scale-125 transition-transform" />
+                      <span>• الضمان الذهبي واسترجاع الأموال</span>
+                    </div>
+                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-300 group-hover:-translate-x-0.5 transition-transform" />
                   </button>
                 </li>
               </ul>
             </div>
 
-            {/* Col 4: Contact & Working Hours */}
+            {/* ---------------- Col 4: Help Center & Sales ---------------- */}
             <div className="space-y-3">
-              <h5 className="text-sm font-black text-cyan-300 tracking-wide">
-                مركز المساعدة والمبيعات
-              </h5>
-              <div className="space-y-2 text-xs font-semibold text-slate-300">
-                <p className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-cyan-400 shrink-0" />
-                  <span dir="ltr" className="font-mono font-bold text-white">
-                    {WHATSAPP_NUMBER}
+              <div className="flex items-center gap-2 pb-2 border-b border-blue-900/50 mb-3.5">
+                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+                  <Phone className="w-3.5 h-3.5 text-emerald-300" />
+                </div>
+                <h5 className="text-sm sm:text-base font-black text-white tracking-wide">
+                  مركز المساعدة والمبيعات
+                </h5>
+              </div>
+
+              <div className="space-y-2.5">
+                {/* 1. Phone Call */}
+                <a
+                  href={PHONE_LINK}
+                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-cyan-400/60 transition-all flex items-center justify-between text-xs font-bold text-white group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(6,182,212,0.2)]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center">
+                      <Phone className="w-3.5 h-3.5 text-cyan-300" />
+                    </div>
+                    <span dir="ltr" className="font-mono font-bold text-slate-100 text-sm tracking-wide">
+                      {WHATSAPP_NUMBER}
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-500/40 font-bold">
+                    اتصال فوري
                   </span>
-                </p>
-                <p className="flex items-center gap-2">
-                  <WhatsAppIcon size={16} color="#34d399" />
-                  <a
-                    href={WHATSAPP_LINK}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-emerald-300 transition-colors"
-                  >
-                    دعم واتساب المباشر 24/7
-                  </a>
-                </p>
-                <p className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-purple-400 shrink-0" />
-                  <a
-                    href={EMAIL_LINK}
-                    className="hover:text-purple-300 transition-colors"
-                  >
+                </a>
+
+                {/* 2. WhatsApp Direct 24/7 */}
+                <a
+                  href={WHATSAPP_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-3 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-xs font-bold text-emerald-300 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(16,185,129,0.25)]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
+                      <WhatsAppIcon size={18} color="#34d399" />
+                    </div>
+                    <span className="font-bold text-slate-100 group-hover:text-emerald-200">
+                      دعم واتساب المباشر 24/7
+                    </span>
+                  </div>
+                  <ChevronLeft className="w-4 h-4 text-emerald-400 group-hover:-translate-x-1 transition-transform" />
+                </a>
+
+                {/* 3. Official Email */}
+                <a
+                  href={EMAIL_LINK}
+                  className="p-3 rounded-2xl bg-purple-950/30 hover:bg-purple-900/40 border border-purple-500/30 hover:border-purple-400/50 transition-all flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:text-purple-200 group cursor-pointer"
+                >
+                  <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-400/40 flex items-center justify-center shrink-0">
+                    <Mail className="w-3.5 h-3.5 text-purple-300" />
+                  </div>
+                  <span dir="ltr" className="font-mono text-xs font-bold text-purple-200 truncate block">
                     support@ecomspeedpro.com
-                  </a>
-                </p>
-                <p className="flex items-center gap-2 text-blue-200/70 pt-1">
-                  <Clock className="w-4 h-4 text-cyan-400 shrink-0" />
+                  </span>
+                </a>
+
+                {/* 4. Working Hours */}
+                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-2.5 text-[11px] font-bold text-slate-300">
+                  <Clock className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                   <span>طيلة أيام الأسبوع: 09:00 - 22:00</span>
-                </p>
+                </div>
               </div>
             </div>
 
           </div>
 
-          {/* Bottom Bar: Copyright & Location */}
-          <div className="flex flex-col sm:flex-row items-center justify-between text-xs font-bold text-blue-200/60 gap-3">
-            <p>
+          {/* Bottom Bar: Copyright & Location Badge */}
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-xs font-bold text-blue-200/75 gap-3 pt-2">
+            <p className="text-center sm:text-right leading-relaxed">
               © 2026 ECOM SPEED PRO • جميع الحقوق محفوظة لشركة حلول التجارة الإلكترونية والتسويق الرقمي بالمغرب.
             </p>
-            <div className="flex items-center gap-2 text-slate-300">
-              <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
-              <span>🇲🇦</span>
+            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-100 shadow-sm transition-all">
+              <span className="text-[11px] sm:text-xs font-bold">مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
+              <span className="text-base select-none">🇲🇦</span>
             </div>
           </div>
         </div>
