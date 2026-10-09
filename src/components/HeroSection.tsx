@@ -28,12 +28,12 @@ export default function HeroSection({ onOpenOrderModal, onOpenPackageSelect }: H
 
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 items-center">
-          
+
           {/* ======================================================== */}
           {/* Column 1 in DOM -> In RTL, renders on the RIGHT side! */}
           {/* ======================================================== */}
           <div className="lg:col-span-6 flex flex-col items-center justify-center text-center">
-            
+
             {/* Main Headline matching original-design.jpg exactly */}
             <h1 className="text-3xl sm:text-4xl md:text-[44px] lg:text-[46px] font-black text-[#0b1739] leading-[1.2] tracking-tight mb-2.5">
               متجرك الإلكتروني الاحترافي
@@ -51,7 +51,7 @@ export default function HeroSection({ onOpenOrderModal, onOpenPackageSelect }: H
 
             {/* CTA Buttons Row - In RTL, first child is on the RIGHT */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
-              
+
               {/* Button 1 (Right in visual layout): اكتشف خدماتنا */}
               <button
                 onClick={scrollToServices}
@@ -80,14 +80,14 @@ export default function HeroSection({ onOpenOrderModal, onOpenPackageSelect }: H
           {/* ======================================================== */}
           <div className="lg:col-span-6 flex justify-center items-center relative mt-4 lg:mt-0">
             <div className="relative w-full max-w-[620px] mx-auto group">
-              
+
               {/* Luxury ambient glowing backlights */}
               <div className="absolute -inset-2 sm:-inset-3 bg-gradient-to-tr from-[#00d2ff]/40 via-[#3a86ff]/35 to-[#7928ca]/40 rounded-[38px] sm:rounded-[46px] blur-2xl opacity-70 group-hover:opacity-100 transition-opacity duration-700 -z-10 animate-pulse"></div>
               <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-[34px] sm:rounded-[42px] opacity-40 group-hover:opacity-75 blur-md transition duration-500 -z-10"></div>
 
               {/* Luxury Glass Card Container */}
               <div className="relative rounded-[32px] sm:rounded-[40px] bg-white/95 dark:bg-slate-900/90 backdrop-blur-2xl p-2.5 sm:p-4 border-2 border-white/95 dark:border-blue-500/30 shadow-[0_25px_65px_-15px_rgba(14,165,233,0.35),0_0_50px_rgba(99,102,241,0.2)] hover:shadow-[0_30px_80px_-10px_rgba(14,165,233,0.45),0_0_70px_rgba(99,102,241,0.3)] transition-all duration-500 hover:-translate-y-1">
-                
+
                 {/* Floating Luxury Status Badge (Top-Right in RTL) */}
                 <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-20 flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-blue-100 dark:border-blue-900/50">
                   <span className="relative flex h-2.5 w-2.5">
