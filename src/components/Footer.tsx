@@ -55,6 +55,29 @@ export default function Footer({
     }, 2500);
   };
 
+  const scrollToServices = () => {
+    const el = document.getElementById("services");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (typeof window !== "undefined" && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  };
+
+  const scrollToFeatures = () => {
+    const el = document.getElementById("features");
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+    if (typeof window !== "undefined" && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (typeof window !== "undefined" && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  };
+
   return (
     <footer className="w-full mt-12 relative z-20 overflow-hidden pb-8 pt-4">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
@@ -104,13 +127,13 @@ export default function Footer({
 
             {/* Left side in RTL: Action Buttons */}
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
-              <a
-                href="#services"
+              <button
+                onClick={scrollToServices}
                 className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white font-black text-xs sm:text-sm shadow-[0_0_22px_rgba(58,134,255,0.6)] hover:shadow-[0_0_32px_rgba(58,134,255,0.9)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>اكتشف جميع الخدمات وباقاتنا الـ 3</span>
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              </a>
+              </button>
 
               <a
                 href={WHATSAPP_LINK}
@@ -129,7 +152,7 @@ export default function Footer({
         {/* ======================================================== */}
         {/* 2. LUXURY 3D CONTACT & SUPPORT SUITE (قنوات التواصل المباشرة) */}
         {/* ======================================================== */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div id="contact" className="grid grid-cols-1 md:grid-cols-3 gap-5">
           
           {/* Card 1: WhatsApp VIP Chat + Facebook Integration */}
           <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-emerald-200/90 p-5 sm:p-6 shadow-[0_8px_30px_rgba(16,185,129,0.12)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.22)] transition-all duration-300 flex flex-col justify-between group">
@@ -482,9 +505,9 @@ export default function Footer({
 
               <div className="space-y-2.5">
                 {/* 1. Fast Landing Page */}
-                <a
-                  href="#services"
-                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-rose-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(244,63,94,0.25)] hover:-translate-y-0.5"
+                <button
+                  onClick={scrollToServices}
+                  className="w-full p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-rose-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(244,63,94,0.25)] hover:-translate-y-0.5"
                 >
                   <div className="flex flex-col text-right">
                     <span className="text-xs font-bold text-slate-100 group-hover:text-white">
@@ -498,12 +521,12 @@ export default function Footer({
                     <Flame className="w-3 h-3" />
                     <span>الأكثر طلباً</span>
                   </span>
-                </a>
+                </button>
 
                 {/* 2. Standard Multi-product Store */}
-                <a
-                  href="#services"
-                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-cyan-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(6,182,212,0.25)] hover:-translate-y-0.5"
+                <button
+                  onClick={scrollToServices}
+                  className="w-full p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-cyan-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(6,182,212,0.25)] hover:-translate-y-0.5"
                 >
                   <div className="flex flex-col text-right">
                     <span className="text-xs font-bold text-slate-100 group-hover:text-white">
@@ -517,12 +540,12 @@ export default function Footer({
                     <Zap className="w-3 h-3" />
                     <span>الأكثر مبيعاً</span>
                   </span>
-                </a>
+                </button>
 
                 {/* 3. Advanced SaaS Platform */}
-                <a
-                  href="#services"
-                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-amber-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(245,158,11,0.25)] hover:-translate-y-0.5"
+                <button
+                  onClick={scrollToServices}
+                  className="w-full p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-amber-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(245,158,11,0.25)] hover:-translate-y-0.5"
                 >
                   <div className="flex flex-col text-right">
                     <span className="text-xs font-bold text-slate-100 group-hover:text-white">
@@ -536,19 +559,19 @@ export default function Footer({
                     <Crown className="w-3 h-3 text-slate-950" />
                     <span>VIP</span>
                   </span>
-                </a>
+                </button>
 
                 {/* 4. Features & Guarantees Link */}
-                <a
-                  href="#features"
-                  className="pt-1.5 px-3 py-2 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 border border-blue-800/40 hover:border-cyan-400/50 text-xs font-bold text-cyan-300 hover:text-white flex items-center justify-between transition-all group cursor-pointer"
+                <button
+                  onClick={scrollToFeatures}
+                  className="w-full pt-1.5 px-3 py-2 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 border border-blue-800/40 hover:border-cyan-400/50 text-xs font-bold text-cyan-300 hover:text-white flex items-center justify-between transition-all group cursor-pointer"
                 >
                   <span className="flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-cyan-400" />
                     <span>• مزايا وضمانات الأداء الفائق</span>
                   </span>
                   <ChevronLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
-                </a>
+                </button>
               </div>
             </div>
 
@@ -565,28 +588,28 @@ export default function Footer({
 
               <ul className="space-y-2.5 text-xs sm:text-[13px] font-bold text-slate-200">
                 <li>
-                  <a
-                    href="#"
-                    className="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-cyan-400/40 hover:text-cyan-300 transition-all flex items-center justify-between group"
+                  <button
+                    onClick={scrollToTop}
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-cyan-400/40 hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="w-2 h-2 rounded-full bg-cyan-400 group-hover:scale-125 transition-transform" />
                       <span>• الصفحة الرئيسية</span>
                     </div>
                     <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </a>
+                  </button>
                 </li>
                 <li>
-                  <a
-                    href="#services"
-                    className="p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-blue-400/40 hover:text-blue-300 transition-all flex items-center justify-between group"
+                  <button
+                    onClick={scrollToServices}
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-blue-400/40 hover:text-blue-300 transition-all flex items-center justify-between group cursor-pointer"
                   >
                     <div className="flex items-center gap-2.5">
                       <span className="w-2 h-2 rounded-full bg-blue-400 group-hover:scale-125 transition-transform" />
                       <span>• مقارنة الباقات والأسعار</span>
                     </div>
                     <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </a>
+                  </button>
                 </li>
                 <li>
                   <button

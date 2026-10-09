@@ -1,14 +1,21 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FeaturesRibbon from "@/components/FeaturesRibbon";
 import PricingSection from "@/components/PricingSection";
+import ProductsSection from "@/components/ProductsSection";
 import SocialSection from "@/components/SocialSection";
+import BlogSection from "@/components/BlogSection";
+import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
 import OrderModal from "@/components/OrderModal";
 import PolicyModal from "@/components/PolicyModal";
+import CartModal from "@/components/CartModal";
+import WishlistModal from "@/components/WishlistModal";
+import AccountModal from "@/components/AccountModal";
+import SearchModal from "@/components/SearchModal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 export default function Home() {
@@ -18,6 +25,19 @@ export default function Home() {
 
   const [policyModalOpen, setPolicyModalOpen] = useState(false);
   const [policyType, setPolicyType] = useState<"privacy" | "terms" | "guarantee">("privacy");
+
+  const [cartOpen, setCartOpen] = useState(false);
+  const [wishlistOpen, setWishlistOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Remove hashtag (#) from URL automatically on page mount
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, []);
 
   const handleOpenOrder = (plan = "منصة التجارة المتقدمة (Advanced SaaS)", price = "5000 درهم") => {
     setSelectedPlan(plan);
@@ -30,6 +50,11 @@ export default function Home() {
     setPolicyModalOpen(true);
   };
 
+  const handleOpenSearch = (query: string) => {
+    setSearchQuery(query);
+    setSearchOpen(true);
+  };
+
   return (
     <main className="relative min-h-screen flex flex-col bg-[#eaf4fd] text-[#0c1833] overflow-x-hidden">
       {/* Store Background matching attached image exactly */}
@@ -37,8 +62,14 @@ export default function Home() {
         className="fixed inset-0 w-full h-full bg-[url('/images/store_bg_master.png')] bg-cover bg-top bg-no-repeat -z-20 pointer-events-none" 
       />
       
-      {/* Main Navbar with Crisp Vector Logo */}
-      <Navbar onOpenOrderModal={handleOpenOrder} />
+      {/* Main Navbar with Crisp 3D Letter E Logo and complete mobile ribbon */}
+      <Navbar
+        onOpenOrderModal={handleOpenOrder}
+        onOpenCart={() => setCartOpen(true)}
+        onOpenWishlist={() => setWishlistOpen(true)}
+        onOpenAccount={() => setAccountOpen(true)}
+        onOpenSearch={handleOpenSearch}
+      />
 
       {/* Hero Section */}
       <HeroSection onOpenOrderModal={handleOpenOrder} />
@@ -49,13 +80,51 @@ export default function Home() {
       {/* Services & Pricing Section */}
       <PricingSection onSelectPlan={handleOpenOrder} />
 
+      {/* Products & Templates Section */}
+      <ProductsSection onSelectPlan={handleOpenOrder} />
+
       {/* Futuristic 3D Social Media Stage Section matching user attachment */}
       <SocialSection />
+
+      {/* Digital eCommerce Blog Section */}
+      <BlogSection />
+
+      {/* About Us & Vision Section */}
+      <AboutSection />
 
       {/* Redesigned Luxury Master Footer Suite */}
       <Footer
         onOpenOrderModal={handleOpenOrder}
         onOpenPolicyModal={handleOpenPolicy}
+      />
+
+      {/* Shopping Cart Modal */}
+      <CartModal
+        isOpen={cartOpen}
+        onClose={() => setCartOpen(false)}
+        onOpenOrderModal={handleOpenOrder}
+      />
+
+      {/* Wishlist Modal */}
+      <WishlistModal
+        isOpen={wishlistOpen}
+        onClose={() => setWishlistOpen(false)}
+        onOpenOrderModal={handleOpenOrder}
+      />
+
+      {/* Client & Investor Account Portal Modal */}
+      <AccountModal
+        isOpen={accountOpen}
+        onClose={() => setAccountOpen(false)}
+        onOpenOrderModal={handleOpenOrder}
+      />
+
+      {/* Instant Search Modal */}
+      <SearchModal
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        query={searchQuery}
+        onSelectPlan={handleOpenOrder}
       />
 
       {/* Interactive Order Modal */}

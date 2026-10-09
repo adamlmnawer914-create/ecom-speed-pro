@@ -9,8 +9,18 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ onOpenOrderModal }: HeroSectionProps) {
+  const scrollToServices = () => {
+    const el = document.getElementById("services");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    if (typeof window !== "undefined" && window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  };
+
   return (
-    <section className="relative w-full overflow-hidden pt-2 pb-3 md:pt-3 md:pb-4">
+    <section id="home" className="relative w-full overflow-hidden pt-2 pb-3 md:pt-3 md:pb-4">
       {/* Background ambient lighting and futuristic glowing rays */}
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-cyan-400/20 rounded-full blur-3xl pointer-events-none -z-10 animate-pulse"></div>
       <div className="absolute top-1/3 right-1/4 w-[450px] h-[450px] bg-indigo-500/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
@@ -42,13 +52,13 @@ export default function HeroSection({ onOpenOrderModal }: HeroSectionProps) {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto">
               
               {/* Button 1 (Right in visual layout): اكتشف خدماتنا */}
-              <a
-                href="#services"
-                className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-2.5 rounded-full font-black text-[#1d4ed8] text-[15px] bg-white border-2 border-[#2563eb] shadow-sm hover:shadow-md hover:bg-blue-50/60 transition-all duration-300 hover:scale-105 active:scale-95"
+              <button
+                onClick={scrollToServices}
+                className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-2.5 rounded-full font-black text-[#1d4ed8] text-[15px] bg-white border-2 border-[#2563eb] shadow-sm hover:shadow-md hover:bg-blue-50/60 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
               >
                 <span>اكتشف خدماتنا</span>
                 <ChevronLeft className="w-5 h-5 text-[#1d4ed8]" />
-              </a>
+              </button>
 
               {/* Button 2 (Left in visual layout): اطلب الآن */}
               <button

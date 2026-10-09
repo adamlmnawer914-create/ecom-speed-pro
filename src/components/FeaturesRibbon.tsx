@@ -195,7 +195,7 @@ export default function FeaturesRibbon({
   ];
 
   return (
-    <section className={`w-full py-3 px-4 ${className}`} dir="rtl">
+    <section id="features" className={`w-full py-3 px-4 ${className}`} dir="rtl">
       <div className="max-w-[1440px] mx-auto">
         {/* Luxury Sculpted 3D Glass Capsule */}
         <div className="relative rounded-3xl lg:rounded-full bg-white/95 backdrop-blur-xl border border-[#b8dcff] shadow-[0_12px_45px_rgba(37,99,235,0.12)] p-3 sm:p-4 lg:p-3 transition-all duration-300 hover:shadow-[0_16px_55px_rgba(37,99,235,0.2)]">
