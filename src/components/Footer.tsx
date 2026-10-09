@@ -100,15 +100,13 @@ export default function Footer({
 
             {/* Left side in RTL: Action Buttons */}
             <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full lg:w-auto justify-center lg:justify-end">
-              <button
-                onClick={() =>
-                  onOpenOrderModal?.("استشارة مجانية وبدء المشروع", "مجاناً")
-                }
+              <a
+                href="#services"
                 className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white font-black text-xs sm:text-sm shadow-[0_0_22px_rgba(58,134,255,0.6)] hover:shadow-[0_0_32px_rgba(58,134,255,0.9)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
               >
-                <span>اكتشف جميع الخدمات واستشرنا مجاناً</span>
+                <span>اكتشف جميع الخدمات وباقاتنا الـ 3</span>
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              </button>
+              </a>
 
               <a
                 href={WHATSAPP_LINK}
@@ -148,18 +146,6 @@ export default function Footer({
                   </div>
                 </div>
 
-                {/* Luxury Facebook Action Button */}
-                <a
-                  href={FACEBOOK_LINK}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-2.5 rounded-2xl bg-gradient-to-br from-[#1877F2]/10 to-[#1877F2]/20 hover:from-[#1877F2] hover:to-[#0d65d9] text-[#1877F2] hover:text-white border border-[#1877F2]/30 shadow-sm transition-all duration-300 hover:scale-110 flex items-center justify-center group/fb"
-                  title="تابع صفحتنا الرسمية على فيسبوك"
-                >
-                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                </a>
               </div>
 
               <div className="my-2 bg-emerald-50/70 rounded-2xl p-3 border border-emerald-100/80 flex items-center justify-between">

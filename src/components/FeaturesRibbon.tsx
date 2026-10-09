@@ -198,12 +198,12 @@ export default function FeaturesRibbon({
     <section className={`w-full py-3 px-4 ${className}`} dir="rtl">
       <div className="max-w-[1440px] mx-auto">
         {/* Luxury Sculpted 3D Glass Capsule */}
-        <div className="relative rounded-full bg-white/90 backdrop-blur-xl border border-[#b8dcff] shadow-[0_12px_45px_rgba(37,99,235,0.12)] p-2 sm:p-3 transition-all duration-300 hover:shadow-[0_16px_55px_rgba(37,99,235,0.2)]">
+        <div className="relative rounded-3xl lg:rounded-full bg-white/95 backdrop-blur-xl border border-[#b8dcff] shadow-[0_12px_45px_rgba(37,99,235,0.12)] p-3 sm:p-4 lg:p-3 transition-all duration-300 hover:shadow-[0_16px_55px_rgba(37,99,235,0.2)]">
           {/* Inner Light Reflection Bar */}
           <div className="absolute inset-x-8 top-1 h-[1.5px] bg-gradient-to-r from-transparent via-white/80 to-transparent rounded-full pointer-events-none" />
 
-          {/* 5 Features Grid / Row */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 items-center">
+          {/* 5 Features Grid / Row (Mobile 1-col, Tablet 2/3-col, Desktop 5-col) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 items-center">
             {features.map((item, index) => (
               <div
                 key={item.id}

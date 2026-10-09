@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import TopBar from "@/components/TopBar";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FeaturesRibbon from "@/components/FeaturesRibbon";
@@ -38,9 +37,6 @@ export default function Home() {
         className="fixed inset-0 w-full h-full bg-[url('/images/store_bg_master.png')] bg-cover bg-top bg-no-repeat -z-20 pointer-events-none" 
       />
       
-      {/* Top Bar */}
-      <TopBar />
-
       {/* Main Navbar with Crisp Vector Logo */}
       <Navbar onOpenOrderModal={handleOpenOrder} />
 
