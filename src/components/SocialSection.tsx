@@ -11,7 +11,7 @@ export default function SocialSection() {
       "https://www.facebook.com/people/Ecom-Speed-Pro/61595388710709/?rdid=XmASTJaHpZvxdwJi&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F1DjRWQFryH%2F",
     instagram: "https://www.instagram.com/ecom_speed_pro",
     tiktok: "https://www.tiktok.com",
-    twitter: "https://twitter.com",
+    twitter: "https://x.com/EcomSpeedPro",
   };
 
   const socialCards = [

@@ -66,7 +66,7 @@ export default function TopBar() {
 
             {/* X */}
             <a
-              href="https://x.com"
+              href="https://x.com/EcomSpeedPro"
               target="_blank"
               rel="noreferrer"
               title="منصة X"

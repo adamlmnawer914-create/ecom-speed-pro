@@ -67,9 +67,17 @@ export default function Footer({
             
             {/* Right side in RTL: Gift / Rocket 3D icon + Headline */}
             <div className="flex items-center gap-4 sm:gap-5 text-right w-full lg:w-auto">
-              <div className="relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-purple-600 p-[2px] shadow-[0_0_25px_rgba(59,130,246,0.6)] animate-pulse">
-                <div className="w-full h-full bg-[#08173d] rounded-2xl flex items-center justify-center">
-                  <Gift className="w-7 h-7 sm:w-8 sm:h-8 text-cyan-300" />
+              {/* Right side in RTL: Official 3D Emblem Badge + Headline */}
+              <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-[#00f5d4] via-[#3a86ff] to-[#7928ca] shadow-[0_0_25px_rgba(58,134,255,0.6)] group hover:scale-105 transition-all duration-300">
+                <div className="w-full h-full bg-white rounded-[14px] sm:rounded-[22px] p-1 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src="/images/ecom_speed_pro_3d_emblem.png"
+                    alt="شعار ECOM SPEED PRO ثلاثي الأبعاد"
+                    width={160}
+                    height={160}
+                    priority
+                    className="w-full h-full object-contain filter drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
               </div>
 
