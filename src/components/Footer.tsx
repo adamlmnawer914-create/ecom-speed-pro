@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import {
-  MessageCircle,
   Phone,
   Mail,
   ChevronLeft,
@@ -16,10 +15,12 @@ import {
   Gift,
   Clock,
   Award,
-  ArrowUpRight,
-  ExternalLink,
+  FileText,
+  Shield,
+  HelpCircle,
 } from "lucide-react";
 import Logo from "@/components/Logo";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 interface FooterProps {
   onOpenOrderModal?: (plan?: string, price?: string) => void;
@@ -35,6 +36,7 @@ export default function Footer({
     "https://wa.me/212762357491?text=مرحباً%20Ecom%20Speed%20Pro%20أريد%20الاستفسار%20عن%20خدماتكم%20وبدء%20المشروع";
   const PHONE_LINK = "tel:+212762357491";
   const EMAIL_LINK = "mailto:support@ecomspeedpro.com";
+  const FACEBOOK_LINK = "https://facebook.com/ecomspeedpro";
 
   const [copiedType, setCopiedType] = useState<string | null>(null);
 
@@ -47,13 +49,13 @@ export default function Footer({
   };
 
   return (
-    <footer className="w-full mt-10 relative z-20 overflow-hidden pb-8 pt-4">
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
+    <footer className="w-full mt-12 relative z-20 overflow-hidden pb-8 pt-4">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
 
         {/* ======================================================== */}
         {/* 1. VIP PROMO CTA BANNER (ابدأ مشروعك الآن مع ECOM SPEED PRO) */}
         {/* ======================================================== */}
-        <div className="relative w-full rounded-3xl bg-gradient-to-r from-[#071333] via-[#0d2259] to-[#0a1840] border border-blue-500/30 p-5 sm:p-7 shadow-[0_12px_40px_rgba(13,34,89,0.35)] overflow-hidden">
+        <div className="relative w-full rounded-3xl bg-gradient-to-r from-[#061230] via-[#0b1f54] to-[#071333] border border-blue-500/30 p-5 sm:p-7 shadow-[0_12px_45px_rgba(11,31,84,0.35)] overflow-hidden">
           {/* Ambient Glows */}
           <div className="absolute -top-24 -right-24 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -91,7 +93,7 @@ export default function Footer({
                 onClick={() =>
                   onOpenOrderModal?.("استشارة مجانية وبدء المشروع", "مجاناً")
                 }
-                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(58,134,255,0.6)] hover:shadow-[0_0_30px_rgba(58,134,255,0.9)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
+                className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white font-black text-xs sm:text-sm shadow-[0_0_22px_rgba(58,134,255,0.6)] hover:shadow-[0_0_32px_rgba(58,134,255,0.9)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>اكتشف جميع الخدمات واستشرنا مجاناً</span>
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
@@ -101,9 +103,9 @@ export default function Footer({
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 font-bold text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                className="w-full sm:w-auto px-5 py-3 rounded-full bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 font-bold text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5"
               >
-                <MessageCircle className="w-4 h-4 text-emerald-400" />
+                <WhatsAppIcon size={20} />
                 <span>واتساب فوري</span>
               </a>
             </div>
@@ -116,107 +118,137 @@ export default function Footer({
         {/* ======================================================== */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           
-          {/* Card 1: WhatsApp VIP Chat */}
-          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-emerald-200/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(16,185,129,0.12)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.22)] transition-all duration-300 flex flex-col justify-between group">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-3 text-white shadow-[0_6px_20px_rgba(16,185,129,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                  <MessageCircle className="w-7 h-7" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-block mb-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
-                    <span>رد فوري خلال دقائق</span>
+          {/* Card 1: WhatsApp VIP Chat + Facebook Integration */}
+          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-emerald-200/90 p-5 sm:p-6 shadow-[0_8px_30px_rgba(16,185,129,0.12)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.22)] transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-2.5 flex items-center justify-center shadow-[0_6px_20px_rgba(16,185,129,0.4)] group-hover:scale-110 transition-transform">
+                    <WhatsAppIcon size={32} />
                   </div>
-                  <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
-                    محادثة واتساب الرسمية
-                  </h4>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 inline-block mb-1">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping inline-block" />
+                      <span>رد فوري خلال دقائق</span>
+                    </div>
+                    <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
+                      محادثة واتساب الرسمية
+                    </h4>
+                  </div>
                 </div>
+
+                {/* Luxury Facebook Action Button */}
+                <a
+                  href={FACEBOOK_LINK}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="p-2.5 rounded-2xl bg-gradient-to-br from-[#1877F2]/10 to-[#1877F2]/20 hover:from-[#1877F2] hover:to-[#0d65d9] text-[#1877F2] hover:text-white border border-[#1877F2]/30 shadow-sm transition-all duration-300 hover:scale-110 flex items-center justify-center group/fb"
+                  title="تابع صفحتنا الرسمية على فيسبوك"
+                >
+                  <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </a>
+              </div>
+
+              <div className="my-2 bg-emerald-50/70 rounded-2xl p-3 border border-emerald-100/80 flex items-center justify-between">
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-500 font-bold block">الرقم المعتمد:</span>
+                  <span dir="ltr" className="text-sm sm:text-base font-black text-emerald-900 tracking-wide font-mono">
+                    {WHATSAPP_NUMBER}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCopy(WHATSAPP_NUMBER, "whatsapp")}
+                  className="p-2 rounded-xl bg-white hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold cursor-pointer"
+                  title="نسخ الرقم"
+                >
+                  {copiedType === "whatsapp" ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-600" />
+                      <span className="text-[10px]">تم النسخ!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span className="text-[10px]">نسخ</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
-            <div className="my-2 bg-emerald-50/60 rounded-2xl p-3 border border-emerald-100/70 flex items-center justify-between">
-              <div className="text-right">
-                <span className="text-[10px] text-slate-500 font-bold block">الرقم المعتمد:</span>
-                <span dir="ltr" className="text-sm sm:text-base font-black text-emerald-900 tracking-wide font-mono">
-                  {WHATSAPP_NUMBER}
-                </span>
-              </div>
-              <button
-                onClick={() => handleCopy(WHATSAPP_NUMBER, "whatsapp")}
-                className="p-2 rounded-xl bg-white hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold"
-                title="نسخ الرقم"
-              >
-                {copiedType === "whatsapp" ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-600" />
-                    <span className="text-[10px]">تم النسخ!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span className="text-[10px]">نسخ</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            <div className="pt-2">
+            <div className="pt-2 flex gap-2">
               <a
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_22px_rgba(16,185,129,0.5)] transition-all cursor-pointer"
+                className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_22px_rgba(16,185,129,0.5)] transition-all cursor-pointer"
               >
-                <span>بدء المحادثة على واتساب</span>
+                <div className="flex items-center gap-2">
+                  <WhatsAppIcon size={18} />
+                  <span>بدء المحادثة الآن</span>
+                </div>
                 <ChevronLeft className="w-4 h-4" />
+              </a>
+
+              <a
+                href={FACEBOOK_LINK}
+                target="_blank"
+                rel="noreferrer"
+                className="py-3 px-3.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1877F2] border border-blue-200 font-bold text-xs flex items-center gap-1 transition-colors"
+                title="صفحة فيسبوك"
+              >
+                <span>فيسبوك</span>
               </a>
             </div>
           </div>
 
           {/* Card 2: Direct Phone Call */}
-          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-blue-200/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(37,99,235,0.12)] hover:shadow-[0_12px_40px_rgba(37,99,235,0.22)] transition-all duration-300 flex flex-col justify-between group">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 p-3 text-white shadow-[0_6px_20px_rgba(37,99,235,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                  <Phone className="w-7 h-7" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 inline-block mb-1">
-                    <Clock className="w-3 h-3 inline-block" />
-                    <span>09:00 ص - 10:00 م</span>
+          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-blue-200/90 p-5 sm:p-6 shadow-[0_8px_30px_rgba(37,99,235,0.12)] hover:shadow-[0_12px_40px_rgba(37,99,235,0.22)] transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 p-3 text-white shadow-[0_6px_20px_rgba(37,99,235,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                    <Phone className="w-7 h-7" />
                   </div>
-                  <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
-                    اتصال هاتفي مباشر
-                  </h4>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-black text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 inline-block mb-1">
+                      <Clock className="w-3 h-3 inline-block" />
+                      <span>09:00 ص - 10:00 م</span>
+                    </div>
+                    <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
+                      اتصال هاتفي مباشر
+                    </h4>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="my-2 bg-blue-50/60 rounded-2xl p-3 border border-blue-100/70 flex items-center justify-between">
-              <div className="text-right">
-                <span className="text-[10px] text-slate-500 font-bold block">مستشار التجارة الإلكترونية:</span>
-                <span dir="ltr" className="text-sm sm:text-base font-black text-blue-950 tracking-wide font-mono">
-                  {WHATSAPP_NUMBER}
-                </span>
+              <div className="my-2 bg-blue-50/70 rounded-2xl p-3 border border-blue-100/80 flex items-center justify-between">
+                <div className="text-right">
+                  <span className="text-[10px] text-slate-500 font-bold block">مستشار التجارة الإلكترونية:</span>
+                  <span dir="ltr" className="text-sm sm:text-base font-black text-blue-950 tracking-wide font-mono">
+                    {WHATSAPP_NUMBER}
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCopy(WHATSAPP_NUMBER, "phone")}
+                  className="p-2 rounded-xl bg-white hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold cursor-pointer"
+                  title="نسخ الرقم"
+                >
+                  {copiedType === "phone" ? (
+                    <>
+                      <Check className="w-4 h-4 text-blue-600" />
+                      <span className="text-[10px]">تم النسخ!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span className="text-[10px]">نسخ</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                onClick={() => handleCopy(WHATSAPP_NUMBER, "phone")}
-                className="p-2 rounded-xl bg-white hover:bg-blue-100 text-blue-700 border border-blue-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold"
-                title="نسخ الرقم"
-              >
-                {copiedType === "phone" ? (
-                  <>
-                    <Check className="w-4 h-4 text-blue-600" />
-                    <span className="text-[10px]">تم النسخ!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span className="text-[10px]">نسخ</span>
-                  </>
-                )}
-              </button>
             </div>
 
             <div className="pt-2 flex gap-2">
@@ -231,7 +263,7 @@ export default function Footer({
                 onClick={() =>
                   onOpenOrderModal?.("طلب استشارة هاتفية سريعة", "مجاناً")
                 }
-                className="px-3.5 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-xs transition-colors"
+                className="px-3.5 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 font-bold text-xs transition-colors cursor-pointer"
                 title="طلب معاودة الاتصال"
               >
                 معاودة الاتصال
@@ -240,48 +272,50 @@ export default function Footer({
           </div>
 
           {/* Card 3: Official VIP Email */}
-          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-purple-200/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(147,51,234,0.12)] hover:shadow-[0_12px_40px_rgba(147,51,234,0.22)] transition-all duration-300 flex flex-col justify-between group">
-            <div className="flex items-start justify-between gap-3 mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 p-3 text-white shadow-[0_6px_20px_rgba(147,51,234,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
-                  <Mail className="w-7 h-7" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-black text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200 inline-block mb-1">
-                    <Award className="w-3 h-3 inline-block" />
-                    <span>مراسلات وعقود رسمية</span>
+          <div className="relative rounded-3xl bg-white/95 backdrop-blur-md border border-purple-200/90 p-5 sm:p-6 shadow-[0_8px_30px_rgba(147,51,234,0.12)] hover:shadow-[0_12px_40px_rgba(147,51,234,0.22)] transition-all duration-300 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 p-3 text-white shadow-[0_6px_20px_rgba(147,51,234,0.4)] group-hover:scale-110 group-hover:rotate-3 transition-transform">
+                    <Mail className="w-7 h-7" />
                   </div>
-                  <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
-                    البريد الإلكتروني المعتمد
-                  </h4>
+                  <div>
+                    <div className="flex items-center gap-1.5 text-[11px] font-black text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-full border border-purple-200 inline-block mb-1">
+                      <Award className="w-3 h-3 inline-block" />
+                      <span>مراسلات وعقود رسمية</span>
+                    </div>
+                    <h4 className="font-black text-[#0a193c] text-base sm:text-lg">
+                      البريد الإلكتروني المعتمد
+                    </h4>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="my-2 bg-purple-50/60 rounded-2xl p-3 border border-purple-100/70 flex items-center justify-between">
-              <div className="text-right truncate ml-2">
-                <span className="text-[10px] text-slate-500 font-bold block">بريد الدعم والمشاريع:</span>
-                <span dir="ltr" className="text-xs sm:text-sm font-black text-purple-950 tracking-tight font-mono truncate block">
-                  support@ecomspeedpro.com
-                </span>
+              <div className="my-2 bg-purple-50/70 rounded-2xl p-3 border border-purple-100/80 flex items-center justify-between">
+                <div className="text-right truncate ml-2">
+                  <span className="text-[10px] text-slate-500 font-bold block">بريد الدعم والمشاريع:</span>
+                  <span dir="ltr" className="text-xs sm:text-sm font-black text-purple-950 tracking-tight font-mono truncate block">
+                    support@ecomspeedpro.com
+                  </span>
+                </div>
+                <button
+                  onClick={() => handleCopy("support@ecomspeedpro.com", "email")}
+                  className="p-2 rounded-xl bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold shrink-0 cursor-pointer"
+                  title="نسخ البريد"
+                >
+                  {copiedType === "email" ? (
+                    <>
+                      <Check className="w-4 h-4 text-purple-600" />
+                      <span className="text-[10px]">تم النسخ!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span className="text-[10px]">نسخ</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                onClick={() => handleCopy("support@ecomspeedpro.com", "email")}
-                className="p-2 rounded-xl bg-white hover:bg-purple-100 text-purple-700 border border-purple-200 shadow-sm transition-colors text-xs flex items-center gap-1 font-bold shrink-0"
-                title="نسخ البريد"
-              >
-                {copiedType === "email" ? (
-                  <>
-                    <Check className="w-4 h-4 text-purple-600" />
-                    <span className="text-[10px]">تم النسخ!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-4 h-4" />
-                    <span className="text-[10px]">نسخ</span>
-                  </>
-                )}
-              </button>
             </div>
 
             <div className="pt-2">
@@ -304,38 +338,40 @@ export default function Footer({
           
           {/* Pillar 1: Bank-Grade Security & Guarantee */}
           <div className="flex items-center gap-3.5 w-full lg:w-auto">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0 shadow-inner">
-              <ShieldCheck className="w-6 h-6 text-blue-600" />
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 p-[2px] shadow-[0_4px_15px_rgba(37,99,235,0.35)]">
+              <div className="w-full h-full bg-white rounded-2xl flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-blue-600" />
+              </div>
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-black text-[#0a193c]">
-                  دفع آمن وحماية معتمدة 100%
+                  دفع إلكتروني آمن وتشفير بنكي 100%
                 </span>
                 <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                   SSL 256-Bit
                 </span>
               </div>
               <p className="text-xs text-slate-500 font-semibold mt-0.5">
-                تشفير بنكي كامل لبياناتك وحرية استرجاع مضمونة
+                حماية شاملة لبيانات الدفع وبوابات رسمية معتمدة
               </p>
             </div>
           </div>
 
-          {/* Pillar 2: Crisp Payment Provider Badges */}
+          {/* Pillar 2: Crisp Payment Provider Badges (NO COD) */}
           <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 py-1">
             {/* YouCan Pay Badge */}
             <div
-              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
               title="YouCan Pay - بوابات الدفع الإلكتروني المغربية"
             >
-              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-black text-slate-800">YouCan Pay</span>
             </div>
 
             {/* CMI Badge */}
             <div
-              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
               title="CMI - Centre Monétique Interbancaire Maroc"
             >
               <span className="text-xs font-black text-[#0066b2]">CMI</span>
@@ -344,7 +380,7 @@ export default function Footer({
 
             {/* VISA Badge */}
             <div
-              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1 transition-all hover:scale-105"
+              className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-sm flex items-center gap-1 transition-all hover:scale-105"
               title="بطاقات Visa العالمية"
             >
               <span className="text-xs font-black tracking-wider text-[#1a1f71]">VISA</span>
@@ -352,7 +388,7 @@ export default function Footer({
 
             {/* Mastercard Badge */}
             <div
-              className="px-3.5 py-1.5 rounded-xl bg-slate-50 hover:bg-white border border-slate-200/90 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              className="px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
               title="بطاقات Mastercard العالمية"
             >
               <div className="flex -space-x-1">
@@ -362,36 +398,48 @@ export default function Footer({
               <span className="text-[11px] font-extrabold text-slate-800">mastercard</span>
             </div>
 
-            {/* Cash on Delivery Badge */}
+            {/* Bank Transfer Badge */}
             <div
-              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
-              title="الدفع نقداً عند استلام أرباحك وتوصيل الطلبات"
+              className="px-3.5 py-1.5 rounded-xl bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
+              title="تحويل بنكي مباشر مع تسليم فوري"
             >
-              <span className="text-xs font-black text-emerald-800">
-                💵 الدفع عند الاستلام (COD)
+              <CreditCard className="w-3.5 h-3.5 text-blue-600" />
+              <span className="text-xs font-black text-blue-900">
+                تحويل بنكي مباشر
               </span>
             </div>
           </div>
 
-          {/* Pillar 3: Interactive Policy & Guarantee Buttons */}
-          <div className="flex items-center gap-2 w-full lg:w-auto justify-center lg:justify-end">
+          {/* Pillar 3: Luxury Interactive Policy & Guarantee Buttons */}
+          <div className="flex items-center gap-2.5 w-full lg:w-auto justify-center lg:justify-end">
+            {/* Luxury Privacy Policy Button */}
             <button
               onClick={() => onOpenPolicyModal?.("privacy")}
-              className="px-3.5 py-2 rounded-xl bg-blue-50/80 hover:bg-blue-100 text-blue-700 border border-blue-200/80 text-xs font-bold transition-all hover:scale-105"
+              className="group px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 text-emerald-800 border border-emerald-300 shadow-sm text-xs font-black transition-all hover:scale-105 flex items-center gap-1.5 cursor-pointer"
+              title="عرض سياسة الخصوصية وحماية البيانات"
             >
-              سياسة الخصوصية
+              <Shield className="w-3.5 h-3.5 text-emerald-600 group-hover:scale-110 transition-transform" />
+              <span>سياسة الخصوصية</span>
             </button>
+
+            {/* Luxury Terms of Service Button */}
             <button
               onClick={() => onOpenPolicyModal?.("terms")}
-              className="px-3.5 py-2 rounded-xl bg-blue-50/80 hover:bg-blue-100 text-blue-700 border border-blue-200/80 text-xs font-bold transition-all hover:scale-105"
+              className="group px-4 py-2 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 hover:from-blue-100 hover:to-indigo-100 text-blue-800 border border-blue-300 shadow-sm text-xs font-black transition-all hover:scale-105 flex items-center gap-1.5 cursor-pointer"
+              title="عرض شروط وأحكام الاستخدام والخدمة"
             >
-              شروط الاستخدام
+              <FileText className="w-3.5 h-3.5 text-blue-600 group-hover:scale-110 transition-transform" />
+              <span>شروط الاستخدام</span>
             </button>
+
+            {/* Luxury Golden Guarantee Button */}
             <button
               onClick={() => onOpenPolicyModal?.("guarantee")}
-              className="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 text-xs font-bold transition-all hover:scale-105"
+              className="group px-4 py-2 rounded-xl bg-gradient-to-r from-amber-50 to-yellow-50 hover:from-amber-100 hover:to-yellow-100 text-amber-900 border border-amber-300 shadow-sm text-xs font-black transition-all hover:scale-105 flex items-center gap-1.5 cursor-pointer"
+              title="عرض تفاصيل الضمان الذهبي لراحة البال"
             >
-              الضمان الذهبي 🛡️
+              <Award className="w-3.5 h-3.5 text-amber-600 group-hover:scale-110 transition-transform" />
+              <span>الضمان الذهبي 🛡️</span>
             </button>
           </div>
 
@@ -400,7 +448,7 @@ export default function Footer({
         {/* ======================================================== */}
         {/* 4. MASTER LUXURY FOOTER (التذييل الشامل للموقع)           */}
         {/* ======================================================== */}
-        <div className="rounded-3xl bg-[#071333] border border-blue-950 text-white p-7 sm:p-10 shadow-2xl">
+        <div className="rounded-3xl bg-[#061230] border border-blue-950 text-white p-7 sm:p-10 shadow-2xl">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 pb-8 border-b border-blue-900/40">
             
             {/* Col 1: Brand & Mission */}
@@ -429,10 +477,10 @@ export default function Footer({
                     onClick={() =>
                       onOpenOrderModal?.("صفحة الهبوط (Landing Page)", "500 درهم")
                     }
-                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>• صفحة الهبوط السريعة (500 درهم)</span>
-                    <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded">الأكثر طلباً</span>
+                    <span className="text-[10px] bg-red-500/20 text-red-300 px-1.5 py-0.2 rounded font-black">الأكثر طلباً</span>
                   </button>
                 </li>
                 <li>
@@ -440,9 +488,10 @@ export default function Footer({
                     onClick={() =>
                       onOpenOrderModal?.("المتجر القياسي (Standard Store)", "1500 درهم")
                     }
-                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>• المتجر القياسي متعدد المنتجات (1500 درهم)</span>
+                    <span className="text-[10px] bg-blue-500/20 text-cyan-300 px-1.5 py-0.2 rounded font-black">الأكثر مبيعاً</span>
                   </button>
                 </li>
                 <li>
@@ -450,10 +499,10 @@ export default function Footer({
                     onClick={() =>
                       onOpenOrderModal?.("منصة التجارة المتقدمة (SaaS)", "5000 درهم")
                     }
-                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5"
+                    className="hover:text-cyan-400 transition-colors flex items-center gap-1.5 cursor-pointer"
                   >
                     <span>• منصة التجارة المتقدمة SaaS (5000 درهم)</span>
-                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded">VIP</span>
+                    <span className="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.2 rounded font-black">VIP</span>
                   </button>
                 </li>
                 <li>
@@ -486,7 +535,7 @@ export default function Footer({
                 <li>
                   <button
                     onClick={() => onOpenPolicyModal?.("privacy")}
-                    className="hover:text-cyan-400 transition-colors text-right"
+                    className="hover:text-cyan-400 transition-colors text-right cursor-pointer"
                   >
                     • سياسة الخصوصية وحماية البيانات
                   </button>
@@ -494,7 +543,7 @@ export default function Footer({
                 <li>
                   <button
                     onClick={() => onOpenPolicyModal?.("terms")}
-                    className="hover:text-cyan-400 transition-colors text-right"
+                    className="hover:text-cyan-400 transition-colors text-right cursor-pointer"
                   >
                     • شروط الخدمة والاتفاقية
                   </button>
@@ -502,7 +551,7 @@ export default function Footer({
                 <li>
                   <button
                     onClick={() => onOpenPolicyModal?.("guarantee")}
-                    className="hover:text-cyan-400 transition-colors text-right"
+                    className="hover:text-cyan-400 transition-colors text-right cursor-pointer"
                   >
                     • الضمان الذهبي واسترجاع الأموال
                   </button>
@@ -523,7 +572,7 @@ export default function Footer({
                   </span>
                 </p>
                 <p className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <WhatsAppIcon size={16} />
                   <a
                     href={WHATSAPP_LINK}
                     target="_blank"

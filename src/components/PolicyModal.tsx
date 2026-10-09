@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { X, ShieldCheck, FileText, CheckCircle2 } from "lucide-react";
+import { X, ShieldCheck, FileText, Award, Lock, Sparkles, Check } from "lucide-react";
 
 interface PolicyModalProps {
   isOpen: boolean;
@@ -15,58 +15,82 @@ export default function PolicyModal({ isOpen, onClose, type }: PolicyModalProps)
   const contentMap = {
     privacy: {
       title: "سياسة الخصوصية وحماية البيانات",
-      icon: <ShieldCheck className="w-6 h-6 text-emerald-500" />,
-      badge: "تشفير وأمان معتمد 100%",
+      badge: "تشفير وأمان معتمد SSL 256-Bit 🛡️",
+      badgeStyle: "bg-emerald-500/10 text-emerald-700 border-emerald-300",
+      glowColor: "from-emerald-500 via-teal-500 to-cyan-500",
+      icon: (
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-cyan-400 p-[2.5px] shadow-[0_0_25px_rgba(16,185,129,0.45)]">
+          <div className="w-full h-full bg-[#061727] rounded-2xl flex items-center justify-center">
+            <ShieldCheck className="w-8 h-8 text-emerald-400" />
+          </div>
+        </div>
+      ),
       sections: [
         {
-          heading: "1. جمع المعلومات وسريتها",
-          text: "نحن في ECOM SPEED PRO نلتزم بحماية خصوصية عملائنا. لا نقوم بمشاركة أي بيانات شخصية أو معلومات تجارية تخص متجرك أو منتجاتك أو عملائك مع أي طرف ثالث بأي شكل من الأشكال.",
+          heading: "1. جمع المعلومات وسريتها التامة",
+          text: "نحن في ECOM SPEED PRO نلتزم بحماية خصوصية عملائنا بأعلى المعايير العالمية. لا نقوم بمشاركة أي بيانات شخصية أو معلومات تجارية تخص متجرك أو منتجاتك أو زبائنك مع أي طرف ثالث تحت أي ظرف.",
         },
         {
-          heading: "2. أمان المعاملات المالية",
-          text: "جميع معاملات الدفع تتم عبر بوابات دفع بنكية معتمدة ومشفرة بأحدث بروتوكولات الأمان SSL 256-Bit. لا يتم تخزين أي بيانات بطاقات ائتمانية على خوادمنا.",
+          heading: "2. أمان المعاملات المالية والدفع الإلكتروني",
+          text: "جميع معاملات الدفع تتم عبر بوابات دفع بنكية معتمدة ومشفرة بأحدث بروتوكولات الأمان المصرفي SSL 256-Bit. لا يتم تخزين أو تسجيل أي بيانات بطاقات بنكية على خوادمنا نهائياً.",
         },
         {
-          heading: "3. ملكية المتجر والبيانات",
-          text: "أنت المالك الحصري 100% لمتجرك الإلكتروني، لقاعدة بيانات عملائك، ولجميع ملفات وتصميمات موقعك بعد استلام المشروع وتسديد التكلفة المتفق عليها.",
+          heading: "3. الملكية الحصرية لبيانات المتجر",
+          text: "أنت المالك القانوني الحصري 100% لمتجرك الإلكتروني، قاعدة بيانات عملائك، تصاميمك، وكافة مبيعاتك فور تسليم المشروع، بدون أي عمولات خفية.",
         },
       ],
     },
     terms: {
       title: "شروط وأحكام الاستخدام والخدمة",
-      icon: <FileText className="w-6 h-6 text-blue-500" />,
-      badge: "اتفاقية الخدمة الرسمية",
+      badge: "اتفاقية الخدمة والتعاقد الرسمي 📜",
+      badgeStyle: "bg-blue-500/10 text-blue-700 border-blue-300",
+      glowColor: "from-blue-600 via-indigo-600 to-cyan-500",
+      icon: (
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-400 p-[2.5px] shadow-[0_0_25px_rgba(37,99,235,0.45)]">
+          <div className="w-full h-full bg-[#061338] rounded-2xl flex items-center justify-center">
+            <FileText className="w-8 h-8 text-cyan-300" />
+          </div>
+        </div>
+      ),
       sections: [
         {
-          heading: "1. نطاق تقديم الخدمات",
-          text: "تلتزم ECOM SPEED PRO بتسليم المتجر الإلكتروني أو صفحة الهبوط المتفق عليها بكامل المواصفات المذكورة في الباقة المختارة، متوافقة بنسبة 100% مع جميع الهواتف والحواسيب.",
+          heading: "1. نطاق تقديم الخدمات والمواصفات",
+          text: "تلتزم ECOM SPEED PRO بتسليم المتجر الإلكتروني أو صفحة الهبوط بكامل المواصفات المحددة في الباقة المختارة، متوافقة 100% مع جميع أجهزة الهواتف الذكية والحواسيب وبسرعة تحميل قياسية.",
         },
         {
-          heading: "2. مدة التنفيذ والتسليم",
-          text: "يتم تسليم صفحات الهبوط والمتاجر القياسية خلال مدة قياسية تتراوح بين 24 إلى 72 ساعة، والمنصات المتقدمة SaaS وفق الجدول الزمني المتفق عليه في العقد.",
+          heading: "2. مدة التنفيذ والتسليم المضمونة",
+          text: "يتم تسليم صفحات الهبوط والمتاجر القياسية خلال مدة قياسية تتراوح بين 24 إلى 72 ساعة، بينما تنفذ منصات SaaS المتقدمة وفق جدول زمني دقيق يتم الاتفاق عليه ومتابعته خطوة بخطوة.",
         },
         {
-          heading: "3. الدعم الفني والتعديلات",
-          text: "يحق للعميل طلب التعديلات والمراجعات حتى الوصول إلى الرضا التام، مع توفير دعم فني مستمر ومجاني لمعالجة أي استفسارات تقنية.",
+          heading: "3. الدعم الفني والتعديلات غير المحدودة",
+          text: "نوفر لك جلسات مراجعة وتعديلات حتى وصولك إلى الرضا التام، مع توفير تدريب مجاني ودعم فني متواصل عبر واتساب لمساعدتك في إدارة ومتابعة الطلبات.",
         },
       ],
     },
     guarantee: {
       title: "الضمان الذهبي وراحة البال",
-      icon: <CheckCircle2 className="w-6 h-6 text-amber-500" />,
-      badge: "ضمان رضا العميل 100%",
+      badge: "ضمان الرضا والالتزام 100% 👑",
+      badgeStyle: "bg-amber-500/10 text-amber-800 border-amber-300",
+      glowColor: "from-amber-400 via-yellow-400 to-amber-600",
+      icon: (
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-600 p-[2.5px] shadow-[0_0_25px_rgba(245,158,11,0.55)]">
+          <div className="w-full h-full bg-[#1e1302] rounded-2xl flex items-center justify-center">
+            <Award className="w-8 h-8 text-amber-400" />
+          </div>
+        </div>
+      ),
       sections: [
         {
-          heading: "1. ضمان الجودة والأداء",
-          text: "نضمن سرعة تحميل فائقة لمتجرك (أقل من ثانية واحدة) مع توافق تام وأعلى درجات تحويل الزوار إلى مشترين فعليين.",
+          heading: "1. ضمان الجودة والأداء الخارق",
+          text: "نضمن سرعة تحميل فائقة لمتجرك (أقل من ثانية واحدة) مع بنية برمجية حديثة ترفع معدل التحويل والمبيعات لأقصى درجة ممكنة.",
         },
         {
-          heading: "2. دعم ما بعد البيع",
-          text: "فريقنا معك خطوة بخطوة بعد الإطلاق لتدريبك على إدارة المتجر ومتابعة الطلبات وتحديث المنتجات بكل سهولة.",
+          heading: "2. مرافقة مستمرة حتى تحقيق أولى مبيعاتك",
+          text: "فريقنا معك ليس فقط لتسليم المتجر، بل للتأكد من جاهزية بوابات الدفع، ضبط إعلاناتك، والتأكد من استقبال الطلبات بسلاسة تامة.",
         },
         {
-          heading: "3. الشفافية والمصداقية",
-          text: "لا توجد أي رسوم خفية أو اشتراكات مفاجئة. السعر المعلن في كل باقة يشمل كل ما تحتاجه للبدء والنجاح.",
+          heading: "3. الشفافية والمصداقية المطلقة",
+          text: "لا توجد أي رسوم أو مصاريف خفية إطلاقاً. السعر المعلن في كل باقة يشمل كل ما يلزمك لبدء تجارتك بنجاح.",
         },
       ],
     },
@@ -75,29 +99,27 @@ export default function PolicyModal({ isOpen, onClose, type }: PolicyModalProps)
   const current = contentMap[type] || contentMap.privacy;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
       <div
         className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-blue-100 p-6 sm:p-8 overflow-hidden max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200"
         dir="rtl"
       >
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-inner">
-              {current.icon}
-            </div>
+        <div className="flex items-center justify-between pb-5 border-b border-slate-100">
+          <div className="flex items-center gap-4">
+            {current.icon}
             <div>
-              <span className="text-[11px] font-black text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full border border-blue-200 inline-block mb-1">
+              <span className={`text-[11px] font-black px-3 py-0.5 rounded-full border inline-block mb-1.5 ${current.badgeStyle}`}>
                 {current.badge}
               </span>
-              <h3 className="text-lg sm:text-xl font-black text-[#0a193c]">
+              <h3 className="text-xl sm:text-2xl font-black text-[#0a193c]">
                 {current.title}
               </h3>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-10 h-10 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors flex items-center justify-center"
+            className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-colors flex items-center justify-center cursor-pointer"
             title="إغلاق"
           >
             <X className="w-5 h-5" />
@@ -107,12 +129,12 @@ export default function PolicyModal({ isOpen, onClose, type }: PolicyModalProps)
         {/* Modal Body */}
         <div className="flex-1 overflow-y-auto py-5 space-y-4 text-slate-700 leading-relaxed text-sm">
           {current.sections.map((sec, idx) => (
-            <div key={idx} className="bg-slate-50/80 rounded-2xl p-4 border border-slate-100">
-              <h4 className="font-extrabold text-[#0a193c] text-base mb-1.5 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-600" />
+            <div key={idx} className="bg-slate-50/90 rounded-2xl p-4 sm:p-5 border border-slate-200/80">
+              <h4 className="font-extrabold text-[#0a193c] text-base mb-2 flex items-center gap-2.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
                 {sec.heading}
               </h4>
-              <p className="text-slate-600 text-xs sm:text-sm font-medium leading-relaxed">
+              <p className="text-slate-600 text-xs sm:text-sm font-semibold leading-relaxed">
                 {sec.text}
               </p>
             </div>
@@ -121,12 +143,13 @@ export default function PolicyModal({ isOpen, onClose, type }: PolicyModalProps)
 
         {/* Footer */}
         <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-500 font-bold">
-            ECOM SPEED PRO • موثوق ومعتمد رسمياً
+          <p className="text-xs text-slate-500 font-black flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+            <span>ECOM SPEED PRO • موثوق ومعتمد رسمياً لعام 2026</span>
           </p>
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold text-xs shadow-md transition-all"
+            className="w-full sm:w-auto px-7 py-2.5 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-black text-xs shadow-md transition-all cursor-pointer"
           >
             فهمت وموافق
           </button>

@@ -9,7 +9,7 @@ import PricingSection from "@/components/PricingSection";
 import Footer from "@/components/Footer";
 import OrderModal from "@/components/OrderModal";
 import PolicyModal from "@/components/PolicyModal";
-import { MessageCircle } from "lucide-react";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -64,6 +64,7 @@ export default function Home() {
         onClose={() => setModalOpen(false)}
         selectedPlan={selectedPlan}
         selectedPrice={selectedPrice}
+        onOpenPolicyModal={handleOpenPolicy}
       />
 
       {/* Interactive Policy & Guarantees Modal */}
@@ -78,10 +79,10 @@ export default function Home() {
         href="https://wa.me/212762357491?text=مرحباً%20Ecom%20Speed%20Pro%20أريد%20الاستفسار%20عن%20خدماتكم"
         target="_blank"
         rel="noreferrer"
-        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 to-green-500 text-white flex items-center justify-center shadow-[0_4px_25px_rgba(16,185,129,0.5)] hover:shadow-[0_4px_35px_rgba(16,185,129,0.7)] hover:scale-110 active:scale-95 transition-all duration-300 group"
+        className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 to-green-500 text-white flex items-center justify-center shadow-[0_4px_25px_rgba(16,185,129,0.5)] hover:shadow-[0_4px_35px_rgba(16,185,129,0.7)] hover:scale-110 active:scale-95 transition-all duration-300 group cursor-pointer"
         title="تواصل معنا عبر واتساب"
       >
-        <MessageCircle className="w-7 h-7" />
+        <WhatsAppIcon size={30} />
         <span className="absolute right-16 bg-slate-900 text-white text-xs font-bold py-1.5 px-3 rounded-xl whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg">
           تحدث معنا الآن
         </span>

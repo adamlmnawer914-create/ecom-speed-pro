@@ -6,15 +6,17 @@ interface LogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
   showSlogan?: boolean;
+  lightText?: boolean;
 }
 
 export default function Logo({
   className = "",
   size = "md",
   showSlogan = true,
+  lightText = false,
 }: LogoProps) {
   // Dimension tokens based on size
-  const iconSize = size === "sm" ? 34 : size === "lg" ? 48 : 40;
+  const iconSize = size === "sm" ? 34 : size === "lg" ? 48 : 42;
   const brandSize = size === "sm" ? "text-base" : size === "lg" ? "text-2xl" : "text-xl";
   const sloganSize = size === "sm" ? "text-[8.5px]" : size === "lg" ? "text-[11px]" : "text-[9.5px]";
 
@@ -23,9 +25,9 @@ export default function Logo({
       className={`flex items-center gap-2.5 select-none transition-transform hover:scale-[1.02] duration-200 ${className}`}
       dir="ltr"
     >
-      {/* 3D Aerodynamic Speed "e" + Rocket Icon */}
+      {/* 3D Aerodynamic Speed Capital "E" + Launch Rocket Icon */}
       <div
-        className="relative shrink-0 flex items-center justify-center filter drop-shadow-[0_4px_10px_rgba(58,134,255,0.35)]"
+        className="relative shrink-0 flex items-center justify-center filter drop-shadow-[0_4px_12px_rgba(58,134,255,0.4)]"
         style={{ width: iconSize, height: iconSize }}
       >
         <svg
@@ -36,59 +38,74 @@ export default function Logo({
         >
           <defs>
             {/* Main Outer Gradient */}
-            <linearGradient id="ecom_grad_main" x1="10%" y1="90%" x2="90%" y2="10%">
+            <linearGradient id="ecom_E_grad" x1="10%" y1="90%" x2="90%" y2="10%">
               <stop offset="0%" stopColor="#7928ca" />
-              <stop offset="30%" stopColor="#3a86ff" />
+              <stop offset="35%" stopColor="#3a86ff" />
               <stop offset="70%" stopColor="#00b4d8" />
               <stop offset="100%" stopColor="#00f5d4" />
             </linearGradient>
 
-            {/* Inner Speed Arrow Gradient */}
-            <linearGradient id="ecom_grad_arrow" x1="0%" y1="100%" x2="100%" y2="0%">
+            {/* Launch Arrow Gradient */}
+            <linearGradient id="ecom_E_arrow" x1="0%" y1="100%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#3a86ff" />
               <stop offset="50%" stopColor="#7209b7" />
               <stop offset="100%" stopColor="#f72585" />
             </linearGradient>
 
+            {/* Glass Highlight */}
+            <linearGradient id="ecom_E_glass" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+            </linearGradient>
+
             {/* Glow Filter */}
-            <filter id="ecom_glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="3" result="blur" />
+            <filter id="ecom_E_glow" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="3.5" result="blur" />
               <feComposite in="SourceGraphic" in2="blur" operator="over" />
             </filter>
           </defs>
 
-          {/* Glowing Base Ambient Circle (soft glass disc) */}
-          <circle cx="50" cy="50" r="46" fill="url(#ecom_grad_main)" fillOpacity="0.12" />
+          {/* Glowing Ambient Backdrop Circle */}
+          <circle cx="50" cy="50" r="46" fill="url(#ecom_E_grad)" fillOpacity="0.12" filter="url(#ecom_E_glow)" />
+          <circle cx="50" cy="50" r="46" stroke="url(#ecom_E_grad)" strokeWidth="1.2" strokeOpacity="0.4" />
 
-          {/* Outer Stylized "e" Body */}
+          {/* CAPITAL "E" - Stylized Modern 3D Geometric Body */}
+          {/* Vertical spine & Bottom Bar */}
           <path
-            d="M 68 32 C 60 22 45 20 32 26 C 18 33 12 49 16 64 C 20 78 35 86 50 85 C 64 84 75 75 79 63 C 79.5 61.5 78.5 60 77 60 L 63 60 C 61.5 60 60.5 61 59.5 62 C 55 69 45 71 38 67 C 31 63 28 55 30 48 L 74 48 C 76.5 48 78 46 78 43.5 C 78 39 74 34 68 32 Z M 32 40 C 33 34 39 30 47 30 C 54 30 59 34 60 40 L 32 40 Z"
-            fill="url(#ecom_grad_main)"
+            d="M 22 20 C 22 17.8 23.8 16 26 16 L 62 16 C 64.2 16 66 17.8 66 20 L 66 28 C 66 30.2 64.2 32 62 32 L 36 32 L 36 43 L 56 43 C 58.2 43 60 44.8 60 47 L 60 54 C 60 56.2 58.2 58 56 58 L 36 58 L 36 69 L 66 69 C 68.2 69 70 70.8 70 73 L 70 81 C 70 83.2 68.2 85 66 85 L 26 85 C 23.8 85 22 83.2 22 81 Z"
+            fill="url(#ecom_E_grad)"
           />
 
-          {/* Aerodynamic Launch Arrow / Rocket Tip breaking through top right */}
+          {/* Top Arm Launching Upward Rocket Swoop (Merging out of the top of Capital E) */}
           <path
-            d="M 66 38 L 84 18 M 84 18 L 73 18 M 84 18 L 84 29"
-            stroke="url(#ecom_grad_arrow)"
+            d="M 52 24 C 62 24 72 18 84 10"
+            stroke="url(#ecom_E_arrow)"
             strokeWidth="5"
             strokeLinecap="round"
-            strokeLinejoin="round"
           />
 
-          {/* Rocket arrowhead polygon */}
+          {/* Rocket Arrow Head */}
           <polygon
-            points="84,18 70,24 78,32"
-            fill="url(#ecom_grad_arrow)"
-            filter="url(#ecom_glow)"
+            points="88,8 74,12 82,22"
+            fill="url(#ecom_E_arrow)"
+            filter="url(#ecom_E_glow)"
           />
 
-          {/* Speed Streamlines */}
+          {/* Glass Highlight Stroke on Spine */}
           <path
-            d="M 18 50 L 8 50 M 15 58 L 6 58 M 20 42 L 10 42"
-            stroke="#00b4d8"
+            d="M 24 22 L 24 79"
+            stroke="url(#ecom_E_glass)"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+
+          {/* Speed Streamlines on bottom-left */}
+          <path
+            d="M 16 50 L 8 50 M 14 62 L 6 62 M 18 38 L 10 38"
+            stroke="#00f5d4"
             strokeWidth="2.5"
             strokeLinecap="round"
-            opacity="0.75"
+            opacity="0.8"
           />
         </svg>
       </div>
@@ -97,11 +114,17 @@ export default function Logo({
       <div className="flex flex-col justify-center leading-none">
         {/* Main Title Row */}
         <div className={`flex items-baseline tracking-tight font-black ${brandSize}`}>
-          <span className="text-[#0a193c] tracking-tight">ECOM</span>
-          <span className="ml-1 text-[#2563eb] tracking-tight drop-shadow-[0_2px_8px_rgba(37,99,235,0.25)]">
+          <span
+            className={`tracking-tight ${
+              lightText ? "text-white" : "text-[#0a193c]"
+            }`}
+          >
+            ECOM
+          </span>
+          <span className="ml-1 text-[#2563eb] tracking-tight drop-shadow-[0_2px_8px_rgba(37,99,235,0.3)]">
             SPEED
           </span>
-          <span className="ml-1.5 px-2 py-0.5 rounded-md bg-gradient-to-r from-[#7928ca] via-[#9333ea] to-[#d946ef] text-white text-[0.72em] font-black uppercase tracking-wider shadow-[0_2px_10px_rgba(147,51,234,0.4)]">
+          <span className="ml-1.5 px-2 py-0.5 rounded-md bg-gradient-to-r from-[#7928ca] via-[#9333ea] to-[#d946ef] text-white text-[0.72em] font-black uppercase tracking-wider shadow-[0_2px_10px_rgba(147,51,234,0.45)]">
             PRO
           </span>
         </div>
@@ -109,11 +132,15 @@ export default function Logo({
         {/* Slogan Row (Arabic with Cyan Accents) */}
         {showSlogan && (
           <div
-            className={`flex items-center gap-1.5 mt-1 font-extrabold text-[#3b82f6] ${sloganSize}`}
+            className={`flex items-center gap-1.5 mt-1 font-extrabold ${sloganSize}`}
             dir="rtl"
           >
             <span className="h-[1.5px] w-2.5 rounded-full bg-gradient-to-r from-transparent to-[#00b4d8]" />
-            <span className="text-[#1e3a8a] tracking-tight font-bold whitespace-nowrap">
+            <span
+              className={`tracking-tight font-bold whitespace-nowrap ${
+                lightText ? "text-cyan-200" : "text-[#1e3a8a]"
+              }`}
+            >
               حلول التجارة الإلكترونية والتسويق الرقمي
             </span>
             <span className="h-[1.5px] w-2.5 rounded-full bg-gradient-to-l from-transparent to-[#00b4d8]" />
