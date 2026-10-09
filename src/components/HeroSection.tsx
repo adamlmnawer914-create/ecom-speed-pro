@@ -6,9 +6,10 @@ import { ShoppingCart, ChevronLeft } from "lucide-react";
 
 interface HeroSectionProps {
   onOpenOrderModal: (plan?: string, price?: string) => void;
+  onOpenPackageSelect?: () => void;
 }
 
-export default function HeroSection({ onOpenOrderModal }: HeroSectionProps) {
+export default function HeroSection({ onOpenOrderModal, onOpenPackageSelect }: HeroSectionProps) {
   const scrollToServices = () => {
     const el = document.getElementById("services");
     if (el) {
@@ -62,7 +63,7 @@ export default function HeroSection({ onOpenOrderModal }: HeroSectionProps) {
 
               {/* Button 2 (Left in visual layout): اطلب الآن */}
               <button
-                onClick={scrollToServices}
+                onClick={onOpenPackageSelect || scrollToServices}
                 className="w-full sm:w-auto relative group flex items-center justify-center gap-2.5 px-8 py-2.5 rounded-full font-black text-white text-[15px] bg-gradient-to-r from-[#00c8ff] via-[#3a86ff] to-[#8338ec] shadow-[0_0_25px_rgba(131,56,236,0.65),0_0_50px_rgba(0,200,255,0.4)] hover:shadow-[0_0_35px_rgba(131,56,236,0.9),0_0_65px_rgba(0,200,255,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
               >
                 <ShoppingCart className="w-5 h-5" />

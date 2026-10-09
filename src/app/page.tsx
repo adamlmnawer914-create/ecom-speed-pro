@@ -16,10 +16,12 @@ import CartModal from "@/components/CartModal";
 import WishlistModal from "@/components/WishlistModal";
 import AccountModal from "@/components/AccountModal";
 import SearchModal from "@/components/SearchModal";
+import PackageSelectModal from "@/components/PackageSelectModal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [packageSelectOpen, setPackageSelectOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState("منصة التجارة المتقدمة (Advanced SaaS)");
   const [selectedPrice, setSelectedPrice] = useState("5000 درهم");
 
@@ -72,7 +74,10 @@ export default function Home() {
       />
 
       {/* Hero Section */}
-      <HeroSection onOpenOrderModal={handleOpenOrder} />
+      <HeroSection
+        onOpenOrderModal={handleOpenOrder}
+        onOpenPackageSelect={() => setPackageSelectOpen(true)}
+      />
 
       {/* Features Ribbon */}
       <FeaturesRibbon />
@@ -124,6 +129,13 @@ export default function Home() {
         isOpen={searchOpen}
         onClose={() => setSearchOpen(false)}
         query={searchQuery}
+        onSelectPlan={handleOpenOrder}
+      />
+
+      {/* Interactive Package Selection Modal (When clicking Order Now) */}
+      <PackageSelectModal
+        isOpen={packageSelectOpen}
+        onClose={() => setPackageSelectOpen(false)}
         onSelectPlan={handleOpenOrder}
       />
 

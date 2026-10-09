@@ -98,7 +98,7 @@ export default function Footer({
               <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-[#00f5d4] via-[#3a86ff] to-[#7928ca] shadow-[0_0_25px_rgba(58,134,255,0.6)] group hover:scale-105 transition-all duration-300">
                 <div className="w-full h-full bg-white rounded-[14px] sm:rounded-[22px] p-1 flex items-center justify-center overflow-hidden">
                   <Image
-                    src="/images/ecom_speed_pro_3d_emblem.png"
+                    src="/images/ecom_brand_logo_transparent.png"
                     alt="شعار ECOM SPEED PRO ثلاثي الأبعاد"
                     width={160}
                     height={160}
