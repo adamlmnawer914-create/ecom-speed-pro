@@ -181,28 +181,18 @@ export default function Footer({
               </div>
             </div>
 
-            <div className="pt-2 flex gap-2">
+            <div className="pt-2">
               <a
                 href={WHATSAPP_LINK}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_22px_rgba(16,185,129,0.5)] transition-all cursor-pointer"
+                className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-xs sm:text-sm flex items-center justify-between shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:shadow-[0_6px_22px_rgba(16,185,129,0.5)] transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-2">
-                  <WhatsAppIcon size={18} />
+                  <WhatsAppIcon size={20} />
                   <span>بدء المحادثة الآن</span>
                 </div>
                 <ChevronLeft className="w-4 h-4" />
-              </a>
-
-              <a
-                href={FACEBOOK_LINK}
-                target="_blank"
-                rel="noreferrer"
-                className="py-3 px-3.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-[#1877F2] border border-blue-200 font-bold text-xs flex items-center gap-1 transition-colors"
-                title="صفحة فيسبوك"
-              >
-                <span>فيسبوك</span>
               </a>
             </div>
           </div>
@@ -399,17 +389,6 @@ export default function Footer({
                 <span className="w-3.5 h-3.5 rounded-full bg-[#f79e1b] inline-block opacity-90" />
               </div>
               <span className="text-[11px] font-extrabold text-slate-800">mastercard</span>
-            </div>
-
-            {/* Bank Transfer Badge */}
-            <div
-              className="px-3.5 py-1.5 rounded-xl bg-blue-50/80 hover:bg-blue-100/80 border border-blue-200 shadow-sm flex items-center gap-1.5 transition-all hover:scale-105"
-              title="تحويل بنكي مباشر مع تسليم فوري"
-            >
-              <CreditCard className="w-3.5 h-3.5 text-blue-600" />
-              <span className="text-xs font-black text-blue-900">
-                تحويل بنكي مباشر
-              </span>
             </div>
           </div>
 

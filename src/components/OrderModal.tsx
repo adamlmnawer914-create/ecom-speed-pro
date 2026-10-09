@@ -36,8 +36,8 @@ export default function OrderModal({
   selectedPrice,
   onOpenPolicyModal,
 }: OrderModalProps) {
-  // Payment methods: "card" | "paypal" | "youcan" | "bank"
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "youcan" | "bank">("card");
+  // Payment methods: "card" | "paypal" | "youcan" | "cmi" (4 exact payment methods)
+  const [paymentMethod, setPaymentMethod] = useState<"card" | "paypal" | "youcan" | "cmi">("card");
   
   // Card Inputs
   const [cardNumber, setCardNumber] = useState("");
@@ -169,8 +169,8 @@ export default function OrderModal({
         : paymentMethod === "paypal"
         ? "PayPal"
         : paymentMethod === "youcan"
-        ? "YouCan Pay / CMI"
-        : "تحويل بنكي مباشر"
+        ? "YouCan Pay"
+        : "بوابة CMI المغرب"
     }%0A*الإجمالي:* ${finalPrice} درهم%0A*الاسم:* ${encodeURIComponent(
       customerName || cardHolder || "عميل مميز"
     )}%0A*الهاتف:* ${encodeURIComponent(customerPhone || "+212...")}%0A%0Aأرجو بدء تجهيز المشروع.`;
@@ -457,7 +457,7 @@ export default function OrderModal({
                     <span className="text-xs font-black text-[#0a193c]">باي بال</span>
                   </button>
 
-                  {/* Tab 3: YouCan Pay / CMI */}
+                  {/* Tab 3: YouCan Pay */}
                   <button
                     type="button"
                     onClick={() => setPaymentMethod("youcan")}
@@ -472,27 +472,27 @@ export default function OrderModal({
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
                     )}
-                    <span className="text-[11px] font-black text-emerald-600">YouCan Pay</span>
-                    <span className="text-xs font-black text-[#0a193c]">بوابة CMI المغرب</span>
+                    <span className="text-[12px] font-black text-emerald-600 font-mono">YouCan Pay</span>
+                    <span className="text-xs font-black text-[#0a193c]">يوكان باي</span>
                   </button>
 
-                  {/* Tab 4: Direct Bank Transfer */}
+                  {/* Tab 4: CMI المغرب */}
                   <button
                     type="button"
-                    onClick={() => setPaymentMethod("bank")}
+                    onClick={() => setPaymentMethod("cmi")}
                     className={`relative p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                      paymentMethod === "bank"
+                      paymentMethod === "cmi"
                         ? "border-blue-600 bg-blue-50/60 shadow-[0_4px_15px_rgba(37,99,235,0.18)]"
                         : "border-slate-200 bg-white hover:bg-slate-50"
                     }`}
                   >
-                    {paymentMethod === "bank" && (
+                    {paymentMethod === "cmi" && (
                       <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px]">
                         <Check className="w-3 h-3 stroke-[3]" />
                       </span>
                     )}
-                    <Building2 className="w-6 h-6 text-indigo-600" />
-                    <span className="text-xs font-black text-[#0a193c]">تحويل بنكي</span>
+                    <span className="text-sm font-black text-[#0066b2] font-mono tracking-tight">CMI</span>
+                    <span className="text-xs font-black text-[#0a193c]">بوابة CMI المغرب</span>
                   </button>
 
                 </div>
@@ -648,31 +648,28 @@ export default function OrderModal({
 
                   {paymentMethod === "youcan" && (
                     <div className="bg-emerald-50/60 border border-emerald-200 rounded-2xl p-4 text-center space-y-2.5 animate-in fade-in duration-200">
-                      <div className="w-12 h-12 rounded-full bg-white shadow-sm mx-auto flex items-center justify-center font-black text-lg text-emerald-600">
-                        CMI
+                      <div className="w-12 h-12 rounded-full bg-white shadow-sm mx-auto flex items-center justify-center font-black text-lg text-emerald-600 font-mono">
+                        YouCan
                       </div>
                       <h4 className="font-black text-sm text-[#0a193c]">
-                        بوابة YouCan Pay / CMI المغربية
+                        بوابة YouCan Pay المغربية الرسمية
                       </h4>
                       <p className="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
-                        دفع فوري عبر جميع البطاقات البنكية المغربية (التجاري وفا بنك، البنك الشعبي، BMCE، CIH).
+                        دفع فوري ومؤتمت ومحمي عبر منصة YouCan Pay لجميع البطاقات الوطنية والدولية.
                       </p>
                     </div>
                   )}
 
-                  {paymentMethod === "bank" && (
-                    <div className="bg-indigo-50/60 border border-indigo-200 rounded-2xl p-4 space-y-2 animate-in fade-in duration-200">
-                      <h4 className="font-black text-xs text-[#0a193c] flex items-center gap-1.5">
-                        <Building2 className="w-4 h-4 text-indigo-600" />
-                        <span>بيانات التحويل البنكي المباشر (RIB بالمغرب):</span>
-                      </h4>
-                      <div className="bg-white rounded-xl p-3 border border-indigo-100 font-mono text-xs text-slate-800 space-y-1">
-                        <p><strong>البنك:</strong> CIH Bank / Attijariwafa Bank</p>
-                        <p><strong>اسم الحساب:</strong> ECOM SPEED PRO SARL</p>
-                        <p><strong>RIB:</strong> 230 780 4598123004 52</p>
+                  {paymentMethod === "cmi" && (
+                    <div className="bg-blue-50/60 border border-blue-200 rounded-2xl p-4 text-center space-y-2.5 animate-in fade-in duration-200">
+                      <div className="w-12 h-12 rounded-full bg-white shadow-sm mx-auto flex items-center justify-center font-black text-lg text-[#0066b2] font-mono">
+                        CMI
                       </div>
-                      <p className="text-[11px] text-slate-500 font-semibold">
-                        يرجى إتمام الشراء وسنرسل لك وصل التأكيد فورياً عبر واتساب.
+                      <h4 className="font-black text-sm text-[#0a193c]">
+                        بوابة CMI (Centre Monétique Interbancaire) المغربية
+                      </h4>
+                      <p className="text-xs text-slate-600 leading-relaxed max-w-sm mx-auto">
+                        الدفع البنكي المغربي الرسمي الآمن (التجاري وفا بنك، البنك الشعبي، بنك إفريقيا، CIH) مع بروتوكول 3D-Secure.
                       </p>
                     </div>
                   )}
