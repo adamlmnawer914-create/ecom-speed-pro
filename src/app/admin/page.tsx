@@ -88,6 +88,45 @@ export default function AdminDashboardPage() {
   const [notificationBanner, setNotificationBanner] = useState<string | null>(null);
   const [bannerScale, setBannerScale] = useState(1);
   const [lightboxZoom, setLightboxZoom] = useState(1);
+  const [pageZoom, setPageZoom] = useState<number>(1);
+
+  // Load saved page zoom preference on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("ecom_speed_pro_page_zoom");
+      if (saved) {
+        const val = parseFloat(saved);
+        if (val >= 0.75 && val <= 1.35) setPageZoom(val);
+      }
+    } catch (e) {}
+  }, []);
+
+  const handleZoomIn = () => {
+    setPageZoom((prev) => {
+      const next = Math.min(1.35, Number((prev + 0.05).toFixed(2)));
+      try {
+        localStorage.setItem("ecom_speed_pro_page_zoom", next.toString());
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const handleZoomOut = () => {
+    setPageZoom((prev) => {
+      const next = Math.max(0.75, Number((prev - 0.05).toFixed(2)));
+      try {
+        localStorage.setItem("ecom_speed_pro_page_zoom", next.toString());
+      } catch (e) {}
+      return next;
+    });
+  };
+
+  const handleResetZoom = () => {
+    setPageZoom(1);
+    try {
+      localStorage.setItem("ecom_speed_pro_page_zoom", "1");
+    } catch (e) {}
+  };
 
   // New Order Form State
   const [newOrderName, setNewOrderName] = useState("");
@@ -506,8 +545,11 @@ export default function AdminDashboardPage() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-[#02133f] via-[#052b75] to-[#011440] text-slate-800 p-3 sm:p-5 lg:p-6 relative overflow-x-hidden font-sans selection:bg-cyan-500 selection:text-black"
+      className="min-h-screen bg-gradient-to-br from-[#02133f] via-[#052b75] to-[#011440] text-slate-800 p-3 sm:p-5 lg:p-6 relative overflow-x-hidden font-sans selection:bg-cyan-500 selection:text-black transition-[zoom] duration-200"
       dir="rtl"
+      style={{
+        zoom: pageZoom,
+      }}
     >
       {/* Background Cosmic Ethereal Rays */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -596,8 +638,55 @@ export default function AdminDashboardPage() {
             </span>
           </div>
 
-          {/* Left side in RTL: "Ecom Speed Pro" Admin Profile Pill + Quick Actions */}
+          {/* Left side in RTL: "Ecom Speed Pro" Admin Profile Pill + Quick Actions + Global Page Zoom */}
           <div className="flex items-center gap-2 sm:gap-3">
+            
+            {/* LUXURY GLOBAL PAGE ZOOM CONTROLLER (تكبير وتصغير الصفحة كاملة بشكل فخم) */}
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-gradient-to-r from-[#071d52]/95 via-[#0b2b7b]/95 to-[#041643]/95 border border-cyan-400/40 shadow-[0_4px_20px_rgba(2,16,56,0.5)] backdrop-blur-xl">
+              
+              {/* Minus Icon (-) تصغير الصفحة */}
+              <button
+                type="button"
+                onClick={handleZoomOut}
+                className="w-7 h-7 rounded-xl bg-white/10 hover:bg-cyan-500/20 text-cyan-200 hover:text-white flex items-center justify-center transition-all cursor-pointer active:scale-90 border border-white/10"
+                title="تصغير عرض الصفحة كاملة (-)"
+              >
+                <Minus className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Current Zoom Level Percentage Badge */}
+              <button
+                type="button"
+                onClick={handleResetZoom}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 shadow-[0_0_12px_rgba(245,158,11,0.5)] font-black text-xs hover:scale-105 active:scale-95 transition-all cursor-pointer select-none"
+                title="حجم الصفحة الحالي (انقر لإعادة الضبط 100%)"
+              >
+                <Sparkles className="w-2.5 h-2.5 text-slate-950 animate-pulse" />
+                <span>{Math.round(pageZoom * 100)}%</span>
+              </button>
+
+              {/* Plus Icon (+) تكبير الصفحة */}
+              <button
+                type="button"
+                onClick={handleZoomIn}
+                className="w-7 h-7 rounded-xl bg-white/10 hover:bg-cyan-500/20 text-cyan-200 hover:text-white flex items-center justify-center transition-all cursor-pointer active:scale-90 border border-white/10"
+                title="تكبير عرض الصفحة كاملة (+)"
+              >
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+
+              {/* Reset Icon if not 100% */}
+              {pageZoom !== 1 && (
+                <button
+                  type="button"
+                  onClick={handleResetZoom}
+                  className="p-1 rounded-lg text-cyan-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+                  title="إعادة ضبط حجم الصفحة إلى 100%"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
             
             {/* ➕ Manual Real Order Creation Button */}
             <button
@@ -2102,6 +2191,65 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* ======================================================== */}
+      {/* 6. FLOATING LUXURY GLOBAL PAGE ZOOM CONTROLLER            */}
+      {/* ======================================================== */}
+      <div className="fixed bottom-5 left-5 z-40">
+        <div className="flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl bg-gradient-to-r from-[#071d52]/95 via-[#0b2b7b]/95 to-[#041643]/95 border-2 border-cyan-400/60 shadow-[0_10px_35px_rgba(2,16,56,0.7),0_0_25px_rgba(6,182,212,0.4)] backdrop-blur-2xl">
+          
+          <div className="flex items-center gap-1.5 text-cyan-300">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            <span className="text-[11px] font-black tracking-wide text-white hidden sm:inline">
+              تكبير / تصغير
+            </span>
+          </div>
+
+          <div className="w-[1px] h-4 bg-cyan-400/30 mx-0.5" />
+
+          {/* Minus Icon (-) تصغير الصفحة */}
+          <button
+            type="button"
+            onClick={handleZoomOut}
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/10 hover:bg-cyan-500/30 text-white flex items-center justify-center transition-all cursor-pointer active:scale-90 border border-white/15"
+            title="تصغير عرض الصفحة كاملة (-)"
+          >
+            <Minus className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Current Zoom Percentage Button */}
+          <button
+            type="button"
+            onClick={handleResetZoom}
+            className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs shadow-[0_0_12px_rgba(245,158,11,0.5)] cursor-pointer hover:scale-105 active:scale-95 transition-all select-none"
+            title="حجم الصفحة الحالي (انقر لإعادة الضبط إلى 100%)"
+          >
+            {Math.round(pageZoom * 100)}%
+          </button>
+
+          {/* Plus Icon (+) تكبير الصفحة */}
+          <button
+            type="button"
+            onClick={handleZoomIn}
+            className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-white/10 hover:bg-cyan-500/30 text-white flex items-center justify-center transition-all cursor-pointer active:scale-90 border border-white/15"
+            title="تكبير عرض الصفحة كاملة (+)"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+
+          {/* Reset button if not 100% */}
+          {pageZoom !== 1 && (
+            <button
+              type="button"
+              onClick={handleResetZoom}
+              className="p-1 rounded-lg text-cyan-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer"
+              title="إعادة ضبط الحجم (100%)"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      </div>
 
     </div>
   );
