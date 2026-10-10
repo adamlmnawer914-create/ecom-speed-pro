@@ -364,11 +364,17 @@ export default function Footer({
 
             {/* Pillar 1: Bank-Grade Security & Guarantee */}
             <div className="flex items-center gap-4 w-full xl:w-auto text-right">
-              {/* 3D Iridescent Shield Icon */}
-              <div className="relative shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-emerald-400 via-cyan-400 to-blue-500 p-[2.5px] shadow-[0_0_25px_rgba(16,185,129,0.5)] group-hover:scale-105 group-hover:rotate-1 transition-all duration-300">
-                <div className="w-full h-full bg-[#051336] rounded-[14px] flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 pointer-events-none" />
-                  <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-emerald-400 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              {/* Official 3D Bank Security & Payment Illustration */}
+              <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-emerald-400 shadow-[0_0_30px_rgba(6,182,212,0.55)] group-hover:scale-105 transition-all duration-300">
+                <div className="w-full h-full bg-white rounded-[14px] sm:rounded-[22px] p-0.5 flex items-center justify-center overflow-hidden">
+                  <Image
+                    src="/images/secure_payment_3d_shield.webp"
+                    alt="درع الدفع الإلكتروني الآمن والتشفير المصرفي"
+                    width={180}
+                    height={180}
+                    priority
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
                 </div>
               </div>
 
