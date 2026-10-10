@@ -134,7 +134,6 @@ export default function AdminDashboardPage() {
           console.warn("Storage warning:", e);
         }
 
-        // Merge raw orders with default template items
         const formattedMerged: OrderItem[] = [...DEFAULT_ORDERS];
 
         [...apiOrders, ...localOrders].forEach((item) => {
@@ -433,7 +432,7 @@ export default function AdminDashboardPage() {
             {/* --- TOP 4 KPI METRIC CARDS --- */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               
-              {/* KPI 1 (Right): إجمالي الطلبات (128) */}
+              {/* KPI 1 (Far Right in RTL): إجمالي الطلبات (128) */}
               <div className="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-[0_4px_20px_rgba(37,99,235,0.06)] flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#60a5fa] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(59,130,246,0.35)] shrink-0">
                   <ShoppingCart className="w-5 h-5" />
@@ -469,7 +468,7 @@ export default function AdminDashboardPage() {
                 </div>
               </div>
 
-              {/* KPI 4 (Left): إجمالي المبيعات (87,500 درهم) */}
+              {/* KPI 4 (Far Left in RTL): إجمالي المبيعات (87,500 درهم) */}
               <div className="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-[0_4px_20px_rgba(37,99,235,0.06)] flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#a855f7] to-[#c084fc] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(168,85,247,0.35)] shrink-0">
                   <Wallet className="w-5 h-5" />
@@ -486,11 +485,11 @@ export default function AdminDashboardPage() {
 
             </div>
 
-            {/* --- ACTION & FILTER TOOLBAR --- */}
+            {/* --- ACTION & FILTER TOOLBAR (MATCHING EXACT POSITION IN ATTACHED SCREENSHOT) --- */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-3 w-full pt-1">
               
-              {/* Search Bar on Right */}
-              <div className="relative w-full md:w-96 order-1 md:order-2">
+              {/* Right Side in RTL: Large Search Bar */}
+              <div className="relative w-full md:w-[360px] lg:w-[420px]">
                 <input
                   type="text"
                   placeholder="ابحث باسم العميل أو رقم الهاتف..."
@@ -501,29 +500,19 @@ export default function AdminDashboardPage() {
                 <Search className="w-4 h-4 text-blue-500 absolute right-3.5 top-3" />
               </div>
 
-              {/* Middle Filters + Left Export Button */}
-              <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto order-2 md:order-1">
+              {/* Middle: Filter Dropdowns */}
+              <div className="flex flex-wrap items-center gap-2.5">
                 
-                {/* Export Button (Vibrant Magenta-Blue Gradient) */}
-                <button
-                  onClick={handleExportCSV}
-                  className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#d946ef] via-[#9333ea] to-[#3b82f6] hover:from-[#c026d3] hover:to-[#2563eb] text-white font-black text-xs shadow-[0_4px_18px_rgba(147,51,234,0.35)] flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>تصدير البيانات</span>
-                </button>
-
-                {/* Dropdown 1: كل الباقات */}
+                {/* Dropdown 1: حالة الدفع */}
                 <div className="relative">
                   <select
-                    value={planFilter}
-                    onChange={(e) => setPlanFilter(e.target.value)}
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
                     className="appearance-none px-4 py-2.5 pl-8 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] outline-none shadow-sm cursor-pointer pr-3"
                   >
-                    <option value="all">كل الباقات</option>
-                    <option value="الهبوط">صفحة الهبوط</option>
-                    <option value="القياسي">المتجر القياسي</option>
-                    <option value="المتقدمة">منصة التجارة المتقدمة</option>
+                    <option value="all">حالة الدفع</option>
+                    <option value="paid">مدفوع</option>
+                    <option value="review">قيد المراجعة</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
                 </div>
@@ -544,31 +533,195 @@ export default function AdminDashboardPage() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
                 </div>
 
-                {/* Dropdown 3: حالة الدفع */}
+                {/* Dropdown 3: كل الباقات */}
                 <div className="relative">
                   <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
+                    value={planFilter}
+                    onChange={(e) => setPlanFilter(e.target.value)}
                     className="appearance-none px-4 py-2.5 pl-8 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] outline-none shadow-sm cursor-pointer pr-3"
                   >
-                    <option value="all">حالة الدفع</option>
-                    <option value="paid">مدفوع</option>
-                    <option value="review">قيد المراجعة</option>
+                    <option value="all">كل الباقات</option>
+                    <option value="الهبوط">صفحة الهبوط</option>
+                    <option value="القياسي">المتجر القياسي</option>
+                    <option value="المتقدمة">منصة التجارة المتقدمة</option>
                   </select>
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
                 </div>
 
               </div>
 
+              {/* Far Left in RTL: Export Button (Vibrant Magenta-Blue Gradient) */}
+              <div className="ms-auto md:ms-0">
+                <button
+                  onClick={handleExportCSV}
+                  className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#d946ef] via-[#9333ea] to-[#3b82f6] hover:from-[#c026d3] hover:to-[#2563eb] text-white font-black text-xs shadow-[0_4px_18px_rgba(147,51,234,0.35)] flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>تصدير البيانات</span>
+                </button>
+              </div>
+
             </div>
 
-            {/* --- TWO-COLUMN LOWER WORKSTATION --- */}
+            {/* --- TWO-COLUMN LOWER WORKSTATION (MATCHING EXACT SCREENSHOT COLUMNS) --- */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
               
               {/* ==================================================== */}
+              {/* RIGHT PART (COL 4 / RTL): تفاصيل الطلب #ESP-1028     */}
+              {/* ==================================================== */}
+              <div className="lg:col-span-4 rounded-3xl bg-white border border-[#d4e4f7] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5 order-1">
+                
+                {/* Header Banner */}
+                <div className="rounded-2xl bg-gradient-to-r from-[#2563eb] via-[#4f46e5] to-[#7c3aed] text-white p-3 flex items-center justify-between shadow-md">
+                  <div className="flex items-center gap-2">
+                    <FileSpreadsheet className="w-4 h-4 text-cyan-200" />
+                    <span className="text-xs sm:text-sm font-black">
+                      تفاصيل الطلب #{selectedOrder.id}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Info Fields: Labels on RIGHT, Values on LEFT */}
+                <div className="space-y-2.5 text-xs">
+                  
+                  {/* Field 1: اسم المشتري */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5 text-blue-600" />
+                      <span>اسم المشتري</span>
+                    </span>
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.customerName}</span>
+                  </div>
+
+                  {/* Field 2: رقم الهاتف */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5 text-blue-600" />
+                      <span>رقم الهاتف</span>
+                    </span>
+                    <a
+                      href={`https://wa.me/${selectedOrder.customerPhone.replace(/[^0-9]/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      <span dir="ltr">{selectedOrder.customerPhone}</span>
+                    </a>
+                  </div>
+
+                  {/* Field 3: الباقة المشتراة */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <Package className="w-3.5 h-3.5 text-blue-600" />
+                      <span>الباقة المشتراة</span>
+                    </span>
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.planTitle}</span>
+                  </div>
+
+                  {/* Field 4: المبلغ */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <Coins className="w-3.5 h-3.5 text-blue-600" />
+                      <span>المبلغ</span>
+                    </span>
+                    <span className="font-black text-[#0b1739] font-mono">{selectedOrder.formattedPrice}</span>
+                  </div>
+
+                  {/* Field 5: تاريخ ووقت الدفع */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                      <span>تاريخ ووقت الدفع</span>
+                    </span>
+                    <span className="font-bold text-[#334155]">{selectedOrder.dateFormatted}</span>
+                  </div>
+
+                  {/* Field 6: طريقة الدفع */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>طريقة الدفع</span>
+                    </span>
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.paymentMethod}</span>
+                  </div>
+
+                  {/* Field 7: البريد الإلكتروني */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <Mail className="w-3.5 h-3.5 text-blue-600" />
+                      <span>البريد الإلكتروني</span>
+                    </span>
+                    <span className="font-mono text-[#475569] text-[11px]">{selectedOrder.customerEmail}</span>
+                  </div>
+
+                  {/* Field 8: المدينة */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                      <span>المدينة</span>
+                    </span>
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.city}</span>
+                  </div>
+
+                  {/* Field 9: حالة الدفع */}
+                  <div className="flex items-center justify-between py-1.5">
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                      <span>حالة الدفع</span>
+                    </span>
+                    {selectedOrder.status === "paid" ? (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>مدفوع</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold text-xs">
+                        <Hourglass className="w-3.5 h-3.5 text-amber-600" />
+                        <span>قيد المراجعة</span>
+                      </span>
+                    )}
+                  </div>
+
+                </div>
+
+                {/* Uploaded Product Photos Section */}
+                {selectedOrder.productImages && selectedOrder.productImages.length > 0 && (
+                  <div className="pt-2 border-t border-[#f1f5f9]">
+                    <span className="text-[11px] font-black text-[#0b1739] block mb-1.5">
+                      صور المنتج المرفقة ({selectedOrder.productImages.length}):
+                    </span>
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                      {selectedOrder.productImages.map((img, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setLightboxImage(img)}
+                          className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#d2e2f3] hover:border-blue-500 shadow-sm shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                          title="تكبير الصورة"
+                        >
+                          <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bottom Action Button: عرض التفاصيل */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => setDetailModalOpen(true)}
+                    className="w-full py-2.5 px-4 rounded-full border border-blue-600/30 hover:border-blue-600 text-blue-700 hover:bg-blue-50/70 font-black text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+                  >
+                    <Eye className="w-4 h-4 text-blue-600" />
+                    <span>عرض التفاصيل</span>
+                  </button>
+                </div>
+
+              </div>
+
+              {/* ==================================================== */}
               {/* LEFT PART (COL 8 / RTL): سجل المشتريات (PURCHASES TABLE) */}
               {/* ==================================================== */}
-              <div className="lg:col-span-8 flex flex-col gap-4">
+              <div className="lg:col-span-8 flex flex-col gap-4 order-2">
                 
                 {/* Section Title */}
                 <div className="flex items-center gap-2 text-base font-black text-[#0b1739]">
@@ -725,158 +878,6 @@ export default function AdminDashboardPage() {
                     />
                   </div>
 
-                </div>
-
-              </div>
-
-              {/* ==================================================== */}
-              {/* RIGHT PART (COL 4 / RTL): تفاصيل الطلب #ESP-1028     */}
-              {/* ==================================================== */}
-              <div className="lg:col-span-4 rounded-3xl bg-white border border-[#d4e4f7] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5">
-                
-                {/* Header Banner */}
-                <div className="rounded-2xl bg-gradient-to-r from-[#2563eb] via-[#4f46e5] to-[#7c3aed] text-white p-3 flex items-center justify-between shadow-md">
-                  <div className="flex items-center gap-2">
-                    <FileSpreadsheet className="w-4 h-4 text-cyan-200" />
-                    <span className="text-xs sm:text-sm font-black">
-                      تفاصيل الطلب #{selectedOrder.id}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Info Fields Table */}
-                <div className="space-y-2.5 text-xs">
-                  
-                  {/* Field 1: اسم المشتري */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-bold text-[#0b1739]">{selectedOrder.customerName}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>اسم المشتري</span>
-                      <User className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 2: رقم الهاتف */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <a
-                      href={`https://wa.me/${selectedOrder.customerPhone.replace(/[^0-9]/g, "")}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="font-mono font-bold text-blue-600 hover:underline flex items-center gap-1"
-                    >
-                      <span dir="ltr">{selectedOrder.customerPhone}</span>
-                    </a>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>رقم الهاتف</span>
-                      <Phone className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 3: الباقة المشتراة */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-bold text-[#0b1739]">{selectedOrder.planTitle}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>الباقة المشتراة</span>
-                      <Package className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 4: المبلغ */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-black text-[#0b1739] font-mono">{selectedOrder.formattedPrice}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>المبلغ</span>
-                      <Coins className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 5: تاريخ ووقت الدفع */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-bold text-[#334155]">{selectedOrder.dateFormatted}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>تاريخ ووقت الدفع</span>
-                      <Calendar className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 6: طريقة الدفع */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-bold text-[#0b1739]">{selectedOrder.paymentMethod}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>طريقة الدفع</span>
-                      <Building2 className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 7: البريد الإلكتروني */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-mono text-[#475569] text-[11px]">{selectedOrder.customerEmail}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>البريد الإلكتروني</span>
-                      <Mail className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 8: المدينة */}
-                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
-                    <span className="font-bold text-[#0b1739]">{selectedOrder.city}</span>
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>المدينة</span>
-                      <MapPin className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                  {/* Field 9: حالة الدفع */}
-                  <div className="flex items-center justify-between py-1.5">
-                    {selectedOrder.status === "paid" ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>مدفوع</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold text-xs">
-                        <Hourglass className="w-3.5 h-3.5 text-amber-600" />
-                        <span>قيد المراجعة</span>
-                      </span>
-                    )}
-                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
-                      <span>حالة الدفع</span>
-                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
-                    </span>
-                  </div>
-
-                </div>
-
-                {/* Uploaded Product Photos (User's special request) */}
-                {selectedOrder.productImages && selectedOrder.productImages.length > 0 && (
-                  <div className="pt-2 border-t border-[#f1f5f9]">
-                    <span className="text-[11px] font-black text-[#0b1739] block mb-1.5">
-                      صور المنتج المرفقة ({selectedOrder.productImages.length}):
-                    </span>
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                      {selectedOrder.productImages.map((img, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setLightboxImage(img)}
-                          className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#d2e2f3] hover:border-blue-500 shadow-sm shrink-0 cursor-pointer hover:scale-105 transition-transform"
-                          title="تكبير الصورة"
-                        >
-                          <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Bottom Action Button: عرض التفاصيل */}
-                <div className="pt-2">
-                  <button
-                    onClick={() => setDetailModalOpen(true)}
-                    className="w-full py-2.5 px-4 rounded-full border border-blue-600/30 hover:border-blue-600 text-blue-700 hover:bg-blue-50/70 font-black text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
-                  >
-                    <Eye className="w-4 h-4 text-blue-600" />
-                    <span>عرض التفاصيل</span>
-                  </button>
                 </div>
 
               </div>
