@@ -161,3 +161,24 @@ export async function PATCH(req: Request) {
     );
   }
 }
+
+// DELETE /api/orders (Delete an order)
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    if (!id) {
+      return NextResponse.json({ success: false, message: "معرف الطلب مطلوب" }, { status: 400 });
+    }
+
+    const currentOrders = getStoredOrders();
+    const updated = currentOrders.filter((o) => o.id !== id);
+    saveOrders(updated);
+
+    return NextResponse.json({ success: true, message: "تم حذف الطلب بنجاح", orders: updated });
+  } catch (error) {
+    console.error("Failed to delete order:", error);
+    return NextResponse.json({ success: false, message: "فشل في حذف الطلب" }, { status: 500 });
+  }
+}
+
