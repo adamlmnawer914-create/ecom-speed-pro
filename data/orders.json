@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "459bb715-f8ab-4069-b8fd-4713fc1c47f7",
+    "order_number": "#ESP-101",
+    "customer_name": "كريم التازي",
+    "phone_number": "0661234567",
+    "plan_tier": "المتجر القياسي (Standard Store)",
+    "status": "pending",
+    "delivered_url": null,
+    "payment_method": "whatsapp",
+    "product_notes": "طلب تجريبي للتأكد من الظهور في لوحة التحكم وتتبع المتجر",
+    "product_images": [],
+    "created_at": "2026-10-10T21:00:16.697Z"
+  }
+]

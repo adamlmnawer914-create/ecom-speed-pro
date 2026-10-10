@@ -17,24 +17,30 @@ export async function GET(req: Request) {
     const id = searchParams.get("id");
     const phone = searchParams.get("phone");
 
+    const noCacheHeaders = {
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
+      Pragma: "no-cache",
+      Expires: "0",
+    };
+
     if (id) {
       const order = await getOrderById(id);
       if (!order) {
         return NextResponse.json(
           { success: false, message: "لم يتم العثور على الطلب" },
-          { status: 404 }
+          { status: 404, headers: noCacheHeaders }
         );
       }
-      return NextResponse.json({ success: true, order });
+      return NextResponse.json({ success: true, order }, { headers: noCacheHeaders });
     }
 
     if (phone) {
       const orders = await getOrdersByPhone(phone);
-      return NextResponse.json({ success: true, orders });
+      return NextResponse.json({ success: true, orders }, { headers: noCacheHeaders });
     }
 
     const orders = await getAllOrders();
-    return NextResponse.json({ success: true, orders });
+    return NextResponse.json({ success: true, orders }, { headers: noCacheHeaders });
   } catch (error) {
     console.error("GET /api/orders error:", error);
     return NextResponse.json(

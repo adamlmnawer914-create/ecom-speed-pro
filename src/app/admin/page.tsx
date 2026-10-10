@@ -151,7 +151,10 @@ export default function AdminDashboardPage() {
   // Function to fetch real live orders from backend API & localStorage
   const fetchRealOrders = async () => {
     try {
-      const res = await fetch("/api/orders");
+      const res = await fetch(`/api/orders?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
       const data = await res.json();
       let apiOrders: any[] = [];
       if (data && data.success && Array.isArray(data.orders)) {

@@ -69,7 +69,10 @@ function OrderTrackingContent() {
 
   const fetchOrder = async () => {
     try {
-      const res = await fetch(`/api/orders?id=${orderId}`);
+      const res = await fetch(`/api/orders?id=${orderId}&t=${Date.now()}`, {
+        cache: "no-store",
+        headers: { "Cache-Control": "no-cache" },
+      });
       if (!res.ok) {
         if (res.status === 404) setNotFound(true);
         return;
