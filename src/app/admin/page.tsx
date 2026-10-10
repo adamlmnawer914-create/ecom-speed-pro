@@ -95,6 +95,13 @@ export default function AdminDashboardPage() {
   const [bannerScale, setBannerScale] = useState(1);
   const [lightboxZoom, setLightboxZoom] = useState(1);
   const [pageZoom, setPageZoom] = useState<number>(1);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    type: "order" | "customer";
+    id?: string;
+    name?: string;
+    phone?: string;
+  } | null>(null);
 
   // Load saved page zoom preference on mount
   useEffect(() => {
@@ -191,6 +198,20 @@ export default function AdminDashboardPage() {
         headers: { "Cache-Control": "no-cache" },
       });
       const data = await res.json();
+
+      // Sync backend deleted IDs if provided
+      if (data && data.success && Array.isArray(data.deletedIds) && data.deletedIds.length > 0) {
+        addLocalDeletedIds(data.deletedIds);
+        data.deletedIds.forEach((id: string) => {
+          if (id) {
+            const clean = id.trim();
+            deletedSet.add(clean);
+            deletedSet.add(clean.replace(/^#/, ""));
+            deletedSet.add("#" + clean.replace(/^#/, ""));
+          }
+        });
+      }
+
       let apiOrders: any[] = [];
       if (data && data.success && Array.isArray(data.orders)) {
         apiOrders = data.orders.filter((o: any) => {
@@ -461,11 +482,21 @@ export default function AdminDashboardPage() {
   };
 
   // Delete / Archive order live
-  const handleDeleteOrder = async (orderId: string) => {
+  const handleDeleteOrder = (orderId: string) => {
     const targetOrder = orders.find((o) => o.id === orderId || o.orderNumber === orderId);
     const displayName = targetOrder?.orderNumber || orderId;
+    setDeleteConfirm({
+      isOpen: true,
+      type: "order",
+      id: orderId,
+      name: displayName,
+    });
+  };
 
-    if (!confirm(`هل أنت متأكد من حذف الطلب ${displayName} نهائياً من قاعدة البيانات؟`)) return;
+  // Execute actual permanent order deletion
+  const executeDeleteOrder = async (orderId: string) => {
+    const targetOrder = orders.find((o) => o.id === orderId || o.orderNumber === orderId);
+    const displayName = targetOrder?.orderNumber || orderId;
 
     try {
       const idsToDelete = [orderId];
@@ -519,9 +550,17 @@ export default function AdminDashboardPage() {
   };
 
   // Delete Customer and all their associated orders live
-  const handleDeleteCustomer = async (customerPhone: string, customerName: string) => {
-    if (!confirm(`هل أنت متأكد من حذف العميل "${customerName}" وكافة طلباته نهائياً من قاعدة البيانات؟`)) return;
+  const handleDeleteCustomer = (customerPhone: string, customerName: string) => {
+    setDeleteConfirm({
+      isOpen: true,
+      type: "customer",
+      phone: customerPhone,
+      name: customerName,
+    });
+  };
 
+  // Execute actual permanent customer deletion
+  const executeDeleteCustomer = async (customerPhone: string, customerName: string) => {
     try {
       const cleanPhone = customerPhone.replace(/[^0-9]/g, "");
       const targetOrders = orders.filter((o) => {
@@ -705,6 +744,7 @@ export default function AdminDashboardPage() {
 
   // Real Unique Customers
   const uniqueCustomers = useMemo(() => {
+    const deletedSet = getLocalDeletedIds();
     const map = new Map<string, {
       name: string;
       phone: string;
@@ -716,10 +756,12 @@ export default function AdminDashboardPage() {
     }>();
 
     orders.forEach((o) => {
-      const key = o.customerPhone.replace(/[^0-9]/g, "") || o.customerName;
+      if (deletedSet.has(o.id) || (o.orderNumber && deletedSet.has(o.orderNumber))) return;
+      const cleanPhone = o.customerPhone.replace(/[^0-9]/g, "");
+      const key = cleanPhone || o.customerName.trim().toLowerCase();
       if (!map.has(key)) {
         map.set(key, {
-          name: o.customerName,
+          name: o.customerName.trim(),
           phone: o.customerPhone,
           email: o.customerEmail,
           city: o.city,
@@ -2694,6 +2736,53 @@ export default function AdminDashboardPage() {
           )}
         </div>
       </div>
+
+      {/* Sleek Delete Confirmation Modal */}
+      {deleteConfirm && deleteConfirm.isOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-100 flex flex-col items-center text-center">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-4 shadow-sm border border-rose-100">
+              <Trash2 className="w-7 h-7 text-rose-600" />
+            </div>
+
+            <h3 className="font-black text-lg text-[#0b1739] mb-2">
+              {deleteConfirm.type === "customer" ? "تأكيد حذف العميل نهائياً" : "تأكيد حذف الطلب نهائياً"}
+            </h3>
+
+            <p className="text-sm text-slate-600 mb-6 leading-relaxed">
+              {deleteConfirm.type === "customer"
+                ? `هل أنت متأكد من حذف العميل "${deleteConfirm.name}" وكافة طلباته من قاعدة البيانات؟ لن يتكرر أو يظهر مجدداً.`
+                : `هل أنت متأكد من حذف الطلب "${deleteConfirm.name}" نهائياً من قاعدة البيانات؟ لن يظهر مجدداً.`}
+            </p>
+
+            <div className="flex items-center gap-3 w-full">
+              <button
+                type="button"
+                onClick={() => {
+                  if (deleteConfirm.type === "customer") {
+                    executeDeleteCustomer(deleteConfirm.phone || "", deleteConfirm.name || "");
+                  } else {
+                    executeDeleteOrder(deleteConfirm.id || "");
+                  }
+                  setDeleteConfirm(null);
+                }}
+                className="flex-1 py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-black text-sm flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all active:scale-95"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>نعم، احذف نهائياً</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setDeleteConfirm(null)}
+                className="py-3 px-6 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-sm cursor-pointer transition-all"
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

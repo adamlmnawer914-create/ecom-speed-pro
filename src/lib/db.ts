@@ -64,7 +64,7 @@ function ensureDir(filePath: string) {
   }
 }
 
-function getDeletedIds(): Set<string> {
+export function getDeletedIds(): Set<string> {
   if (globalThis.__ECOM_DELETED_CACHE__) {
     return globalThis.__ECOM_DELETED_CACHE__;
   }

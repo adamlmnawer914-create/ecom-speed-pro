@@ -7,6 +7,7 @@ import {
   updateOrder,
   deleteOrder,
   deleteCustomerOrders,
+  getDeletedIds,
   Order,
 } from "@/lib/db";
 
@@ -24,24 +25,26 @@ export async function GET(req: Request) {
       Expires: "0",
     };
 
+    const deletedIds = Array.from(getDeletedIds());
+
     if (id) {
       const order = await getOrderById(id);
       if (!order) {
         return NextResponse.json(
-          { success: false, message: "لم يتم العثور على الطلب" },
+          { success: false, message: "لم يتم العثور على الطلب", isDeleted: true },
           { status: 404, headers: noCacheHeaders }
         );
       }
-      return NextResponse.json({ success: true, order }, { headers: noCacheHeaders });
+      return NextResponse.json({ success: true, order, deletedIds }, { headers: noCacheHeaders });
     }
 
     if (phone) {
       const orders = await getOrdersByPhone(phone);
-      return NextResponse.json({ success: true, orders }, { headers: noCacheHeaders });
+      return NextResponse.json({ success: true, orders, deletedIds }, { headers: noCacheHeaders });
     }
 
     const orders = await getAllOrders();
-    return NextResponse.json({ success: true, orders }, { headers: noCacheHeaders });
+    return NextResponse.json({ success: true, orders, deletedIds }, { headers: noCacheHeaders });
   } catch (error) {
     console.error("GET /api/orders error:", error);
     return NextResponse.json(
