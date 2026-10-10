@@ -17,6 +17,10 @@ import {
   Zap,
   Award,
   ChevronLeft,
+  Mail,
+  UploadCloud,
+  ImageIcon,
+  Trash2,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -42,6 +46,11 @@ export default function OrderModal({
   // Customer contact info
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerEmail, setCustomerEmail] = useState("");
+
+  // Product Assets to upload
+  const [productImages, setProductImages] = useState<string[]>([]);
+  const [productNotes, setProductNotes] = useState("");
 
   // Card Inputs
   const [cardNumber, setCardNumber] = useState("");
@@ -103,6 +112,31 @@ export default function OrderModal({
   const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 1500;
   const formattedPrice = `${rawNumericPrice.toLocaleString()} درهم`;
 
+  // Handle Product Images Selection
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      if (file.size > 4 * 1024 * 1024) {
+        alert(`الصورة ${file.name} كبيرة جداً (الحد الأقصى 4 ميغابايت لكل صورة)`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        if (result) {
+          setProductImages((prev) => [...prev, result]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveImage = (index: number) => {
+    setProductImages((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
   // Format Card Number
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/\D/g, "").slice(0, 16);
@@ -127,9 +161,44 @@ export default function OrderModal({
   };
 
   // Submit Order
-  const handleSubmitOrder = (e: React.FormEvent) => {
+  const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
+
+    const orderPayload = {
+      id: orderId,
+      customerName: customerName.trim(),
+      customerPhone: customerPhone.trim(),
+      customerEmail: customerEmail.trim() || "غير محدد",
+      planTitle,
+      price: rawNumericPrice,
+      formattedPrice,
+      paymentMethod,
+      productImages,
+      productNotes: productNotes.trim(),
+      status: "new",
+      createdAt: new Date().toISOString(),
+    };
+
+    // 1. Save to local storage for instant sync across tabs
+    try {
+      const stored = localStorage.getItem("ecom_speed_pro_orders");
+      const list = stored ? JSON.parse(stored) : [];
+      localStorage.setItem("ecom_speed_pro_orders", JSON.stringify([orderPayload, ...list]));
+    } catch (err) {
+      console.warn("Storage warning:", err);
+    }
+
+    // 2. Save to backend API
+    try {
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(orderPayload),
+      });
+    } catch (err) {
+      console.warn("API sync error:", err);
+    }
 
     setTimeout(() => {
       setIsProcessing(false);
@@ -151,7 +220,11 @@ export default function OrderModal({
         : "تأكيد واتساب VIP المباشر"
     }%0A*الاسم:* ${encodeURIComponent(
       customerName || cardHolder || "عميل مميز"
-    )}%0A*الهاتف:* ${encodeURIComponent(customerPhone || "+212...")}%0A%0Aأرجو بدء تجهيز المشروع والتسليم في الوقت المحدد.`;
+    )}%0A*الهاتف:* ${encodeURIComponent(customerPhone || "+212...")}%0A*البريد:* ${encodeURIComponent(
+      customerEmail || "غير محدد"
+    )}${productImages.length > 0 ? `%0A*عدد صور المنتجات المرفقة:* ${productImages.length} صورة 📸` : ""}${
+      productNotes ? `%0A*ملاحظات المنتج:* ${encodeURIComponent(productNotes)}` : ""
+    }%0A%0Aأرجو بدء تجهيز المشروع والتسليم في الوقت المحدد.`;
 
     const url = `https://wa.me/212762357491?text=${message}`;
     window.open(url, "_blank");
@@ -494,8 +567,8 @@ export default function OrderModal({
                 {/* 2. Streamlined Form Inputs */}
                 <form onSubmit={handleSubmitOrder} className="space-y-3.5">
                   
-                  {/* Step A: Basic Customer Contact (Always required) */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Step A: Basic Customer Contact (Name, Phone, Email) */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                     <div>
                       <label className="text-xs font-black text-blue-100 block mb-1">
                         الاسم الكامل *
@@ -507,9 +580,9 @@ export default function OrderModal({
                           placeholder="مثال: محمد العلوي"
                           value={customerName}
                           onChange={(e) => setCustomerName(e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-9"
+                          className="w-full px-3 py-2.5 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-8"
                         />
-                        <User className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
+                        <User className="w-3.5 h-3.5 text-cyan-400 absolute left-2.5 top-3" />
                       </div>
                     </div>
 
@@ -525,14 +598,90 @@ export default function OrderModal({
                           placeholder="+212 6 XX XX XX XX"
                           value={customerPhone}
                           onChange={(e) => setCustomerPhone(e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-9 text-right font-mono"
+                          className="w-full px-3 py-2.5 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-8 text-right font-mono"
                         />
-                        <Phone className="w-4 h-4 text-emerald-400 absolute left-3 top-3" />
+                        <Phone className="w-3.5 h-3.5 text-emerald-400 absolute left-2.5 top-3" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-black text-blue-100 block mb-1">
+                        البريد الإلكتروني *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="email"
+                          required
+                          dir="ltr"
+                          placeholder="client@gmail.com"
+                          value={customerEmail}
+                          onChange={(e) => setCustomerEmail(e.target.value)}
+                          className="w-full px-3 py-2.5 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-8 text-right"
+                        />
+                        <Mail className="w-3.5 h-3.5 text-purple-400 absolute left-2.5 top-3" />
                       </div>
                     </div>
                   </div>
 
-                  {/* Step B: Card Inputs (Visible when 'card' is selected) */}
+                  {/* Step B: Product Photos Upload Field (صور المنتج المراد وضعه) */}
+                  <div className="rounded-2xl bg-[#061845]/90 border border-blue-400/35 p-3 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-black text-cyan-200 flex items-center gap-1.5">
+                        <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>صور المنتج أو المنتجات (اختياري)</span>
+                      </label>
+                      <span className="text-[10px] text-cyan-300/70 font-bold">
+                        {productImages.length > 0 ? `${productImages.length} صور محددة` : "يمكنك رفع عدة صور"}
+                      </span>
+                    </div>
+
+                    <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-cyan-400/50 bg-[#071d54]/50 hover:bg-[#0b276b]/70 cursor-pointer transition-colors group">
+                      <UploadCloud className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                      <span className="text-xs font-bold text-cyan-200">
+                        اضغط لرفع صور منتجاتك من جهازك 📸
+                      </span>
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                    </label>
+
+                    {/* Thumbnails preview */}
+                    {productImages.length > 0 && (
+                      <div className="flex items-center gap-2 overflow-x-auto py-1">
+                        {productImages.map((img, idx) => (
+                          <div
+                            key={idx}
+                            className="relative w-12 h-12 rounded-xl overflow-hidden border border-cyan-400/60 shrink-0 group shadow-md"
+                          >
+                            <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveImage(idx)}
+                              className="absolute inset-0 bg-red-950/80 text-rose-300 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                              title="حذف الصورة"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Product notes or store domain */}
+                    <input
+                      type="text"
+                      placeholder="اسم المنتج أو ملاحظات تود إضافتها لمتجرك (اختياري)"
+                      value={productNotes}
+                      onChange={(e) => setProductNotes(e.target.value)}
+                      className="w-full px-3 py-1.5 rounded-xl bg-[#05143a] border border-blue-400/30 text-xs font-semibold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400"
+                    />
+                  </div>
+
+                  {/* Step C: Card Inputs (Visible when 'card' is selected) */}
                   {paymentMethod === "card" && (
                     <div className="rounded-2xl bg-[#071a48]/75 border border-cyan-400/30 p-3.5 space-y-3 animate-in fade-in duration-200">
                       
@@ -661,7 +810,7 @@ export default function OrderModal({
                       {isProcessing ? (
                         <>
                           <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>جاري تأكيد وتشفير الطلب بأمان...</span>
+                          <span>جاري تأكيد وتشفير الطلب وحفظ صور المنتجات...</span>
                         </>
                       ) : (
                         <>

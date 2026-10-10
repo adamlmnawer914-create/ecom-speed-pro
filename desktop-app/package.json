@@ -1,0 +1,10 @@
+{
+  "name": "ecom-speed-pro-admin-desk",
+  "version": "1.0.0",
+  "description": "ECOM SPEED PRO Luxury Desktop Admin Dashboard",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {}
+}
