@@ -449,144 +449,87 @@ export default function Footer({
         </div>
 
         {/* ======================================================== */}
-        {/* 4. MASTER LUXURY FOOTER (التذييل الشامل فائق التنظيم والفخامة) */}
         {/* ======================================================== */}
-        <div className="relative rounded-[32px] sm:rounded-[44px] bg-gradient-to-b from-[#05112e] via-[#030b22] to-[#01040f] border border-blue-500/30 text-white p-7 sm:p-10 lg:p-12 shadow-[0_30px_80px_rgba(1,4,15,0.9)] overflow-hidden">
+        {/* 4. MASTER LUXURY BANNER STRIP (شريط بانر فائق الفخامة والانسيابية) */}
+        {/* ======================================================== */}
+        <div className="relative rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#05112e] via-[#071842] to-[#040e29] border border-blue-500/30 text-white p-4 sm:p-5 shadow-[0_15px_40px_rgba(2,8,26,0.5)] overflow-hidden">
           
-          {/* Top Ambient Laser Streamline & Glows */}
-          <div className="absolute top-0 inset-x-8 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/90 via-blue-500/80 to-transparent pointer-events-none" />
-          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-28 bg-cyan-500/15 blur-3xl rounded-full pointer-events-none" />
-          <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-600/10 blur-3xl rounded-full pointer-events-none" />
+          {/* Top Laser Accent */}
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/80 via-blue-500/80 to-transparent pointer-events-none" />
 
-          {/* Main Columns Grid */}
-          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 mb-8 pb-8 border-b border-blue-900/50">
+          {/* Horizontal Banner Main Bar */}
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-4 pb-3.5 border-b border-blue-900/50">
             
-            {/* ---------------- Col 1: Brand & Mission ---------------- */}
-            <div className="flex flex-col justify-between space-y-4">
-              <div className="space-y-4">
-                <div className="bg-white rounded-2xl p-2.5 sm:p-3 inline-flex shadow-[0_8px_30px_rgba(58,134,255,0.25)] border border-white/80">
-                  <Logo size="md" />
-                </div>
-                
-                <p className="text-xs sm:text-[13px] text-blue-100/85 leading-relaxed font-semibold text-justify sm:text-right">
-                  المنصة المتكاملة الرائدة في إطلاق وتطوير المتاجر الإلكترونية وحلول التجارة الرقمية. نوفر لك تصميمات استثنائية، سرعة تحميل خارقة، ودعماً فنياً على مدار الساعة لضمان نمو تجارتك ومضاعفة مبيعاتك.
-                </p>
+            {/* Brand Logo & Compact Tagline */}
+            <div className="flex items-center gap-3">
+              <div className="bg-white rounded-xl p-1.5 shadow-sm border border-white/80 shrink-0">
+                <Logo size="sm" showSlogan={false} />
               </div>
-
-              {/* Server Status Live Widget */}
-              <div className="pt-2">
-                <div className="inline-flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[#081a44]/90 border border-emerald-400/40 shadow-[0_4px_20px_rgba(16,185,129,0.18)] backdrop-blur-md">
-                  <span className="relative flex h-3 w-3 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                  </span>
-                  <div className="flex flex-col">
-                    <span className="text-[12px] font-black text-emerald-300">
-                      الخوادم تعمل بكفاءة 100% وبسرعة فائقة
-                    </span>
-                    <span className="text-[10px] text-emerald-400/80 font-bold">
-                      جاهزية متواصلة 99.9% • استجابة فورية
-                    </span>
-                  </div>
-                </div>
+              <div className="text-right">
+                <span className="text-xs sm:text-sm font-black text-white block">ECOM SPEED PRO</span>
+                <span className="text-[10px] sm:text-[11px] text-blue-200/70 font-semibold block">حلول وهندسة التجارة الإلكترونية بالمغرب</span>
               </div>
             </div>
 
-            {/* ---------------- Col 2: Packages & Services ---------------- */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-2 border-b border-blue-900/50 mb-3.5">
-                <div className="w-6 h-6 rounded-lg bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center">
-                  <Sparkles className="w-3.5 h-3.5 text-cyan-300" />
-                </div>
-                <h5 className="text-sm sm:text-base font-black text-white tracking-wide">
-                  الباقات والخدمات
-                </h5>
-              </div>
+            {/* Horizontal Package Action Pills */}
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <button
+                onClick={scrollToServices}
+                className="px-3.5 py-1.5 rounded-xl bg-[#091d52]/80 hover:bg-[#0e2c7a] border border-blue-800/80 hover:border-rose-400/80 text-xs font-bold text-slate-100 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                <span>صفحة الهبوط (500 د.م)</span>
+              </button>
 
-              <div className="space-y-2.5">
-                {/* 1. Fast Landing Page */}
-                <button
-                  onClick={scrollToServices}
-                  className="w-full p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-rose-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(244,63,94,0.25)] hover:-translate-y-0.5"
-                >
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-100 group-hover:text-white">
-                      • صفحة الهبوط السريعة
-                    </span>
-                    <span className="text-cyan-300 font-mono text-[11px] font-black tracking-wide">
-                      (500 درهم)
-                    </span>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white text-[10px] font-black flex items-center gap-1 shadow-[0_2px_8px_rgba(225,29,72,0.4)] shrink-0">
-                    <Flame className="w-3 h-3" />
-                    <span>الأكثر طلباً</span>
-                  </span>
-                </button>
+              <button
+                onClick={scrollToServices}
+                className="px-3.5 py-1.5 rounded-xl bg-[#091d52]/80 hover:bg-[#0e2c7a] border border-blue-800/80 hover:border-cyan-400/80 text-xs font-bold text-slate-100 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                <span>المتجر القياسي (1500 د.م)</span>
+              </button>
 
-                {/* 2. Standard Multi-product Store */}
-                <button
-                  onClick={scrollToServices}
-                  className="w-full p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-cyan-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(6,182,212,0.25)] hover:-translate-y-0.5"
-                >
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-100 group-hover:text-white">
-                      • المتجر القياسي متعدد المنتجات
-                    </span>
-                    <span className="text-cyan-300 font-mono text-[11px] font-black tracking-wide">
-                      (1500 درهم)
-                    </span>
-                  </div>
-                  <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[10px] font-black flex items-center gap-1 shadow-[0_2px_8px_rgba(6,182,212,0.4)] shrink-0">
-                    <Zap className="w-3 h-3" />
-                    <span>الأكثر مبيعاً</span>
-                  </span>
-                </button>
+              <button
+                onClick={scrollToServices}
+                className="px-3.5 py-1.5 rounded-xl bg-[#091d52]/80 hover:bg-[#0e2c7a] border border-blue-800/80 hover:border-amber-400/80 text-xs font-bold text-slate-100 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                <span>منصة SaaS VIP (5000 د.م)</span>
+              </button>
 
-                {/* 3. Advanced SaaS Platform */}
-                <button
-                  onClick={scrollToServices}
-                  className="w-full p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-amber-400/70 flex items-center justify-between transition-all duration-200 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(245,158,11,0.25)] hover:-translate-y-0.5"
-                >
-                  <div className="flex flex-col text-right">
-                    <span className="text-xs font-bold text-slate-100 group-hover:text-white">
-                      • منصة التجارة المتقدمة SaaS
-                    </span>
-                    <span className="text-amber-300 font-mono text-[11px] font-black tracking-wide">
-                      (5000 درهم)
-                    </span>
-                  </div>
-                  <span className="px-3 py-1 rounded-lg bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-slate-950 text-[10px] font-black flex items-center gap-1 shadow-[0_2px_8px_rgba(245,158,11,0.45)] shrink-0">
-                    <Crown className="w-3 h-3 text-slate-950" />
-                    <span>VIP</span>
-                  </span>
-                </button>
+              <button
+                onClick={scrollToFeatures}
+                className="px-3 py-1.5 rounded-xl bg-blue-950/60 hover:bg-blue-900/70 border border-blue-800/60 hover:border-cyan-400/60 text-xs font-bold text-cyan-300 hover:text-white transition-all flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95"
+              >
+                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                <span>مزايا الأداء</span>
+              </button>
+            </div>
 
-                {/* 4. Features & Guarantees Link */}
-                <button
-                  onClick={scrollToFeatures}
-                  className="w-full pt-1.5 px-3 py-2 rounded-xl bg-blue-950/40 hover:bg-blue-900/50 border border-blue-800/40 hover:border-cyan-400/50 text-xs font-bold text-cyan-300 hover:text-white flex items-center justify-between transition-all group cursor-pointer"
-                >
-                  <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-cyan-400" />
-                    <span>• مزايا وضمانات الأداء الفائق</span>
-                  </span>
-                  <ChevronLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
-                </button>
-              </div>
+            {/* Live Server Indicator Capsule */}
+            <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#081a44]/90 border border-emerald-400/40 shadow-xs">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              <span className="text-[11px] font-black text-emerald-300">
+                خوادم سحابية فائقة السرعة 99.9%
+              </span>
             </div>
 
           </div>
 
-          {/* Bottom Bar: Copyright & Location Badge */}
-          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-xs font-bold text-blue-200/75 gap-3 pt-2">
-            <p className="text-center sm:text-right leading-relaxed">
+          {/* Slim Copyright & Location Row */}
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-[11px] font-bold text-blue-200/70 gap-2 pt-2.5">
+            <p className="text-center sm:text-right">
               © 2026 ECOM SPEED PRO • جميع الحقوق محفوظة لشركة حلول التجارة الإلكترونية والتسويق الرقمي بالمغرب.
             </p>
-            <div className="flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-100 shadow-sm transition-all">
-              <span className="text-[11px] sm:text-xs font-bold">مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
-              <span className="text-base select-none">🇲🇦</span>
+            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px]">
+              <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
+              <span>🇲🇦</span>
             </div>
           </div>
+
         </div>
 
       </div>
