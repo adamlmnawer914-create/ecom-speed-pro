@@ -6,6 +6,7 @@ import {
   createOrder,
   updateOrder,
   deleteOrder,
+  deleteCustomerOrders,
   Order,
 } from "@/lib/db";
 
@@ -123,16 +124,25 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+    const phone = searchParams.get("phone");
+    const customer = searchParams.get("customer");
 
-    if (!id) {
+    if (!id && !phone && !customer) {
       return NextResponse.json(
-        { success: false, message: "معرف الطلب مطلوب" },
+        { success: false, message: "معرف الطلب أو بيانات العميل مطلوبة للحذف" },
         { status: 400 }
       );
     }
 
-    await deleteOrder(id);
-    return NextResponse.json({ success: true, message: "تم حذف الطلب بنجاح" });
+    if (id) {
+      await deleteOrder(id);
+    }
+
+    if (phone || customer) {
+      await deleteCustomerOrders(phone || "", customer || "");
+    }
+
+    return NextResponse.json({ success: true, message: "تم حذف البيانات بنجاح" });
   } catch (error) {
     console.error("DELETE /api/orders error:", error);
     return NextResponse.json(

@@ -83,8 +83,40 @@ function OrderTrackingContent() {
         }
       }
 
-      // If not returned by server (e.g. serverless instance restart or cold start), check client localStorage
-      if (!foundOrder) {
+      // Check if order was explicitly deleted
+      let isDeleted = false;
+      try {
+        const deletedRaw = localStorage.getItem("ecom_speed_pro_deleted_order_ids");
+        if (deletedRaw) {
+          const deletedArr = JSON.parse(deletedRaw);
+          if (Array.isArray(deletedArr) && (deletedArr.includes(orderId) || deletedArr.includes(orderId.replace(/^#/, "")) || deletedArr.includes("#" + orderId.replace(/^#/, "")))) {
+            isDeleted = true;
+          }
+        }
+      } catch (e) {}
+
+      if (isDeleted || res.status === 404) {
+        // Clean from localStorage so it never resurrects
+        try {
+          const stored = localStorage.getItem("ecom_speed_pro_orders");
+          if (stored) {
+            const list = JSON.parse(stored);
+            if (Array.isArray(list)) {
+              localStorage.setItem(
+                "ecom_speed_pro_orders",
+                JSON.stringify(list.filter((item: any) => item && item.id !== orderId && item.order_number !== orderId && item.orderNumber !== orderId))
+              );
+            }
+          }
+        } catch (e) {}
+
+        setOrder(null);
+        setNotFound(true);
+        return;
+      }
+
+      // If not returned by server (e.g. offline fallback), check client localStorage
+      if (!foundOrder && !isDeleted) {
         try {
           const stored = localStorage.getItem("ecom_speed_pro_orders");
           if (stored) {
@@ -110,13 +142,6 @@ function OrderTrackingContent() {
                   product_notes: localMatch.product_notes || localMatch.productNotes || "",
                   created_at: localMatch.created_at || localMatch.createdAt || new Date().toISOString(),
                 };
-
-                // Asynchronously sync to backend so server and admin also have it!
-                fetch("/api/orders", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(foundOrder),
-                }).catch(() => {});
               }
             }
           }
@@ -136,6 +161,7 @@ function OrderTrackingContent() {
           })
         );
       } else {
+        setOrder(null);
         setNotFound(true);
       }
     } catch (err) {

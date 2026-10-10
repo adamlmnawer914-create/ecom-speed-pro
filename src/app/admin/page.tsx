@@ -144,13 +144,48 @@ export default function AdminDashboardPage() {
   const [newOrderMethod, setNewOrderMethod] = useState("YouCan Pay");
   const [newOrderNotes, setNewOrderNotes] = useState("");
 
-  // Function to fetch real live orders from backend API & localStorage
-  // Test order IDs to permanently exclude
-  const TEST_ORDER_IDS = new Set(["ESP-849201", "ESP-910442", "ESP-732019"]);
+  // Persistent deleted order IDs helpers
+  const getLocalDeletedIds = (): Set<string> => {
+    const set = new Set<string>(["ESP-849201", "ESP-910442", "ESP-732019"]);
+    try {
+      const stored = localStorage.getItem("ecom_speed_pro_deleted_order_ids");
+      if (stored) {
+        const arr = JSON.parse(stored);
+        if (Array.isArray(arr)) {
+          arr.forEach((id: string) => {
+            if (id && typeof id === "string") {
+              const clean = id.trim();
+              set.add(clean);
+              set.add(clean.replace(/^#/, ""));
+              set.add("#" + clean.replace(/^#/, ""));
+            }
+          });
+        }
+      }
+    } catch (e) {}
+    return set;
+  };
+
+  const addLocalDeletedIds = (ids: (string | undefined | null)[]) => {
+    try {
+      const current = getLocalDeletedIds();
+      ids.forEach((id) => {
+        if (id && typeof id === "string" && id.trim()) {
+          const clean = id.trim();
+          current.add(clean);
+          current.add(clean.replace(/^#/, ""));
+          current.add("#" + clean.replace(/^#/, ""));
+        }
+      });
+      localStorage.setItem("ecom_speed_pro_deleted_order_ids", JSON.stringify(Array.from(current)));
+    } catch (e) {}
+  };
 
   // Function to fetch real live orders from backend API & localStorage
   const fetchRealOrders = async () => {
     try {
+      const deletedSet = getLocalDeletedIds();
+
       const res = await fetch(`/api/orders?t=${Date.now()}`, {
         cache: "no-store",
         headers: { "Cache-Control": "no-cache" },
@@ -158,7 +193,11 @@ export default function AdminDashboardPage() {
       const data = await res.json();
       let apiOrders: any[] = [];
       if (data && data.success && Array.isArray(data.orders)) {
-        apiOrders = data.orders.filter((o: any) => o && !TEST_ORDER_IDS.has(o.id));
+        apiOrders = data.orders.filter((o: any) => {
+          if (!o || !o.id) return false;
+          if (deletedSet.has(o.id) || (o.order_number && deletedSet.has(o.order_number))) return false;
+          return true;
+        });
       }
 
       let localOrders: any[] = [];
@@ -167,7 +206,12 @@ export default function AdminDashboardPage() {
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed)) {
-            localOrders = parsed.filter((item: any) => item && !TEST_ORDER_IDS.has(item.id));
+            localOrders = parsed.filter((item: any) => {
+              if (!item || !item.id) return false;
+              const num = item.order_number || item.orderNumber;
+              if (deletedSet.has(item.id) || (num && deletedSet.has(num))) return false;
+              return true;
+            });
             if (localOrders.length !== parsed.length) {
               localStorage.setItem("ecom_speed_pro_orders", JSON.stringify(localOrders));
             }
@@ -178,13 +222,32 @@ export default function AdminDashboardPage() {
       }
 
       const map = new Map<string, OrderItem>();
+      const seenOrderNumbers = new Set<string>();
+      const seenSignatures = new Set<string>();
 
       [...apiOrders, ...localOrders].forEach((item: any) => {
-        if (!item || !item.id || TEST_ORDER_IDS.has(item.id)) return;
+        if (!item || !item.id) return;
+        const orderNum = (item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`).trim();
+
+        if (deletedSet.has(item.id) || deletedSet.has(orderNum)) return;
+        if (map.has(item.id)) return;
+        if (seenOrderNumbers.has(orderNum)) return;
+
         const rawPrice =
           typeof item.price === "number"
             ? item.price
             : parseInt(String(item.price || "").replace(/[^0-9]/g, ""), 10) || 1500;
+
+        const custPhone = (item.customerPhone || item.phone || item.phone_number || "").replace(/[^0-9]/g, "");
+        const custName = (item.customerName || item.customer_name || "عميل مميز").trim();
+        const plan = (item.planTitle || item.plan_tier || item.plan || "المتجر القياسي (Standard Store)").trim();
+
+        const signature = `${custPhone}_${custName}_${plan}_${rawPrice}`;
+        if (seenSignatures.has(signature)) {
+          return;
+        }
+        seenSignatures.add(signature);
+        seenOrderNumbers.add(orderNum);
 
         const mappedStatus: "pending" | "in_progress" | "completed" =
           item.status === "completed" || item.status === "paid"
@@ -195,12 +258,12 @@ export default function AdminDashboardPage() {
 
         const orderObj: OrderItem = {
           id: item.id,
-          orderNumber: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`,
-          customerName: item.customerName || item.customer_name || "عميل مميز",
+          orderNumber: orderNum,
+          customerName: custName,
           customerPhone: item.customerPhone || item.phone || item.phone_number || "06 00 00 00 00",
           customerEmail: item.customerEmail || item.email || item.customer_email || "contact@client.ma",
           city: item.city || "المغرب",
-          planTitle: item.planTitle || item.plan_tier || item.plan || "المتجر القياسي (Standard Store)",
+          planTitle: plan,
           price: rawPrice,
           formattedPrice: item.formattedPrice || `${rawPrice.toLocaleString()} درهم`,
           paymentMethod:
@@ -230,9 +293,7 @@ export default function AdminDashboardPage() {
           createdAt: item.createdAt || item.created_at || new Date().toISOString(),
         };
 
-        if (!map.has(orderObj.id)) {
-          map.set(orderObj.id, orderObj);
-        }
+        map.set(orderObj.id, orderObj);
       });
 
       const sortedList = Array.from(map.values()).sort(
@@ -401,12 +462,31 @@ export default function AdminDashboardPage() {
 
   // Delete / Archive order live
   const handleDeleteOrder = async (orderId: string) => {
-    if (!confirm(`هل أنت متأكد من حذف الطلب #${orderId} نهائياً من قاعدة البيانات؟`)) return;
+    const targetOrder = orders.find((o) => o.id === orderId || o.orderNumber === orderId);
+    const displayName = targetOrder?.orderNumber || orderId;
+
+    if (!confirm(`هل أنت متأكد من حذف الطلب ${displayName} نهائياً من قاعدة البيانات؟`)) return;
 
     try {
-      setOrders((prev) => prev.filter((o) => o.id !== orderId));
-      if (selectedOrder?.id === orderId) {
-        const remaining = orders.filter((o) => o.id !== orderId);
+      const idsToDelete = [orderId];
+      if (targetOrder?.id) idsToDelete.push(targetOrder.id);
+      if (targetOrder?.orderNumber) idsToDelete.push(targetOrder.orderNumber);
+
+      // Record in local deleted set permanently
+      addLocalDeletedIds(idsToDelete);
+
+      // Remove immediately from UI state
+      setOrders((prev) =>
+        prev.filter(
+          (o) =>
+            o.id !== orderId &&
+            o.orderNumber !== orderId &&
+            (!targetOrder || (o.id !== targetOrder.id && o.orderNumber !== targetOrder.orderNumber))
+        )
+      );
+
+      if (selectedOrder && (selectedOrder.id === orderId || selectedOrder.orderNumber === orderId)) {
+        const remaining = orders.filter((o) => o.id !== orderId && o.orderNumber !== orderId);
         setSelectedOrder(remaining.length > 0 ? remaining[0] : null);
       }
 
@@ -415,20 +495,93 @@ export default function AdminDashboardPage() {
         const stored = localStorage.getItem("ecom_speed_pro_orders");
         if (stored) {
           const list = JSON.parse(stored);
-          localStorage.setItem(
-            "ecom_speed_pro_orders",
-            JSON.stringify(list.filter((o: any) => o.id !== orderId))
-          );
+          const filtered = list.filter((o: any) => {
+            if (!o) return false;
+            const num = o.order_number || o.orderNumber;
+            return (
+              o.id !== orderId &&
+              num !== orderId &&
+              (!targetOrder || (o.id !== targetOrder.id && num !== targetOrder.orderNumber))
+            );
+          });
+          localStorage.setItem("ecom_speed_pro_orders", JSON.stringify(filtered));
         }
       } catch (e) {
         console.warn(e);
       }
 
       // Remove from API
-      await fetch(`/api/orders?id=${orderId}`, { method: "DELETE" });
-      triggerNotification(`تم حذف الطلب #${orderId} بنجاح`);
+      await fetch(`/api/orders?id=${encodeURIComponent(targetOrder?.id || orderId)}`, { method: "DELETE" });
+      triggerNotification(`تم حذف الطلب ${displayName} نهائياً 🗑️`);
     } catch (err) {
       console.error("Failed to delete order:", err);
+    }
+  };
+
+  // Delete Customer and all their associated orders live
+  const handleDeleteCustomer = async (customerPhone: string, customerName: string) => {
+    if (!confirm(`هل أنت متأكد من حذف العميل "${customerName}" وكافة طلباته نهائياً من قاعدة البيانات؟`)) return;
+
+    try {
+      const cleanPhone = customerPhone.replace(/[^0-9]/g, "");
+      const targetOrders = orders.filter((o) => {
+        const oPhone = o.customerPhone.replace(/[^0-9]/g, "");
+        const matchPhone = cleanPhone && cleanPhone.length >= 6 && (oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone));
+        const matchName = o.customerName.trim().toLowerCase() === customerName.trim().toLowerCase();
+        return matchPhone || matchName;
+      });
+
+      const idsToDelete = targetOrders.flatMap((o) => [o.id, o.orderNumber || ""]);
+      addLocalDeletedIds(idsToDelete);
+
+      // Remove immediately from UI state
+      setOrders((prev) =>
+        prev.filter((o) => {
+          const oPhone = o.customerPhone.replace(/[^0-9]/g, "");
+          const matchPhone = cleanPhone && cleanPhone.length >= 6 && (oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone));
+          const matchName = o.customerName.trim().toLowerCase() === customerName.trim().toLowerCase();
+          return !matchPhone && !matchName;
+        })
+      );
+
+      if (selectedOrder && targetOrders.some((t) => t.id === selectedOrder.id)) {
+        const remaining = orders.filter((o) => !targetOrders.some((t) => t.id === o.id));
+        setSelectedOrder(remaining.length > 0 ? remaining[0] : null);
+      }
+
+      // Remove from localStorage
+      try {
+        const stored = localStorage.getItem("ecom_speed_pro_orders");
+        if (stored) {
+          const list = JSON.parse(stored);
+          const filtered = list.filter((o: any) => {
+            if (!o) return false;
+            const oPhone = (o.customerPhone || o.phone || o.phone_number || "").replace(/[^0-9]/g, "");
+            const oName = (o.customerName || o.customer_name || "").trim().toLowerCase();
+            const matchPhone = cleanPhone && cleanPhone.length >= 6 && (oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone));
+            const matchName = oName === customerName.trim().toLowerCase();
+            return !matchPhone && !matchName;
+          });
+          localStorage.setItem("ecom_speed_pro_orders", JSON.stringify(filtered));
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+
+      // Remove from API by customer phone and name
+      await fetch(
+        `/api/orders?phone=${encodeURIComponent(customerPhone)}&customer=${encodeURIComponent(customerName)}`,
+        { method: "DELETE" }
+      );
+
+      // Also call individual deletes for each order ID to ensure everything is purged
+      for (const ord of targetOrders) {
+        fetch(`/api/orders?id=${encodeURIComponent(ord.id)}`, { method: "DELETE" }).catch(() => {});
+      }
+
+      triggerNotification(`تم حذف العميل "${customerName}" وكافة طلباته نهائياً 🗑️`);
+    } catch (err) {
+      console.error("Failed to delete customer:", err);
     }
   };
 
@@ -1884,17 +2037,29 @@ export default function AdminDashboardPage() {
                         </div>
                       </div>
 
-                      <a
-                        href={`https://wa.me/${c.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                          `مرحباً بك ${c.name}، معك إدارة ECOM SPEED PRO.`
-                        )}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
-                      >
-                        <WhatsAppIcon size={14} />
-                        <span>مراسلة العميل واتساب</span>
-                      </a>
+                      <div className="flex items-center gap-2 pt-2 border-t border-slate-100">
+                        <a
+                          href={`https://wa.me/${c.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                            `مرحباً بك ${c.name}، معك إدارة ECOM SPEED PRO.`
+                          )}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all"
+                        >
+                          <WhatsAppIcon size={14} />
+                          <span>مراسلة واتساب</span>
+                        </a>
+
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteCustomer(c.phone, c.name)}
+                          className="px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 hover:text-rose-700 font-black text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer shadow-sm"
+                          title="حذف هذا العميل وكافة طلباته نهائياً من قاعدة البيانات"
+                        >
+                          <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                          <span>حذف العميل</span>
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

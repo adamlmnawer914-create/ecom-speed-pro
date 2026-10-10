@@ -41,6 +41,7 @@ const supabase =
 declare global {
   var __ECOM_ORDERS_CACHE__: Order[] | undefined;
   var __ECOM_OTP_CACHE__: OtpVerification[] | undefined;
+  var __ECOM_DELETED_CACHE__: Set<string> | undefined;
 }
 
 const LOCAL_ORDERS_FILE = path.join(process.cwd(), "data", "orders.json");
@@ -48,6 +49,9 @@ const TMP_ORDERS_FILE = path.join("/tmp", "orders.json");
 
 const LOCAL_OTP_FILE = path.join(process.cwd(), "data", "otp.json");
 const TMP_OTP_FILE = path.join("/tmp", "otp.json");
+
+const LOCAL_DELETED_FILE = path.join(process.cwd(), "data", "deleted_orders.json");
+const TMP_DELETED_FILE = path.join("/tmp", "deleted_orders.json");
 
 function ensureDir(filePath: string) {
   try {
@@ -58,6 +62,51 @@ function ensureDir(filePath: string) {
   } catch (e) {
     // Read-only filesystem on Vercel
   }
+}
+
+function getDeletedIds(): Set<string> {
+  if (globalThis.__ECOM_DELETED_CACHE__) {
+    return globalThis.__ECOM_DELETED_CACHE__;
+  }
+  const set = new Set<string>();
+  try {
+    if (fs.existsSync(TMP_DELETED_FILE)) {
+      const data = JSON.parse(fs.readFileSync(TMP_DELETED_FILE, "utf-8"));
+      if (Array.isArray(data)) data.forEach((item: string) => set.add(item));
+    }
+  } catch (e) {}
+
+  try {
+    if (fs.existsSync(LOCAL_DELETED_FILE)) {
+      const data = JSON.parse(fs.readFileSync(LOCAL_DELETED_FILE, "utf-8"));
+      if (Array.isArray(data)) data.forEach((item: string) => set.add(item));
+    }
+  } catch (e) {}
+
+  globalThis.__ECOM_DELETED_CACHE__ = set;
+  return set;
+}
+
+function recordDeletedId(id: string) {
+  if (!id) return;
+  const set = getDeletedIds();
+  const clean = id.trim();
+  set.add(clean);
+  set.add(clean.replace(/^#/, ""));
+  set.add("#" + clean.replace(/^#/, ""));
+
+  const arr = Array.from(set);
+  const json = JSON.stringify(arr, null, 2);
+
+  try {
+    ensureDir(TMP_DELETED_FILE);
+    fs.writeFileSync(TMP_DELETED_FILE, json, "utf-8");
+  } catch (e) {}
+
+  try {
+    ensureDir(LOCAL_DELETED_FILE);
+    fs.writeFileSync(LOCAL_DELETED_FILE, json, "utf-8");
+  } catch (e) {}
 }
 
 // ----------------------------------------------------
@@ -95,7 +144,15 @@ function readLocalOrders(): Order[] {
     } catch (e) {}
   }
 
-  const mapped: Order[] = rawList.map((item: any) => ({
+  const deletedSet = getDeletedIds();
+  const validRaw = rawList.filter((item: any) => {
+    if (!item) return false;
+    const id = item.id;
+    const num = item.order_number || item.orderNumber;
+    return !deletedSet.has(id) && (!num || !deletedSet.has(num));
+  });
+
+  const mapped: Order[] = validRaw.map((item: any) => ({
     id: item.id || crypto.randomUUID(),
     order_number: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`,
     customer_name: item.customer_name || item.customerName || "عميل مميز",
@@ -179,6 +236,15 @@ function writeLocalOtp(otps: OtpVerification[]): void {
  * Fetch a single order by its secret UUID
  */
 export async function getOrderById(id: string): Promise<Order | null> {
+  const deletedSet = getDeletedIds();
+  if (
+    deletedSet.has(id) ||
+    deletedSet.has(id.replace(/^#/, "")) ||
+    deletedSet.has("#" + id.replace(/^#/, ""))
+  ) {
+    return null;
+  }
+
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -188,6 +254,9 @@ export async function getOrderById(id: string): Promise<Order | null> {
         .maybeSingle();
 
       if (!error && data) {
+        if (deletedSet.has(data.id) || (data.order_number && deletedSet.has(data.order_number))) {
+          return null;
+        }
         return data as Order;
       }
     } catch (err) {
@@ -197,7 +266,11 @@ export async function getOrderById(id: string): Promise<Order | null> {
 
   // Fallback to local
   const orders = readLocalOrders();
-  return orders.find((o) => o.id === id) || null;
+  const found = orders.find((o) => o.id === id || o.order_number === id);
+  if (found && (deletedSet.has(found.id) || deletedSet.has(found.order_number))) {
+    return null;
+  }
+  return found || null;
 }
 
 /**
@@ -205,6 +278,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
  */
 export async function getOrdersByPhone(phoneNumber: string): Promise<Order[]> {
   const cleanPhone = phoneNumber.replace(/[^0-9]/g, "");
+  const deletedSet = getDeletedIds();
 
   if (supabase) {
     try {
@@ -214,10 +288,13 @@ export async function getOrdersByPhone(phoneNumber: string): Promise<Order[]> {
         .order("created_at", { ascending: false });
 
       if (!error && Array.isArray(data)) {
-        return (data as Order[]).filter((o) =>
-          o.phone_number.replace(/[^0-9]/g, "").includes(cleanPhone) ||
-          cleanPhone.includes(o.phone_number.replace(/[^0-9]/g, ""))
-        );
+        return (data as Order[]).filter((o) => {
+          if (!o || deletedSet.has(o.id) || (o.order_number && deletedSet.has(o.order_number))) {
+            return false;
+          }
+          const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
+          return oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone);
+        });
       }
     } catch (err) {
       console.warn("Supabase fetch by phone failed, falling back to local:", err);
@@ -227,7 +304,10 @@ export async function getOrdersByPhone(phoneNumber: string): Promise<Order[]> {
   // Fallback to local
   const orders = readLocalOrders();
   return orders.filter((o) => {
-    const oPhone = o.phone_number.replace(/[^0-9]/g, "");
+    if (!o || deletedSet.has(o.id) || (o.order_number && deletedSet.has(o.order_number))) {
+      return false;
+    }
+    const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
     return oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone);
   });
 }
@@ -236,6 +316,8 @@ export async function getOrdersByPhone(phoneNumber: string): Promise<Order[]> {
  * Fetch all orders (for admin dashboard)
  */
 export async function getAllOrders(): Promise<Order[]> {
+  const deletedSet = getDeletedIds();
+
   if (supabase) {
     try {
       const { data, error } = await supabase
@@ -244,21 +326,39 @@ export async function getAllOrders(): Promise<Order[]> {
         .order("created_at", { ascending: false });
 
       if (!error && Array.isArray(data)) {
-        return data as Order[];
+        return (data as Order[]).filter(
+          (o) =>
+            o &&
+            o.id &&
+            !deletedSet.has(o.id) &&
+            (!o.order_number || !deletedSet.has(o.order_number))
+        );
       }
     } catch (err) {
       console.warn("Supabase fetch all failed, falling back to local:", err);
     }
   }
 
-  return readLocalOrders();
+  const local = readLocalOrders();
+  return local.filter(
+    (o) =>
+      o &&
+      o.id &&
+      !deletedSet.has(o.id) &&
+      (!o.order_number || !deletedSet.has(o.order_number))
+  );
 }
 
 /**
  * Create a new order with a secure UUID
  */
 export async function createOrder(data: Partial<Order>): Promise<Order> {
-  const newId = data.id || crypto.randomUUID();
+  const deletedSet = getDeletedIds();
+  let newId = data.id || crypto.randomUUID();
+  if (deletedSet.has(newId)) {
+    newId = crypto.randomUUID();
+  }
+
   const existing = readLocalOrders();
   const nextSeq = existing.length + 101;
   const orderNumber = data.order_number || `#ESP-${nextSeq}`;
@@ -334,18 +434,70 @@ export async function updateOrder(id: string, updates: Partial<Order>): Promise<
 }
 
 /**
- * Delete an order
+ * Delete an order permanently
  */
 export async function deleteOrder(id: string): Promise<boolean> {
+  recordDeletedId(id);
+
   const orders = readLocalOrders();
-  const filtered = orders.filter((o) => o.id !== id);
+  const target = orders.find((o) => o.id === id || o.order_number === id);
+  if (target?.order_number) recordDeletedId(target.order_number);
+  if (target?.id) recordDeletedId(target.id);
+
+  const filtered = orders.filter((o) => o.id !== id && o.order_number !== id);
   writeLocalOrders(filtered);
 
   if (supabase) {
     try {
       await supabase.from("orders").delete().eq("id", id);
+      if (target?.order_number) {
+        await supabase.from("orders").delete().eq("order_number", target.order_number);
+      }
     } catch (err) {
       console.warn("Supabase delete failed:", err);
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Delete all orders belonging to a customer permanently
+ */
+export async function deleteCustomerOrders(phoneNumber: string, customerName?: string): Promise<boolean> {
+  const cleanPhone = phoneNumber ? phoneNumber.replace(/[^0-9]/g, "") : "";
+  const cleanName = customerName ? customerName.trim().toLowerCase() : "";
+
+  const orders = readLocalOrders();
+  const toDelete = orders.filter((o) => {
+    const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
+    const matchPhone = cleanPhone && cleanPhone.length >= 6 && (oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone));
+    const matchName = cleanName && o.customer_name.trim().toLowerCase() === cleanName;
+    return matchPhone || matchName;
+  });
+
+  toDelete.forEach((o) => {
+    recordDeletedId(o.id);
+    if (o.order_number) recordDeletedId(o.order_number);
+  });
+
+  const remaining = orders.filter((o) => !toDelete.some((d) => d.id === o.id));
+  writeLocalOrders(remaining);
+
+  if (supabase) {
+    try {
+      const ids = toDelete.map((o) => o.id);
+      if (ids.length > 0) {
+        await supabase.from("orders").delete().in("id", ids);
+      }
+      if (cleanPhone && cleanPhone.length >= 6) {
+        await supabase.from("orders").delete().ilike("phone_number", `%${cleanPhone}%`);
+      }
+      if (cleanName) {
+        await supabase.from("orders").delete().ilike("customer_name", `%${cleanName}%`);
+      }
+    } catch (err) {
+      console.warn("Supabase customer delete failed:", err);
     }
   }
 
