@@ -37,77 +37,138 @@ const supabase =
       })
     : null;
 
-// File system fallback database paths
-const ORDERS_FILE_PATH = path.join(process.cwd(), "data", "orders.json");
-const OTP_FILE_PATH = path.join(process.cwd(), "data", "otp.json");
+// In-memory runtime cache for warm instances
+declare global {
+  var __ECOM_ORDERS_CACHE__: Order[] | undefined;
+  var __ECOM_OTP_CACHE__: OtpVerification[] | undefined;
+}
+
+const LOCAL_ORDERS_FILE = path.join(process.cwd(), "data", "orders.json");
+const TMP_ORDERS_FILE = path.join("/tmp", "orders.json");
+
+const LOCAL_OTP_FILE = path.join(process.cwd(), "data", "otp.json");
+const TMP_OTP_FILE = path.join("/tmp", "otp.json");
 
 function ensureDir(filePath: string) {
-  const dir = path.dirname(filePath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
+  try {
+    const dir = path.dirname(filePath);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  } catch (e) {
+    // Read-only filesystem on Vercel
   }
 }
 
 // ----------------------------------------------------
-// LOCAL FALLBACK HELPERS
+// LOCAL & SERVERLESS FALLBACK HELPERS
 // ----------------------------------------------------
 function readLocalOrders(): Order[] {
+  // 1. Check in-memory cache
+  if (globalThis.__ECOM_ORDERS_CACHE__ && globalThis.__ECOM_ORDERS_CACHE__.length > 0) {
+    return globalThis.__ECOM_ORDERS_CACHE__;
+  }
+
+  let rawList: any[] = [];
+
+  // 2. Try /tmp/orders.json (Vercel writable layer)
   try {
-    if (fs.existsSync(ORDERS_FILE_PATH)) {
-      const data = fs.readFileSync(ORDERS_FILE_PATH, "utf-8");
+    if (fs.existsSync(TMP_ORDERS_FILE)) {
+      const data = fs.readFileSync(TMP_ORDERS_FILE, "utf-8");
       const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
-        // Map legacy fields if any
-        return parsed.map((item: any) => ({
-          id: item.id || crypto.randomUUID(),
-          order_number: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`,
-          customer_name: item.customer_name || item.customerName || "عميل مميز",
-          phone_number: item.phone_number || item.customerPhone || item.phone || "",
-          plan_tier: item.plan_tier || item.planTitle || item.plan || "المتجر القياسي (1,500 MAD)",
-          status: (item.status === "paid" || item.status === "completed") ? "completed" : (item.status === "in_progress" ? "in_progress" : "pending"),
-          delivered_url: item.delivered_url || item.deliveredUrl || null,
-          payment_method: item.payment_method || item.paymentMethod || "بطاقة بنكية",
-          product_notes: item.product_notes || item.productNotes || "",
-          product_images: item.product_images || item.productImages || [],
-          created_at: item.created_at || item.createdAt || new Date().toISOString(),
-        }));
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        rawList = parsed;
       }
     }
-  } catch (err) {
-    console.warn("Could not read local orders file:", err);
+  } catch (e) {}
+
+  // 3. Fallback to bundled data/orders.json
+  if (rawList.length === 0) {
+    try {
+      if (fs.existsSync(LOCAL_ORDERS_FILE)) {
+        const data = fs.readFileSync(LOCAL_ORDERS_FILE, "utf-8");
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed)) {
+          rawList = parsed;
+        }
+      }
+    } catch (e) {}
   }
-  return [];
+
+  const mapped: Order[] = rawList.map((item: any) => ({
+    id: item.id || crypto.randomUUID(),
+    order_number: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`,
+    customer_name: item.customer_name || item.customerName || "عميل مميز",
+    phone_number: item.phone_number || item.customerPhone || item.phone || "",
+    plan_tier: item.plan_tier || item.planTitle || item.plan || "المتجر القياسي (1,500 MAD)",
+    status: (item.status === "paid" || item.status === "completed") ? "completed" : (item.status === "in_progress" ? "in_progress" : "pending"),
+    delivered_url: item.delivered_url || item.deliveredUrl || null,
+    payment_method: item.payment_method || item.paymentMethod || "بطاقة بنكية",
+    product_notes: item.product_notes || item.productNotes || "",
+    product_images: item.product_images || item.productImages || [],
+    created_at: item.created_at || item.createdAt || new Date().toISOString(),
+  }));
+
+  globalThis.__ECOM_ORDERS_CACHE__ = mapped;
+  return mapped;
 }
 
 function writeLocalOrders(orders: Order[]): void {
+  // Always update in-memory cache first
+  globalThis.__ECOM_ORDERS_CACHE__ = orders;
+
+  const content = JSON.stringify(orders, null, 2);
+
+  // Try /tmp (works in Vercel / serverless)
   try {
-    ensureDir(ORDERS_FILE_PATH);
-    fs.writeFileSync(ORDERS_FILE_PATH, JSON.stringify(orders, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Could not write local orders file:", err);
-  }
+    ensureDir(TMP_ORDERS_FILE);
+    fs.writeFileSync(TMP_ORDERS_FILE, content, "utf-8");
+  } catch (e) {}
+
+  // Try local repo file
+  try {
+    ensureDir(LOCAL_ORDERS_FILE);
+    fs.writeFileSync(LOCAL_ORDERS_FILE, content, "utf-8");
+  } catch (e) {}
 }
 
 function readLocalOtp(): OtpVerification[] {
-  try {
-    if (fs.existsSync(OTP_FILE_PATH)) {
-      const data = fs.readFileSync(OTP_FILE_PATH, "utf-8");
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch (err) {
-    console.warn("Could not read local OTP file:", err);
+  if (globalThis.__ECOM_OTP_CACHE__ && globalThis.__ECOM_OTP_CACHE__.length > 0) {
+    return globalThis.__ECOM_OTP_CACHE__;
   }
-  return [];
+
+  let rawList: any[] = [];
+  try {
+    if (fs.existsSync(TMP_OTP_FILE)) {
+      rawList = JSON.parse(fs.readFileSync(TMP_OTP_FILE, "utf-8"));
+    }
+  } catch (e) {}
+
+  if (rawList.length === 0) {
+    try {
+      if (fs.existsSync(LOCAL_OTP_FILE)) {
+        rawList = JSON.parse(fs.readFileSync(LOCAL_OTP_FILE, "utf-8"));
+      }
+    } catch (e) {}
+  }
+
+  globalThis.__ECOM_OTP_CACHE__ = Array.isArray(rawList) ? rawList : [];
+  return globalThis.__ECOM_OTP_CACHE__;
 }
 
 function writeLocalOtp(otps: OtpVerification[]): void {
+  globalThis.__ECOM_OTP_CACHE__ = otps;
+  const content = JSON.stringify(otps, null, 2);
+
   try {
-    ensureDir(OTP_FILE_PATH);
-    fs.writeFileSync(OTP_FILE_PATH, JSON.stringify(otps, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Could not write local OTP file:", err);
-  }
+    ensureDir(TMP_OTP_FILE);
+    fs.writeFileSync(TMP_OTP_FILE, content, "utf-8");
+  } catch (e) {}
+
+  try {
+    ensureDir(LOCAL_OTP_FILE);
+    fs.writeFileSync(LOCAL_OTP_FILE, content, "utf-8");
+  } catch (e) {}
 }
 
 // ----------------------------------------------------

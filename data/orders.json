@@ -1,5 +1,18 @@
 [
   {
+    "id": "7c327080-5b9f-4399-b3e2-ca6c8fe6ec6c",
+    "order_number": "#ESP-102",
+    "customer_name": "نوح",
+    "phone_number": "0672378923",
+    "plan_tier": "المتجر القياسي (Standard Store)",
+    "status": "pending",
+    "delivered_url": null,
+    "payment_method": "الأداء بالبطاقة البنكية (Paiement sécurisé par Carte Bancaire)",
+    "product_notes": "طلب جديد مؤكد من العميل نوح",
+    "product_images": [],
+    "created_at": "2026-10-10T21:40:00.000Z"
+  },
+  {
     "id": "459bb715-f8ab-4069-b8fd-4713fc1c47f7",
     "order_number": "#ESP-101",
     "customer_name": "كريم التازي",
@@ -7,7 +20,7 @@
     "plan_tier": "المتجر القياسي (Standard Store)",
     "status": "pending",
     "delivered_url": null,
-    "payment_method": "whatsapp",
+    "payment_method": "تحويل بنكي",
     "product_notes": "طلب تجريبي للتأكد من الظهور في لوحة التحكم وتتبع المتجر",
     "product_images": [],
     "created_at": "2026-10-10T21:00:16.697Z"

@@ -239,24 +239,34 @@ export default function AdminDashboardPage() {
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
-      setOrders(sortedList);
-      if (sortedList.length > 0) {
-        setSelectedOrder((prev) => {
-          if (!prev) return sortedList[0];
-          const found = sortedList.find((o) => o.id === prev.id);
-          return found || sortedList[0];
-        });
-      } else {
-        setSelectedOrder(null);
-      }
+      // Optimized: Only update orders array reference if data actually changed
+      setOrders((prev) => {
+        if (prev.length === sortedList.length) {
+          const prevKey = prev.map((o) => `${o.id}_${o.status}_${o.deliveredUrl}`).join(",");
+          const nextKey = sortedList.map((o) => `${o.id}_${o.status}_${o.deliveredUrl}`).join(",");
+          if (prevKey === nextKey) {
+            return prev; // Same reference -> React skips re-rendering!
+          }
+        }
+        return sortedList;
+      });
 
-      setLastSyncTime(
-        new Date().toLocaleTimeString("ar-MA", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        })
-      );
+      setSelectedOrder((prev) => {
+        if (!prev) return sortedList.length > 0 ? sortedList[0] : null;
+        const found = sortedList.find((o) => o.id === prev.id);
+        if (!found) return sortedList.length > 0 ? sortedList[0] : null;
+        if (found.status === prev.status && found.deliveredUrl === prev.deliveredUrl) {
+          return prev; // Same reference -> React skips re-rendering!
+        }
+        return found;
+      });
+
+      setLastSyncTime((prev) => {
+        if (!prev) {
+          return new Date().toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" });
+        }
+        return prev;
+      });
     } catch (err) {
       console.error("Error fetching live orders:", err);
     }
@@ -271,11 +281,27 @@ export default function AdminDashboardPage() {
     }
   }, [selectedOrder?.id]);
 
-  // Sync orders with API on mount + Real-time auto-polling every 4 seconds
+  // High performance smart sync: initial load, window focus, and background polling only when visible
   useEffect(() => {
     fetchRealOrders();
-    const interval = setInterval(fetchRealOrders, 4000);
-    return () => clearInterval(interval);
+
+    // Refresh immediately when user returns to tab
+    const handleFocus = () => {
+      fetchRealOrders();
+    };
+    window.addEventListener("focus", handleFocus);
+
+    // Light background poll every 15 seconds ONLY if tab is visible
+    const interval = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        fetchRealOrders();
+      }
+    }, 15000);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
 
   // Update order status live (pending | in_progress | completed)
@@ -481,35 +507,48 @@ export default function AdminDashboardPage() {
     }, 600);
   };
 
-  // Filtered orders
-  const filteredOrders = orders.filter((ord) => {
-    const matchesSearch =
-      ord.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ord.customerPhone.includes(searchQuery) ||
-      ord.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ord.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ord.city.toLowerCase().includes(searchQuery.toLowerCase());
+  // High performance memoized filtered orders
+  const filteredOrders = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return orders.filter((ord) => {
+      const matchesSearch =
+        !q ||
+        ord.customerName.toLowerCase().includes(q) ||
+        ord.customerPhone.includes(q) ||
+        ord.customerEmail.toLowerCase().includes(q) ||
+        ord.id.toLowerCase().includes(q) ||
+        ord.city.toLowerCase().includes(q);
 
-    const matchesStatus =
-      statusFilter === "all" ||
-      (statusFilter === "pending" && (ord.status === "pending" || ord.status === "review")) ||
-      (statusFilter === "in_progress" && ord.status === "in_progress") ||
-      (statusFilter === "completed" && (ord.status === "completed" || ord.status === "paid")) ||
-      (statusFilter === "paid" && (ord.status === "paid" || ord.status === "completed")) ||
-      (statusFilter === "review" && (ord.status === "review" || ord.status === "pending"));
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "pending" && (ord.status === "pending" || ord.status === "review")) ||
+        (statusFilter === "in_progress" && ord.status === "in_progress") ||
+        (statusFilter === "completed" && (ord.status === "completed" || ord.status === "paid")) ||
+        (statusFilter === "paid" && (ord.status === "paid" || ord.status === "completed")) ||
+        (statusFilter === "review" && (ord.status === "review" || ord.status === "pending"));
 
-    const matchesMethod = methodFilter === "all" || ord.paymentMethod.includes(methodFilter);
-    const matchesPlan = planFilter === "all" || ord.planTitle.includes(planFilter);
+      const matchesMethod = methodFilter === "all" || ord.paymentMethod.includes(methodFilter);
+      const matchesPlan = planFilter === "all" || ord.planTitle.includes(planFilter);
 
-    return matchesSearch && matchesStatus && matchesMethod && matchesPlan;
-  });
+      return matchesSearch && matchesStatus && matchesMethod && matchesPlan;
+    });
+  }, [orders, searchQuery, statusFilter, methodFilter, planFilter]);
 
-  // Calculate Real Dynamic Metrics
-  const totalOrdersCount = orders.length;
-  const paidOrdersCount = orders.filter((o) => o.status === "completed" || o.status === "paid").length;
-  const reviewOrdersCount = orders.filter((o) => o.status === "pending" || o.status === "in_progress" || o.status === "review").length;
-  const totalRevenueSum = orders.reduce((acc, o) => acc + (o.price || 0), 0);
-  const avgOrderValue = totalOrdersCount > 0 ? Math.round(totalRevenueSum / totalOrdersCount) : 0;
+  // High performance memoized metrics
+  const { totalOrdersCount, paidOrdersCount, reviewOrdersCount, totalRevenueSum, avgOrderValue } = useMemo(() => {
+    const total = orders.length;
+    const paid = orders.filter((o) => o.status === "completed" || o.status === "paid").length;
+    const review = orders.filter((o) => o.status === "pending" || o.status === "in_progress" || o.status === "review").length;
+    const sum = orders.reduce((acc, o) => acc + (o.price || 0), 0);
+    const avg = total > 0 ? Math.round(sum / total) : 0;
+    return {
+      totalOrdersCount: total,
+      paidOrdersCount: paid,
+      reviewOrdersCount: review,
+      totalRevenueSum: sum,
+      avgOrderValue: avg,
+    };
+  }, [orders]);
 
   // Real Unique Customers
   const uniqueCustomers = useMemo(() => {

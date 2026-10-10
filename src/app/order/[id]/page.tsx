@@ -73,13 +73,60 @@ function OrderTrackingContent() {
         cache: "no-store",
         headers: { "Cache-Control": "no-cache" },
       });
-      if (!res.ok) {
-        if (res.status === 404) setNotFound(true);
-        return;
+
+      let foundOrder: OrderData | null = null;
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.order) {
+          foundOrder = data.order;
+        }
       }
-      const data = await res.json();
-      if (data.success && data.order) {
-        setOrder(data.order);
+
+      // If not returned by server (e.g. serverless instance restart or cold start), check client localStorage
+      if (!foundOrder) {
+        try {
+          const stored = localStorage.getItem("ecom_speed_pro_orders");
+          if (stored) {
+            const list = JSON.parse(stored);
+            if (Array.isArray(list)) {
+              const localMatch = list.find(
+                (item: any) =>
+                  item &&
+                  (item.id === orderId ||
+                    item.order_number === orderId ||
+                    item.orderNumber === orderId)
+              );
+              if (localMatch) {
+                foundOrder = {
+                  id: localMatch.id,
+                  order_number: localMatch.order_number || localMatch.orderNumber || `#ESP-101`,
+                  customer_name: localMatch.customer_name || localMatch.customerName || "عميل مميز",
+                  phone_number: localMatch.phone_number || localMatch.customerPhone || localMatch.phone || "",
+                  plan_tier: localMatch.plan_tier || localMatch.planTitle || "المتجر القياسي (1,500 MAD)",
+                  status: (localMatch.status === "completed" || localMatch.status === "paid") ? "completed" : (localMatch.status === "in_progress" ? "in_progress" : "pending"),
+                  delivered_url: localMatch.delivered_url || localMatch.deliveredUrl || null,
+                  payment_method: localMatch.payment_method || localMatch.paymentMethod || "بطاقة بنكية",
+                  product_notes: localMatch.product_notes || localMatch.productNotes || "",
+                  created_at: localMatch.created_at || localMatch.createdAt || new Date().toISOString(),
+                };
+
+                // Asynchronously sync to backend so server and admin also have it!
+                fetch("/api/orders", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify(foundOrder),
+                }).catch(() => {});
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Local storage order fallback error:", e);
+        }
+      }
+
+      if (foundOrder) {
+        setOrder(foundOrder);
         setNotFound(false);
         setLastCheck(
           new Date().toLocaleTimeString("ar-MA", {
@@ -93,6 +140,28 @@ function OrderTrackingContent() {
       }
     } catch (err) {
       console.error("Error fetching order:", err);
+      // Even on network error, check localStorage before declaring 404
+      try {
+        const stored = localStorage.getItem("ecom_speed_pro_orders");
+        if (stored) {
+          const list = JSON.parse(stored);
+          const localMatch = list.find((item: any) => item && (item.id === orderId || item.order_number === orderId));
+          if (localMatch) {
+            setOrder({
+              id: localMatch.id,
+              order_number: localMatch.order_number || `#ESP-101`,
+              customer_name: localMatch.customer_name || "عميل مميز",
+              phone_number: localMatch.phone_number || "",
+              plan_tier: localMatch.plan_tier || "المتجر القياسي",
+              status: localMatch.status || "pending",
+              delivered_url: localMatch.delivered_url || null,
+              created_at: localMatch.created_at || new Date().toISOString(),
+            });
+            setNotFound(false);
+            return;
+          }
+        }
+      } catch (e) {}
       setNotFound(true);
     } finally {
       setLoading(false);
