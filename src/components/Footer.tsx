@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Phone,
   Mail,
@@ -586,6 +587,15 @@ export default function Footer({
                 <ShieldCheck className="w-4 h-4 text-cyan-400" />
                 <span>مزايا الأداء</span>
               </button>
+
+              {/* Track Order Direct Link */}
+              <Link
+                href="/track"
+                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-xs font-black text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:scale-105 active:scale-95"
+              >
+                <span>تتبع واستلام طلبك</span>
+                <span>🔍</span>
+              </Link>
             </div>
 
             {/* Live Server Indicator Capsule with Cybernetic Neon */}

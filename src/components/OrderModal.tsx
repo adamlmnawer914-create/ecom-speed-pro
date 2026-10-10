@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   X,
   ShieldCheck,
@@ -21,6 +22,9 @@ import {
   UploadCloud,
   ImageIcon,
   Trash2,
+  Copy,
+  ExternalLink,
+  Rocket,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -58,15 +62,23 @@ export default function OrderModal({
   const [cvv, setCvv] = useState("");
   const [cardHolder, setCardHolder] = useState("");
 
+  const router = useRouter();
+
   // Submission state
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [createdOrder, setCreatedOrder] = useState<any>(null);
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [redirectTimer, setRedirectTimer] = useState(5);
 
   useEffect(() => {
     if (isOpen) {
       setIsSuccess(false);
       setIsProcessing(false);
+      setCreatedOrder(null);
+      setCopiedLink(false);
+      setRedirectTimer(5);
       setOrderId("ESP-" + Math.floor(100000 + Math.random() * 900000));
       // Lock background scroll
       document.body.style.overflow = "hidden";
@@ -77,6 +89,19 @@ export default function OrderModal({
       document.body.style.overflow = "";
     };
   }, [isOpen]);
+
+  // Countdown timer for auto-redirect to secret tracking page
+  useEffect(() => {
+    let interval: any = null;
+    if (isSuccess && createdOrder?.id && redirectTimer > 0) {
+      interval = setInterval(() => {
+        setRedirectTimer((prev) => prev - 1);
+      }, 1000);
+    } else if (isSuccess && createdOrder?.id && redirectTimer === 0) {
+      router.push(`/order/${createdOrder.id}`);
+    }
+    return () => clearInterval(interval);
+  }, [isSuccess, createdOrder, redirectTimer, router]);
 
   if (!isOpen) return null;
 
@@ -165,50 +190,103 @@ export default function OrderModal({
     e.preventDefault();
     setIsProcessing(true);
 
+    const clientUuid =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : "esp-" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
     const orderPayload = {
-      id: orderId,
-      customerName: customerName.trim(),
-      customerPhone: customerPhone.trim(),
-      customerEmail: customerEmail.trim() || "غير محدد",
-      planTitle,
+      id: clientUuid,
+      customer_name: customerName.trim(),
+      phone_number: customerPhone.trim(),
+      customer_email: customerEmail.trim() || undefined,
+      plan_tier: planTitle,
       price: rawNumericPrice,
-      formattedPrice,
-      paymentMethod,
-      productImages,
-      productNotes: productNotes.trim(),
-      status: "new",
-      createdAt: new Date().toISOString(),
+      payment_method: paymentMethod,
+      product_images: productImages,
+      product_notes: productNotes.trim(),
+      status: "pending",
     };
 
-    // 1. Save to local storage for instant sync across tabs
-    try {
-      const stored = localStorage.getItem("ecom_speed_pro_orders");
-      const list = stored ? JSON.parse(stored) : [];
-      localStorage.setItem("ecom_speed_pro_orders", JSON.stringify([orderPayload, ...list]));
-    } catch (err) {
-      console.warn("Storage warning:", err);
-    }
+    let savedOrder: any = null;
 
-    // 2. Save to backend API
+    // 1. Save to backend API (Supabase & hybrid storage)
     try {
-      await fetch("/api/orders", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderPayload),
       });
+      const data = await res.json();
+      if (data && data.success && data.order) {
+        savedOrder = data.order;
+      }
     } catch (err) {
       console.warn("API sync error:", err);
+    }
+
+    if (!savedOrder) {
+      savedOrder = {
+        id: clientUuid,
+        order_number: "#ESP-" + Math.floor(100 + Math.random() * 900),
+        customer_name: customerName.trim(),
+        phone_number: customerPhone.trim(),
+        plan_tier: planTitle,
+        price: rawNumericPrice,
+        status: "pending",
+        created_at: new Date().toISOString(),
+      };
+    }
+
+    setCreatedOrder(savedOrder);
+    setOrderId(savedOrder.order_number || savedOrder.id);
+
+    // 2. Save to local storage for instant sync across tabs
+    try {
+      const stored = localStorage.getItem("ecom_speed_pro_orders");
+      const list = stored ? JSON.parse(stored) : [];
+      const legacyItem = {
+        id: savedOrder.id,
+        order_number: savedOrder.order_number,
+        customerName: customerName.trim(),
+        customerPhone: customerPhone.trim(),
+        customerEmail: customerEmail.trim() || "غير محدد",
+        planTitle,
+        price: rawNumericPrice,
+        formattedPrice,
+        paymentMethod,
+        productImages,
+        productNotes: productNotes.trim(),
+        status: "pending",
+        createdAt: new Date().toISOString(),
+      };
+      localStorage.setItem("ecom_speed_pro_orders", JSON.stringify([legacyItem, ...list]));
+    } catch (err) {
+      console.warn("Storage warning:", err);
     }
 
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-    }, 1100);
+    }, 1000);
+  };
+
+  // Copy secret tracking link
+  const handleCopySecretLink = () => {
+    if (!createdOrder?.id) return;
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://ecom-speed-pro.vercel.app";
+    const secretUrl = `${origin}/order/${createdOrder.id}`;
+    navigator.clipboard.writeText(secretUrl);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
   };
 
   // WhatsApp VIP Redirect
   const handleProceedWhatsApp = () => {
-    const message = `مرحباً وكالة ECOM SPEED PRO 🚀%0Aتم حجز طلب جديد عبر شاشة الدفع الفاخرة:%0A%0A*رقم الطلب:* ${orderId}%0A*الباقة المختارة:* ${encodeURIComponent(
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://ecom-speed-pro.vercel.app";
+    const secretUrl = createdOrder?.id ? `${origin}/order/${createdOrder.id}` : "";
+
+    const message = `مرحباً وكالة ECOM SPEED PRO 🚀%0Aتم حجز طلب جديد عبر شاشة الدفع الفاخرة:%0A%0A*رقم الطلب:* ${createdOrder?.order_number || orderId}%0A*الباقة المختارة:* ${encodeURIComponent(
       planTitle
     )}%0A*المبلغ:* ${rawNumericPrice} درهم%0A*طريقة الدفع:* ${
       paymentMethod === "card"
@@ -222,7 +300,7 @@ export default function OrderModal({
       customerName || cardHolder || "عميل مميز"
     )}%0A*الهاتف:* ${encodeURIComponent(customerPhone || "+212...")}%0A*البريد:* ${encodeURIComponent(
       customerEmail || "غير محدد"
-    )}${productImages.length > 0 ? `%0A*عدد صور المنتجات المرفقة:* ${productImages.length} صورة 📸` : ""}${
+    )}${secretUrl ? `%0A*رابط التتبع السري:* ${encodeURIComponent(secretUrl)}` : ""}${productImages.length > 0 ? `%0A*عدد صور المنتجات المرفقة:* ${productImages.length} صورة 📸` : ""}${
       productNotes ? `%0A*ملاحظات المنتج:* ${encodeURIComponent(productNotes)}` : ""
     }%0A%0Aأرجو بدء تجهيز المشروع والتسليم في الوقت المحدد.`;
 
@@ -296,39 +374,86 @@ export default function OrderModal({
 
           {isSuccess ? (
             /* ======================================================== */
-            /* SUCCESS CONFIRMATION SCREEN (شاشة نجاح أسطورية)          */
+            /* SUCCESS CONFIRMATION SCREEN (شاشة نجاح أسطورية مع التتبع)  */
             /* ======================================================== */
-            <div className="py-8 sm:py-12 px-4 flex flex-col items-center text-center max-w-xl mx-auto animate-in zoom-in-95 duration-300">
+            <div className="py-6 sm:py-10 px-4 flex flex-col items-center text-center max-w-xl mx-auto animate-in zoom-in-95 duration-300">
               
               {/* Pulsing 3D Check Jewel */}
-              <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-400 p-[3px] shadow-[0_0_40px_rgba(16,185,129,0.6)] mb-6 animate-bounce">
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-400 p-[3px] shadow-[0_0_40px_rgba(16,185,129,0.6)] mb-5 animate-bounce">
                 <div className="w-full h-full bg-[#051c2e] rounded-[22px] flex items-center justify-center">
-                  <CheckCircle2 className="w-12 h-12 text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
+                  <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
                 </div>
               </div>
 
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-black mb-3 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>تم تأكيد حجزك بنجاح تام!</span>
+                <span>تم تأكيد حجزك وإنشاء رابط المتابعة السري بنجاح!</span>
               </span>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white mb-2 tracking-tight">
-                تهانينا! رقم طلبك الرسمي:{" "}
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">
+                رقم طلبك الرسمي:{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-300 font-mono">
-                  {orderId}
+                  {createdOrder?.order_number || orderId}
                 </span>
               </h3>
 
-              <p className="text-blue-200/90 text-sm font-semibold mb-6 leading-relaxed max-w-md">
+              <p className="text-blue-200/90 text-xs sm:text-sm font-semibold mb-4 leading-relaxed max-w-md">
                 تم تسجيل حجزك لباقة <strong className="text-white">{planTitle}</strong> بقيمة{" "}
-                <strong className="text-emerald-300 font-mono">{formattedPrice}</strong>. 
-                اضغط أدناه للبدء فوراً وتنسيق تفاصيل مشروعك مع فريقنا عبر واتساب.
+                <strong className="text-emerald-300 font-mono">{formattedPrice}</strong>.
+                لا تحتاج إلى تسجيل دخول مسبق — تم تخصيص رابط سري مشفر لتتبع طلبك واستلام متجرك فور جهوزه.
               </p>
 
+              {/* Secret Tracking Link Capsule & Auto Redirect Pill */}
+              {createdOrder?.id && (
+                <div className="w-full bg-[#071d4a]/90 border border-cyan-400/40 rounded-2xl p-3.5 sm:p-4 mb-4 flex flex-col gap-2.5 text-right">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>رابطك السري المخصص لمتابعة واستلام المتجر:</span>
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/30">
+                      محمي 100%
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 bg-[#030e26] border border-blue-900/80 rounded-xl p-2">
+                    <span className="flex-1 font-mono text-[11px] text-blue-200 truncate text-left" dir="ltr">
+                      {typeof window !== "undefined" ? window.location.origin : ""}/order/{createdOrder.id}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleCopySecretLink}
+                      className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center gap-1 shrink-0 transition-all cursor-pointer"
+                    >
+                      {copiedLink ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-emerald-300" />
+                          <span className="text-[11px] text-emerald-200">تم النسخ ✓</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          <span className="text-[11px]">نسخ الرابط</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Auto-redirect countdown notice */}
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-blue-200 font-bold bg-blue-900/30 py-1 rounded-lg">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                    <span>
+                      جاري نقلك تلقائياً لصفحة المتابعة خلال{" "}
+                      <strong className="text-cyan-300 font-mono text-xs">{redirectTimer}</strong> ثوانٍ...
+                    </span>
+                  </div>
+                </div>
+              )}
+
               {/* Package Summary Capsule in Success Screen */}
-              <div className="w-full bg-[#071a48]/80 border border-blue-400/30 rounded-2xl p-4 mb-6 flex items-center justify-between text-right">
+              <div className="w-full bg-[#071a48]/80 border border-blue-400/30 rounded-2xl p-3 sm:p-4 mb-5 flex items-center justify-between text-right">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-white/20 shrink-0">
+                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden border border-white/20 shrink-0">
                     <Image src={planImage} alt={planTitle} fill className="object-cover" />
                   </div>
                   <div>
@@ -336,24 +461,34 @@ export default function OrderModal({
                     <span className="text-[11px] text-cyan-300 font-bold block">تسليم قياسي خلال 48 ساعة</span>
                   </div>
                 </div>
-                <div className="text-left font-mono text-base font-black text-emerald-300">
+                <div className="text-left font-mono text-sm sm:text-base font-black text-emerald-300">
                   {formattedPrice}
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center gap-3.5 w-full justify-center">
+              {/* Action Buttons: Primary Go to Tracking, WhatsApp, and Back */}
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
+                {createdOrder?.id && (
+                  <button
+                    onClick={() => router.push(`/order/${createdOrder.id}`)}
+                    className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Rocket className="w-4 h-4" />
+                    <span>متابعة وتتبع حالة متجرك الآن 🚀</span>
+                  </button>
+                )}
+
                 <button
                   onClick={handleProceedWhatsApp}
-                  className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-sm sm:text-base shadow-[0_0_25px_rgba(16,185,129,0.55)] hover:shadow-[0_0_35px_rgba(16,185,129,0.85)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <WhatsAppIcon size={22} />
-                  <span>تأكيد وانطلاق المشروع على واتساب فوراً</span>
-                  <ChevronLeft className="w-4 h-4" />
+                  <WhatsAppIcon size={18} />
+                  <span>تأكيد وانطلاق المشروع على واتساب</span>
                 </button>
+
                 <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-6 py-4 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-sm transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs transition-colors cursor-pointer"
                 >
                   العودة للمتجر
                 </button>

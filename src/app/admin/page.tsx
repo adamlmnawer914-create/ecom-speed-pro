@@ -52,11 +52,15 @@ import {
   ZoomOut,
   RotateCcw,
   Maximize2,
+  Lock,
+  Rocket,
+  Copy,
 } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 export interface OrderItem {
-  id: string;
+  id: string; // Unguessable secret UUID
+  orderNumber?: string; // Serial display format e.g. #ESP-101
   customerName: string;
   customerPhone: string;
   customerEmail: string;
@@ -67,7 +71,8 @@ export interface OrderItem {
   paymentMethod: string;
   productImages: string[];
   productNotes?: string;
-  status: "paid" | "review";
+  status: "pending" | "in_progress" | "completed" | "paid" | "review";
+  deliveredUrl?: string | null;
   dateFormatted: string;
   createdAt: string;
 }
@@ -75,6 +80,7 @@ export interface OrderItem {
 export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
+  const [editingDeliveredUrl, setEditingDeliveredUrl] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [methodFilter, setMethodFilter] = useState("all");
@@ -177,13 +183,21 @@ export default function AdminDashboardPage() {
             ? item.price
             : parseInt(String(item.price || "").replace(/[^0-9]/g, ""), 10) || 1500;
 
+        const mappedStatus: "pending" | "in_progress" | "completed" =
+          item.status === "completed" || item.status === "paid"
+            ? "completed"
+            : item.status === "in_progress"
+            ? "in_progress"
+            : "pending";
+
         const orderObj: OrderItem = {
           id: item.id,
+          orderNumber: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`,
           customerName: item.customerName || item.customer_name || "عميل مميز",
-          customerPhone: item.customerPhone || item.phone || "06 00 00 00 00",
-          customerEmail: item.customerEmail || item.email || "contact@client.ma",
+          customerPhone: item.customerPhone || item.phone || item.phone_number || "06 00 00 00 00",
+          customerEmail: item.customerEmail || item.email || item.customer_email || "contact@client.ma",
           city: item.city || "المغرب",
-          planTitle: item.planTitle || item.plan || "المتجر القياسي (Standard Store)",
+          planTitle: item.planTitle || item.plan_tier || item.plan || "المتجر القياسي (Standard Store)",
           price: rawPrice,
           formattedPrice: item.formattedPrice || `${rawPrice.toLocaleString()} درهم`,
           paymentMethod:
@@ -200,17 +214,17 @@ export default function AdminDashboardPage() {
             Array.isArray(item.productImages) && item.productImages.length > 0
               ? item.productImages
               : ["/images/card_standard_new.webp"],
-          productNotes: item.productNotes || "",
-          status:
-            item.status === "completed" || item.status === "paid" ? "paid" : "review",
+          productNotes: item.productNotes || item.product_notes || "",
+          status: mappedStatus,
+          deliveredUrl: item.delivered_url || item.deliveredUrl || null,
           dateFormatted:
             item.dateFormatted ||
             "اليوم في " +
-              new Date(item.createdAt || Date.now()).toLocaleTimeString("ar-MA", {
+              new Date(item.createdAt || item.created_at || Date.now()).toLocaleTimeString("ar-MA", {
                 hour: "2-digit",
                 minute: "2-digit",
               }),
-          createdAt: item.createdAt || new Date().toISOString(),
+          createdAt: item.createdAt || item.created_at || new Date().toISOString(),
         };
 
         if (!map.has(orderObj.id)) {
@@ -245,6 +259,15 @@ export default function AdminDashboardPage() {
     }
   };
 
+  // Sync editingDeliveredUrl with selectedOrder
+  useEffect(() => {
+    if (selectedOrder) {
+      setEditingDeliveredUrl(selectedOrder.deliveredUrl || "");
+    } else {
+      setEditingDeliveredUrl("");
+    }
+  }, [selectedOrder?.id]);
+
   // Sync orders with API on mount + Real-time auto-polling every 4 seconds
   useEffect(() => {
     fetchRealOrders();
@@ -252,8 +275,11 @@ export default function AdminDashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Update order status live
-  const handleUpdateStatus = async (orderId: string, newStatus: "paid" | "review") => {
+  // Update order status live (pending | in_progress | completed)
+  const handleUpdateStatus = async (
+    orderId: string,
+    newStatus: "pending" | "in_progress" | "completed"
+  ) => {
     try {
       // 1. Update in State immediately
       setOrders((prev) =>
@@ -269,7 +295,7 @@ export default function AdminDashboardPage() {
         if (stored) {
           const list = JSON.parse(stored);
           const updated = list.map((o: any) =>
-            o.id === orderId ? { ...o, status: newStatus === "paid" ? "completed" : "in_progress" } : o
+            o.id === orderId ? { ...o, status: newStatus } : o
           );
           localStorage.setItem("ecom_speed_pro_orders", JSON.stringify(updated));
         }
@@ -283,14 +309,65 @@ export default function AdminDashboardPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: orderId,
-          status: newStatus === "paid" ? "completed" : "in_progress",
+          status: newStatus,
         }),
       });
 
-      triggerNotification(`تم تحديث حالة الطلب #${orderId} بنجاح إلى: ${newStatus === "paid" ? "مكتمل / مدفوع" : "قيد المراجعة"}`);
+      const statusLabels: Record<string, string> = {
+        pending: "قيد المراجعة 🟡",
+        in_progress: "جاري التجهيز والبرمجة 🔵",
+        completed: "تم التسليم بنجاح 🟢",
+      };
+
+      triggerNotification(`تم تحديث حالة الطلب #${orderId.slice(0, 8)} إلى: ${statusLabels[newStatus] || newStatus}`);
     } catch (err) {
       console.error("Failed to update status:", err);
     }
+  };
+
+  // Save delivered store URL
+  const handleSaveDeliveredUrl = async (orderId: string, url: string) => {
+    const trimmed = url.trim();
+    try {
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, deliveredUrl: trimmed } : o))
+      );
+      if (selectedOrder && selectedOrder.id === orderId) {
+        setSelectedOrder({ ...selectedOrder, deliveredUrl: trimmed });
+      }
+
+      try {
+        const stored = localStorage.getItem("ecom_speed_pro_orders");
+        if (stored) {
+          const list = JSON.parse(stored);
+          const updated = list.map((o: any) =>
+            o.id === orderId ? { ...o, delivered_url: trimmed, deliveredUrl: trimmed } : o
+          );
+          localStorage.setItem("ecom_speed_pro_orders", JSON.stringify(updated));
+        }
+      } catch (e) {}
+
+      await fetch("/api/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: orderId,
+          delivered_url: trimmed,
+        }),
+      });
+
+      triggerNotification("تم حفظ رابط المتجر النهائي بنجاح 🚀");
+    } catch (err) {
+      console.error("Failed to save delivered url:", err);
+    }
+  };
+
+  // Copy client secret tracking link
+  const handleCopyClientTrackingLink = (id: string) => {
+    const origin = typeof window !== "undefined" ? window.location.origin : "https://ecom-speed-pro.vercel.app";
+    const link = `${origin}/order/${id}`;
+    navigator.clipboard.writeText(link);
+    triggerNotification("تم نسخ الرابط السري للعميل بنجاح 🔗");
   };
 
   // Delete / Archive order live
@@ -412,8 +489,11 @@ export default function AdminDashboardPage() {
 
     const matchesStatus =
       statusFilter === "all" ||
-      (statusFilter === "paid" && ord.status === "paid") ||
-      (statusFilter === "review" && ord.status === "review");
+      (statusFilter === "pending" && (ord.status === "pending" || ord.status === "review")) ||
+      (statusFilter === "in_progress" && ord.status === "in_progress") ||
+      (statusFilter === "completed" && (ord.status === "completed" || ord.status === "paid")) ||
+      (statusFilter === "paid" && (ord.status === "paid" || ord.status === "completed")) ||
+      (statusFilter === "review" && (ord.status === "review" || ord.status === "pending"));
 
     const matchesMethod = methodFilter === "all" || ord.paymentMethod.includes(methodFilter);
     const matchesPlan = planFilter === "all" || ord.planTitle.includes(planFilter);
@@ -423,8 +503,8 @@ export default function AdminDashboardPage() {
 
   // Calculate Real Dynamic Metrics
   const totalOrdersCount = orders.length;
-  const paidOrdersCount = orders.filter((o) => o.status === "paid").length;
-  const reviewOrdersCount = orders.filter((o) => o.status === "review").length;
+  const paidOrdersCount = orders.filter((o) => o.status === "completed" || o.status === "paid").length;
+  const reviewOrdersCount = orders.filter((o) => o.status === "pending" || o.status === "in_progress" || o.status === "review").length;
   const totalRevenueSum = orders.reduce((acc, o) => acc + (o.price || 0), 0);
   const avgOrderValue = totalOrdersCount > 0 ? Math.round(totalRevenueSum / totalOrdersCount) : 0;
 
@@ -995,8 +1075,9 @@ export default function AdminDashboardPage() {
                         className="appearance-none px-4 py-2.5 pl-8 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] outline-none shadow-sm cursor-pointer pr-3"
                       >
                         <option value="all">جميع الحالات</option>
-                        <option value="paid">مدفوع ومكتمل</option>
-                        <option value="review">قيد المراجعة</option>
+                        <option value="pending">🟡 قيد المراجعة</option>
+                        <option value="in_progress">🔵 جاري التجهيز والبرمجة</option>
+                        <option value="completed">🟢 تم التسليم بنجاح</option>
                       </select>
                       <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
                     </div>
@@ -1059,42 +1140,135 @@ export default function AdminDashboardPage() {
                           <div className="flex items-center gap-2">
                             <FileSpreadsheet className="w-4 h-4 text-cyan-200" />
                             <span className="text-xs sm:text-sm font-black">
-                              تفاصيل الطلب #{selectedOrder.id}
+                              تفاصيل الطلب {selectedOrder.orderNumber || `#ESP-${selectedOrder.id.slice(0, 6)}`}
                             </span>
                           </div>
                           <button
                             onClick={() => handleDeleteOrder(selectedOrder.id)}
-                            className="p-1.5 rounded-xl bg-white/10 hover:bg-rose-600 text-white transition-colors"
+                            className="p-1.5 rounded-xl bg-white/10 hover:bg-rose-600 text-white transition-colors cursor-pointer"
                             title="حذف هذا الطلب"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
                         </div>
 
-                        {/* Status Switcher Bar */}
-                        <div className="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-200/60">
-                          <span className="text-xs font-bold text-slate-600">تعديل الحالة:</span>
-                          <div className="flex items-center gap-1.5">
+                        {/* 3-State Status Switcher Bar */}
+                        <div className="flex flex-col gap-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/60">
+                          <span className="text-[11px] font-black text-slate-600 flex items-center justify-between">
+                            <span>تحديث مرحلة العمل:</span>
+                            <span className="font-mono text-[10px] text-blue-600">
+                              {selectedOrder.status === "completed" || selectedOrder.status === "paid"
+                                ? "المرحلة 3: تم التسليم 🟢"
+                                : selectedOrder.status === "in_progress"
+                                ? "المرحلة 2: جاري البرمجة 🔵"
+                                : "المرحلة 1: قيد المراجعة 🟡"}
+                            </span>
+                          </span>
+                          <div className="grid grid-cols-3 gap-1">
                             <button
-                              onClick={() => handleUpdateStatus(selectedOrder.id, "paid")}
-                              className={`px-3 py-1 rounded-full text-xs font-black transition-all ${
-                                selectedOrder.status === "paid"
-                                  ? "bg-emerald-600 text-white shadow-sm"
+                              onClick={() => handleUpdateStatus(selectedOrder.id, "pending")}
+                              className={`py-1.5 px-2 rounded-xl text-[11px] font-black transition-all text-center cursor-pointer ${
+                                selectedOrder.status === "pending" || selectedOrder.status === "review"
+                                  ? "bg-amber-400 text-slate-950 shadow-sm ring-2 ring-amber-200"
                                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
                               }`}
                             >
-                              مكتمل / مدفوع
+                              قيد المراجعة 🟡
                             </button>
                             <button
-                              onClick={() => handleUpdateStatus(selectedOrder.id, "review")}
-                              className={`px-3 py-1 rounded-full text-xs font-black transition-all ${
-                                selectedOrder.status === "review"
-                                  ? "bg-amber-500 text-white shadow-sm"
+                              onClick={() => handleUpdateStatus(selectedOrder.id, "in_progress")}
+                              className={`py-1.5 px-2 rounded-xl text-[11px] font-black transition-all text-center cursor-pointer ${
+                                selectedOrder.status === "in_progress"
+                                  ? "bg-blue-600 text-white shadow-sm ring-2 ring-blue-200"
                                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
                               }`}
                             >
-                              قيد المراجعة
+                              جاري التجهيز 🔵
                             </button>
+                            <button
+                              onClick={() => handleUpdateStatus(selectedOrder.id, "completed")}
+                              className={`py-1.5 px-2 rounded-xl text-[11px] font-black transition-all text-center cursor-pointer ${
+                                selectedOrder.status === "completed" || selectedOrder.status === "paid"
+                                  ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-200"
+                                  : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                              }`}
+                            >
+                              تم التسليم 🟢
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Delivered URL Section */}
+                        <div className="bg-gradient-to-r from-blue-50/70 to-indigo-50/70 p-3 rounded-2xl border border-blue-200/80 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-black text-[#0b1739] flex items-center gap-1.5">
+                              <Rocket className="w-3.5 h-3.5 text-blue-600" />
+                              <span>رابط المتجر النهائي (Delivered URL):</span>
+                            </span>
+                            {selectedOrder.deliveredUrl && (
+                              <a
+                                href={selectedOrder.deliveredUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[10px] text-blue-600 font-bold hover:underline flex items-center gap-1"
+                              >
+                                <span>معاينة المتجر</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="url"
+                              placeholder="https://my-store.youcan.shop أو نطاق العميل"
+                              value={editingDeliveredUrl}
+                              onChange={(e) => setEditingDeliveredUrl(e.target.value)}
+                              className="flex-1 px-3 py-1.5 rounded-xl bg-white border border-slate-300 text-xs text-[#0b1739] font-mono outline-none focus:border-blue-500 shadow-inner"
+                              dir="ltr"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleSaveDeliveredUrl(selectedOrder.id, editingDeliveredUrl)}
+                              className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs transition-all shadow-sm cursor-pointer shrink-0"
+                            >
+                              حفظ 🚀
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Secret Client Tracking Link Capsule */}
+                        <div className="bg-cyan-50/80 p-3 rounded-2xl border border-cyan-200/80 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-black text-cyan-950 flex items-center gap-1.5">
+                              <Lock className="w-3.5 h-3.5 text-cyan-700" />
+                              <span>رابط التتبع السري للعميل (Guest Tracking):</span>
+                            </span>
+                            <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-300 font-mono">
+                              {selectedOrder.orderNumber || `#ESP-${selectedOrder.id.slice(0, 6)}`}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="flex-1 bg-white px-2.5 py-1.5 rounded-xl border border-cyan-200 font-mono text-[11px] text-slate-700 truncate" dir="ltr">
+                              /order/{selectedOrder.id}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => handleCopyClientTrackingLink(selectedOrder.id)}
+                              className="px-3 py-1.5 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white font-black text-xs flex items-center gap-1 transition-all cursor-pointer shadow-xs shrink-0"
+                              title="نسخ الرابط السري للعميل"
+                            >
+                              <Copy className="w-3 h-3" />
+                              <span>نسخ</span>
+                            </button>
+                            <a
+                              href={`/order/${selectedOrder.id}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="p-1.5 rounded-xl bg-white border border-cyan-300 hover:bg-cyan-100 text-cyan-800 transition-colors shrink-0"
+                              title="فتح صفحة متابعة العميل"
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </a>
                           </div>
                         </div>
 
@@ -1344,7 +1518,9 @@ export default function AdminDashboardPage() {
                                       </div>
                                       <div>
                                         <span className="font-black text-[#0b1739] block">{ord.customerName}</span>
-                                        <span className="text-[10px] text-slate-400 block font-mono">{ord.id}</span>
+                                        <span className="text-[10px] text-blue-600 block font-mono font-bold">
+                                          {ord.orderNumber || `#ESP-${ord.id.slice(0, 6)}`}
+                                        </span>
                                       </div>
                                     </div>
                                   </td>
@@ -1381,28 +1557,51 @@ export default function AdminDashboardPage() {
 
                                   {/* الحالة */}
                                   <td className="py-3.5 px-3.5 text-center">
-                                    {ord.status === "paid" ? (
+                                    {ord.status === "completed" || ord.status === "paid" ? (
                                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-[11px]">
                                         <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                                        <span>مكتمل</span>
+                                        <span>تم التسليم 🟢</span>
+                                      </span>
+                                    ) : ord.status === "in_progress" ? (
+                                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-bold text-[11px]">
+                                        <Sparkles className="w-3 h-3 text-blue-600" />
+                                        <span>جاري البرمجة 🔵</span>
                                       </span>
                                     ) : (
                                       <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold text-[11px]">
                                         <Hourglass className="w-3 h-3 text-amber-600" />
-                                        <span>قيد المراجعة</span>
+                                        <span>قيد المراجعة 🟡</span>
                                       </span>
                                     )}
                                   </td>
 
                                   {/* إجراءات سريعة */}
                                   <td className="py-3.5 px-3.5 text-center" onClick={(e) => e.stopPropagation()}>
-                                    <button
-                                      onClick={() => handleDeleteOrder(ord.id)}
-                                      className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                                      title="حذف هذا الطلب"
-                                    >
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    </button>
+                                    <div className="flex items-center justify-center gap-1">
+                                      <button
+                                        onClick={() => handleCopyClientTrackingLink(ord.id)}
+                                        className="p-1.5 rounded-lg text-slate-400 hover:text-cyan-600 hover:bg-cyan-50 transition-colors cursor-pointer"
+                                        title="نسخ الرابط السري للعميل"
+                                      >
+                                        <Copy className="w-3.5 h-3.5" />
+                                      </button>
+                                      <a
+                                        href={`/order/${ord.id}`}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                                        title="معاينة صفحة متابعة العميل"
+                                      >
+                                        <ExternalLink className="w-3.5 h-3.5" />
+                                      </a>
+                                      <button
+                                        onClick={() => handleDeleteOrder(ord.id)}
+                                        className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                                        title="حذف هذا الطلب"
+                                      >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
                                   </td>
                                 </tr>
                               );
@@ -1979,7 +2178,7 @@ export default function AdminDashboardPage() {
               <div className="flex items-center gap-2">
                 <FileSpreadsheet className="w-5 h-5 text-blue-600" />
                 <h3 className="font-black text-base text-[#0b1739]">
-                  وثيقة الطلب #{selectedOrder.id}
+                  وثيقة الطلب {selectedOrder.orderNumber || `#ESP-${selectedOrder.id.slice(0, 6)}`}
                 </h3>
               </div>
               <button
@@ -2015,9 +2214,47 @@ export default function AdminDashboardPage() {
                 <span className="font-bold text-slate-500">المبلغ:</span>
                 <span className="font-black text-emerald-700 font-mono">{selectedOrder.formattedPrice}</span>
               </div>
-              <div className="flex justify-between py-1">
+              <div className="flex justify-between py-1 border-b border-slate-200">
                 <span className="font-bold text-slate-500">طريقة الدفع:</span>
                 <span className="font-bold text-slate-800">{selectedOrder.paymentMethod}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="font-bold text-slate-500">حالة الإنجاز:</span>
+                <span className="font-black text-xs">
+                  {selectedOrder.status === "completed" || selectedOrder.status === "paid" ? (
+                    <span className="text-emerald-700">تم التسليم بنجاح 🟢</span>
+                  ) : selectedOrder.status === "in_progress" ? (
+                    <span className="text-blue-700">جاري التجهيز والبرمجة 🔵</span>
+                  ) : (
+                    <span className="text-amber-700">قيد المراجعة 🟡</span>
+                  )}
+                </span>
+              </div>
+              {selectedOrder.deliveredUrl && (
+                <div className="flex justify-between py-1 border-b border-slate-200">
+                  <span className="font-bold text-slate-500">رابط المتجر المسلم:</span>
+                  <a
+                    href={selectedOrder.deliveredUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="font-mono font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    dir="ltr"
+                  >
+                    <span>{selectedOrder.deliveredUrl.slice(0, 28)}...</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              )}
+              <div className="pt-1 flex items-center justify-between">
+                <span className="font-bold text-slate-500">رابط تتبع العميل:</span>
+                <button
+                  type="button"
+                  onClick={() => handleCopyClientTrackingLink(selectedOrder.id)}
+                  className="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 font-bold text-[11px] hover:bg-blue-200 flex items-center gap-1 cursor-pointer"
+                >
+                  <Copy className="w-3 h-3" />
+                  <span>نسخ الرابط السري</span>
+                </button>
               </div>
             </div>
 

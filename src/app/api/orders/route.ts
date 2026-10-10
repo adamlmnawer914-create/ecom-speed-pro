@@ -1,134 +1,137 @@
 import { NextResponse } from "next/server";
-import fs from "fs";
-import path from "path";
-
-export interface OrderItem {
-  id: string;
-  customerName: string;
-  customerPhone: string;
-  customerEmail: string;
-  planTitle: string;
-  price: number;
-  formattedPrice: string;
-  paymentMethod: "card" | "youcan" | "cmi" | "whatsapp";
-  productImages: string[];
-  productNotes?: string;
-  status: "new" | "in_progress" | "completed";
-  createdAt: string;
-}
-
-const DATA_FILE_PATH = path.join(process.cwd(), "data", "orders.json");
-
-// Clean initial orders (starts empty waiting for real customer purchases)
-const INITIAL_ORDERS: OrderItem[] = [];
-
-function getStoredOrders(): OrderItem[] {
-  try {
-    if (fs.existsSync(DATA_FILE_PATH)) {
-      const data = fs.readFileSync(DATA_FILE_PATH, "utf-8");
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
-        return parsed;
-      }
-    }
-  } catch (err) {
-    console.error("Error reading orders file:", err);
-  }
-  return [];
-}
-
-function saveOrders(orders: OrderItem[]): void {
-  try {
-    const dir = path.dirname(DATA_FILE_PATH);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    fs.writeFileSync(DATA_FILE_PATH, JSON.stringify(orders, null, 2), "utf-8");
-  } catch (err) {
-    console.error("Error saving orders file:", err);
-  }
-}
+import {
+  getAllOrders,
+  getOrderById,
+  getOrdersByPhone,
+  createOrder,
+  updateOrder,
+  deleteOrder,
+  Order,
+} from "@/lib/db";
 
 // GET /api/orders
-export async function GET() {
-  const orders = getStoredOrders();
-  return NextResponse.json({ success: true, orders });
+// Supported queries: ?id=UUID or ?phone=06... or no param (all orders)
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+    const phone = searchParams.get("phone");
+
+    if (id) {
+      const order = await getOrderById(id);
+      if (!order) {
+        return NextResponse.json(
+          { success: false, message: "لم يتم العثور على الطلب" },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({ success: true, order });
+    }
+
+    if (phone) {
+      const orders = await getOrdersByPhone(phone);
+      return NextResponse.json({ success: true, orders });
+    }
+
+    const orders = await getAllOrders();
+    return NextResponse.json({ success: true, orders });
+  } catch (error) {
+    console.error("GET /api/orders error:", error);
+    return NextResponse.json(
+      { success: false, message: "فشل استرجاع بيانات الطلبات" },
+      { status: 500 }
+    );
+  }
 }
 
-// POST /api/orders
+// POST /api/orders (Create new guest order with secret UUID)
 export async function POST(req: Request) {
   try {
-    const newOrder: OrderItem = await req.json();
+    const body = await req.json();
 
-    if (!newOrder.id) {
-      newOrder.id = "ESP-" + Math.floor(100000 + Math.random() * 900000);
-    }
-    if (!newOrder.createdAt) {
-      newOrder.createdAt = new Date().toISOString();
-    }
-    if (!newOrder.status) {
-      newOrder.status = "new";
-    }
+    // Normalize field names
+    const orderPayload: Partial<Order> = {
+      customer_name: body.customer_name || body.customerName || "عميل مميز",
+      phone_number: body.phone_number || body.customerPhone || body.phone || "",
+      plan_tier: body.plan_tier || body.planTitle || body.plan || "المتجر القياسي (1,500 MAD)",
+      status: body.status || "pending",
+      delivered_url: body.delivered_url || null,
+      payment_method: body.payment_method || body.paymentMethod || "بطاقة بنكية",
+      product_notes: body.product_notes || body.productNotes || "",
+      product_images: body.product_images || body.productImages || [],
+    };
 
-    const currentOrders = getStoredOrders();
-    // Prepend to top
-    const updated = [newOrder, ...currentOrders.filter((o) => o.id !== newOrder.id)];
-    saveOrders(updated);
+    const newOrder = await createOrder(orderPayload);
 
-    return NextResponse.json({ success: true, order: newOrder, orders: updated });
+    return NextResponse.json({
+      success: true,
+      order: newOrder,
+      trackingUrl: `/order/${newOrder.id}`,
+    });
   } catch (error) {
-    console.error("Failed to save order:", error);
+    console.error("POST /api/orders error:", error);
     return NextResponse.json(
-      { success: false, message: "فشل في حفظ الطلب" },
+      { success: false, message: "فشل في تسجيل الطلب" },
       { status: 500 }
     );
   }
 }
 
-// PATCH /api/orders (Update status)
+// PATCH /api/orders (Update status / delivered_url)
 export async function PATCH(req: Request) {
   try {
-    const { id, status } = await req.json();
-    if (!id || !status) {
-      return NextResponse.json({ success: false, message: "معرف الطلب والحالة مطلوبان" }, { status: 400 });
+    const body = await req.json();
+    const { id, status, delivered_url } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, message: "معرف الطلب مطلوب" },
+        { status: 400 }
+      );
     }
 
-    const currentOrders = getStoredOrders();
-    const index = currentOrders.findIndex((o) => o.id === id);
-    if (index === -1) {
-      return NextResponse.json({ success: false, message: "الطلب غير موجود" }, { status: 404 });
+    const updates: Partial<Order> = {};
+    if (status) updates.status = status;
+    if (delivered_url !== undefined) updates.delivered_url = delivered_url;
+
+    const updated = await updateOrder(id, updates);
+    if (!updated) {
+      return NextResponse.json(
+        { success: false, message: "الطلب غير موجود" },
+        { status: 404 }
+      );
     }
 
-    currentOrders[index].status = status;
-    saveOrders(currentOrders);
-
-    return NextResponse.json({ success: true, order: currentOrders[index], orders: currentOrders });
+    return NextResponse.json({ success: true, order: updated });
   } catch (error) {
-    console.error("Failed to update order:", error);
+    console.error("PATCH /api/orders error:", error);
     return NextResponse.json(
-      { success: false, message: "فشل في تحديث حالة الطلب" },
+      { success: false, message: "فشل في تحديث بيانات الطلب" },
       { status: 500 }
     );
   }
 }
 
-// DELETE /api/orders (Delete an order)
+// DELETE /api/orders
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
+
     if (!id) {
-      return NextResponse.json({ success: false, message: "معرف الطلب مطلوب" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, message: "معرف الطلب مطلوب" },
+        { status: 400 }
+      );
     }
 
-    const currentOrders = getStoredOrders();
-    const updated = currentOrders.filter((o) => o.id !== id);
-    saveOrders(updated);
-
-    return NextResponse.json({ success: true, message: "تم حذف الطلب بنجاح", orders: updated });
+    await deleteOrder(id);
+    return NextResponse.json({ success: true, message: "تم حذف الطلب بنجاح" });
   } catch (error) {
-    console.error("Failed to delete order:", error);
-    return NextResponse.json({ success: false, message: "فشل في حذف الطلب" }, { status: 500 });
+    console.error("DELETE /api/orders error:", error);
+    return NextResponse.json(
+      { success: false, message: "فشل في حذف الطلب" },
+      { status: 500 }
+    );
   }
 }
-

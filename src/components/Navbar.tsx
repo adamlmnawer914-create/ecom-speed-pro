@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { Search, ChevronDown, Menu, X, ArrowLeft, Sparkles, Layers, Phone } from "lucide-react";
 import Logo from "@/components/Logo";
 
@@ -144,6 +145,16 @@ export default function Navbar({
             >
               اتصل بنا
             </button>
+
+            {/* 7. Track Order Tab (Public OTP Tracking) */}
+            <Link
+              href="/track"
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 hover:to-cyan-100 text-blue-700 border border-blue-200/90 transition-all font-black text-xs hover:scale-105 active:scale-95 shadow-xs"
+              title="تتبع واستلام طلبك"
+            >
+              <span>تتبع طلبك</span>
+              <span className="text-xs">🔍</span>
+            </Link>
           </div>
 
           {/* Left in RTL: Search & Action Buttons Capsule */}
@@ -226,6 +237,12 @@ export default function Navbar({
             >
               اتصل بنا
             </button>
+            <Link
+              href="/track"
+              className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 text-blue-700 border border-blue-200 shrink-0 cursor-pointer font-black"
+            >
+              تتبع طلبك 🔍
+            </Link>
           </div>
         </div>
 
@@ -297,6 +314,15 @@ export default function Navbar({
               >
                 اتصل بنا والدعم الفني
               </button>
+
+              <Link
+                href="/track"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-right px-4 py-2.5 rounded-2xl bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 text-blue-800 font-black border border-blue-200 flex items-center justify-between"
+              >
+                <span>تتبع طلبك واستلام المتجر (OTP)</span>
+                <span>🔍</span>
+              </Link>
             </div>
 
 
