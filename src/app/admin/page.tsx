@@ -3,33 +3,35 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import {
-  ShieldCheck,
-  Lock,
-  Search,
-  Filter,
-  Phone,
-  Mail,
-  Calendar,
-  Clock,
+  LayoutGrid,
+  User,
+  Bell,
+  LogOut,
+  Home,
+  ShoppingCart,
+  Users,
+  Package,
+  CreditCard,
+  TrendingUp,
+  Settings,
+  FileSpreadsheet,
   CheckCircle2,
-  AlertCircle,
+  Hourglass,
+  Wallet,
+  Search,
   Download,
-  Eye,
-  RefreshCw,
-  ExternalLink,
   ChevronDown,
-  Sparkles,
-  Zap,
-  Flame,
-  Crown,
-  FileText,
-  Printer,
+  Calendar,
+  Mail,
+  MapPin,
+  Building2,
+  Coins,
+  Eye,
+  ShieldCheck,
   X,
-  Check,
-  Copy,
-  ChevronLeft,
-  Volume2,
-  VolumeX,
+  Phone,
+  Sparkles,
+  ExternalLink,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -39,796 +41,940 @@ interface OrderItem {
   customerName: string;
   customerPhone: string;
   customerEmail: string;
+  city: string;
   planTitle: string;
   price: number;
   formattedPrice: string;
-  paymentMethod: "card" | "youcan" | "cmi" | "whatsapp";
+  paymentMethod: string;
   productImages: string[];
   productNotes?: string;
-  status: "new" | "in_progress" | "completed";
+  status: "paid" | "review" | "pending";
+  dateFormatted: string;
   createdAt: string;
 }
 
+const DEFAULT_ORDERS: OrderItem[] = [
+  {
+    id: "ESP-1028",
+    customerName: "محمد العلوي",
+    customerPhone: "06 12 34 56 78",
+    customerEmail: "m.alaoui@example.com",
+    city: "الدار البيضاء",
+    planTitle: "المتجر القياسي",
+    price: 1500,
+    formattedPrice: "1500 درهم",
+    paymentMethod: "تحويل بنكي",
+    productImages: ["/images/card_standard_new.webp", "/images/card_landing_new.webp"],
+    productNotes: "متجر متكامل متعدد المنتجات للعلامات التجارية الطموحة",
+    status: "paid",
+    dateFormatted: "10 أكتوبر 2026 في 14:32",
+    createdAt: "2026-10-10T14:32:00Z",
+  },
+  {
+    id: "ESP-1027",
+    customerName: "سارة بناني",
+    customerPhone: "06 98 76 54 32",
+    customerEmail: "s.bennani@example.com",
+    city: "الرباط",
+    planTitle: "صفحة الهبوط",
+    price: 500,
+    formattedPrice: "500 درهم",
+    paymentMethod: "بطاقة بنكية",
+    productImages: ["/images/card_landing_new.webp"],
+    productNotes: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح",
+    status: "paid",
+    dateFormatted: "09 أكتوبر 2026 في 11:20",
+    createdAt: "2026-10-09T11:20:00Z",
+  },
+  {
+    id: "ESP-1026",
+    customerName: "يوسف أمين",
+    customerPhone: "06 45 67 89 01",
+    customerEmail: "y.amine@example.com",
+    city: "مراكش",
+    planTitle: "منصة التجارة المتقدمة",
+    price: 5000,
+    formattedPrice: "5000 درهم",
+    paymentMethod: "PayPal",
+    productImages: ["/images/card_saas_new.webp"],
+    productNotes: "حل برمجي VIP متكامل لكبار التجار والشركات التوسعية",
+    status: "review",
+    dateFormatted: "08 أكتوبر 2026 في 16:45",
+    createdAt: "2026-10-08T16:45:00Z",
+  },
+];
+
 export default function AdminDashboardPage() {
-  const [orders, setOrders] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState<OrderItem[]>(DEFAULT_ORDERS);
+  const [selectedOrder, setSelectedOrder] = useState<OrderItem>(DEFAULT_ORDERS[0]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "new" | "in_progress" | "completed">("all");
-  const [planFilter, setPlanFilter] = useState<string>("all");
-  
-  // Selected order for detailed modal
-  const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
-  
-  // Lightbox for product image
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [methodFilter, setMethodFilter] = useState("all");
+  const [planFilter, setPlanFilter] = useState("all");
+  const [activeTab, setActiveTab] = useState("orders");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
-  // Copied indicator
-  const [copiedId, setCopiedId] = useState<string | null>(null);
-
-  // Sound alert toggle
-  const [soundEnabled, setSoundEnabled] = useState(true);
-
-  // Live Time in Morocco
-  const [currentTime, setCurrentTime] = useState("");
-
+  // Sync orders with API / localStorage
   useEffect(() => {
-    const updateClock = () => {
-      const now = new Date();
-      setCurrentTime(
-        now.toLocaleTimeString("ar-MA", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        })
-      );
-    };
-    updateClock();
-    const timer = setInterval(updateClock, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Fetch orders from API and localStorage
-  const fetchOrders = async () => {
-    setLoading(true);
-    try {
-      // 1. Fetch from backend API
-      const res = await fetch("/api/orders");
-      const data = await res.json();
-      
-      let serverOrders: OrderItem[] = [];
-      if (data && data.success && Array.isArray(data.orders)) {
-        serverOrders = data.orders;
-      }
-
-      // 2. Fetch from localStorage for any client-side cached orders
-      let localOrders: OrderItem[] = [];
+    const loadOrders = async () => {
       try {
-        const stored = localStorage.getItem("ecom_speed_pro_orders");
-        if (stored) {
-          localOrders = JSON.parse(stored);
+        const res = await fetch("/api/orders");
+        const data = await res.json();
+        let apiOrders: any[] = [];
+        if (data && data.success && Array.isArray(data.orders)) {
+          apiOrders = data.orders;
         }
-      } catch (e) {
-        console.warn("Local storage parse error:", e);
+
+        let localOrders: any[] = [];
+        try {
+          const stored = localStorage.getItem("ecom_speed_pro_orders");
+          if (stored) localOrders = JSON.parse(stored);
+        } catch (e) {
+          console.warn("Storage warning:", e);
+        }
+
+        // Merge raw orders with default template items
+        const formattedMerged: OrderItem[] = [...DEFAULT_ORDERS];
+
+        [...apiOrders, ...localOrders].forEach((item) => {
+          if (!formattedMerged.find((o) => o.id === item.id)) {
+            formattedMerged.unshift({
+              id: item.id || `ESP-${Math.floor(1000 + Math.random() * 9000)}`,
+              customerName: item.customerName || "عميل مميز",
+              customerPhone: item.customerPhone || "06 00 00 00 00",
+              customerEmail: item.customerEmail || "client@example.com",
+              city: item.city || "الدار البيضاء",
+              planTitle: item.planTitle || "المتجر القياسي",
+              price: item.price || 1500,
+              formattedPrice: item.formattedPrice || `${item.price || 1500} درهم`,
+              paymentMethod:
+                item.paymentMethod === "card"
+                  ? "بطاقة بنكية"
+                  : item.paymentMethod === "youcan"
+                  ? "YouCan Pay"
+                  : item.paymentMethod === "cmi"
+                  ? "بوابة CMI"
+                  : item.paymentMethod === "whatsapp"
+                  ? "واتساب VIP"
+                  : item.paymentMethod || "تحويل بنكي",
+              productImages: item.productImages || ["/images/card_standard_new.webp"],
+              productNotes: item.productNotes || "",
+              status: item.status === "completed" ? "paid" : item.status === "new" ? "review" : "paid",
+              dateFormatted: "اليوم في " + new Date(item.createdAt || Date.now()).toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" }),
+              createdAt: item.createdAt || new Date().toISOString(),
+            });
+          }
+        });
+
+        setOrders(formattedMerged);
+        if (formattedMerged.length > 0) {
+          setSelectedOrder(formattedMerged[0]);
+        }
+      } catch (err) {
+        console.error("Error loading orders:", err);
       }
+    };
 
-      // Merge avoiding duplicates by id
-      const orderMap = new Map<string, OrderItem>();
-      [...serverOrders, ...localOrders].forEach((item) => {
-        if (!orderMap.has(item.id)) {
-          orderMap.set(item.id, item);
-        }
-      });
-
-      const merged = Array.from(orderMap.values()).sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-
-      setOrders(merged);
-    } catch (err) {
-      console.error("Failed to load orders:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-    // Poll every 10 seconds for real-time updates
-    const pollInterval = setInterval(fetchOrders, 10000);
-    return () => clearInterval(pollInterval);
+    loadOrders();
   }, []);
 
-  // Update order status
-  const handleUpdateStatus = async (id: string, newStatus: "new" | "in_progress" | "completed") => {
-    // Optimistic update
-    setOrders((prev) =>
-      prev.map((ord) => (ord.id === id ? { ...ord, status: newStatus } : ord))
-    );
-    if (selectedOrder && selectedOrder.id === id) {
-      setSelectedOrder((prev) => (prev ? { ...prev, status: newStatus } : null));
-    }
-
-    try {
-      await fetch("/api/orders", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, status: newStatus }),
-      });
-    } catch (err) {
-      console.error("Failed to update status on server:", err);
-    }
-  };
-
-  // Copy helper
-  const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
-  };
-
-  // Filter orders
-  const filteredOrders = orders.filter((order) => {
+  // Filtered orders
+  const filteredOrders = orders.filter((ord) => {
     const matchesSearch =
-      order.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customerPhone.includes(searchQuery) ||
-      order.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.planTitle.toLowerCase().includes(searchQuery.toLowerCase());
+      ord.customerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ord.customerPhone.includes(searchQuery) ||
+      ord.customerEmail.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ord.id.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesStatus = statusFilter === "all" || order.status === statusFilter;
-    const matchesPlan =
-      planFilter === "all" ||
-      (planFilter === "landing" && (order.planTitle.includes("الهبوط") || order.planTitle.includes("Landing"))) ||
-      (planFilter === "standard" && (order.planTitle.includes("القياسي") || order.planTitle.includes("Standard"))) ||
-      (planFilter === "saas" && (order.planTitle.includes("المتقدمة") || order.planTitle.includes("SaaS")));
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "paid" && ord.status === "paid") ||
+      (statusFilter === "review" && ord.status === "review");
 
-    return matchesSearch && matchesStatus && matchesPlan;
+    const matchesMethod = methodFilter === "all" || ord.paymentMethod.includes(methodFilter);
+    const matchesPlan = planFilter === "all" || ord.planTitle.includes(planFilter);
+
+    return matchesSearch && matchesStatus && matchesMethod && matchesPlan;
   });
 
-  // Financial KPI calculations
-  const totalRevenue = orders.reduce((acc, curr) => acc + (curr.price || 0), 0);
-  const totalOrdersCount = orders.length;
-  const inProgressCount = orders.filter((o) => o.status === "in_progress").length;
-  const completedCount = orders.filter((o) => o.status === "completed").length;
+  // Export CSV
+  const handleExportCSV = () => {
+    const headers = ["ID", "Customer", "Phone", "Email", "Plan", "Price", "Method", "City", "Status", "Date"];
+    const rows = filteredOrders.map((o) => [
+      o.id,
+      o.customerName,
+      o.customerPhone,
+      o.customerEmail,
+      o.planTitle,
+      o.price,
+      o.paymentMethod,
+      o.city,
+      o.status,
+      o.dateFormatted,
+    ]);
 
-  // Format Date in Arabic
-  const formatOrderDate = (isoString: string) => {
-    try {
-      const d = new Date(isoString);
-      return d.toLocaleDateString("ar-MA", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    } catch {
-      return isoString;
-    }
+    const csvContent =
+      "data:text/csv;charset=utf-8,\uFEFF" +
+      [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "ecom_speed_pro_orders.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
-    <div className="min-h-screen bg-[#020718] text-white flex flex-col font-sans selection:bg-cyan-500 selection:text-black overflow-x-hidden" dir="rtl">
-      
-      {/* Background Ambient Cosmic Nebulas */}
+    <div
+      className="min-h-screen bg-gradient-to-br from-[#02133f] via-[#052b75] to-[#011440] text-slate-800 p-3 sm:p-5 lg:p-6 relative overflow-x-hidden font-sans selection:bg-cyan-500 selection:text-black"
+      dir="rtl"
+    >
+      {/* Background Cosmic Ethereal Rays */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-blue-600/15 rounded-full blur-[130px]" />
-        <div className="absolute top-1/3 -left-40 w-[550px] h-[550px] bg-purple-600/15 rounded-full blur-[130px]" />
-        <div className="absolute -bottom-40 right-1/4 w-[600px] h-[600px] bg-cyan-500/15 rounded-full blur-[140px]" />
+        <div className="absolute top-0 inset-x-0 h-96 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-400/25 via-blue-600/10 to-transparent" />
+        <div className="absolute -top-32 right-1/4 w-[750px] h-[750px] bg-cyan-400/20 rounded-full blur-[140px]" />
+        <div className="absolute -bottom-32 left-1/4 w-[750px] h-[750px] bg-blue-500/20 rounded-full blur-[140px]" />
+      </div>
+
+      <div className="max-w-[1720px] mx-auto flex flex-col gap-4">
+        
+        {/* ======================================================== */}
+        {/* 1. TOP HEADER (EXACTLY MATCHING ATTACHED SCREENSHOT)     */}
+        {/* ======================================================== */}
+        <header className="w-full flex items-center justify-between px-2 sm:px-4 py-1">
+          
+          {/* Right side in RTL: Official Brand Logo Capsule */}
+          <div className="flex items-center gap-3">
+            <div className="rounded-2xl bg-white px-3.5 py-1.5 shadow-[0_4px_20px_rgba(0,30,80,0.25)] border border-white/80 flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-fuchsia-600 p-[2px] shadow-sm flex items-center justify-center">
+                <div className="w-full h-full bg-white rounded-[10px] flex items-center justify-center font-black text-transparent bg-clip-text bg-gradient-to-tr from-cyan-500 to-purple-600 text-lg">
+                  E
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-sm font-black text-[#0b1739] tracking-wider block">
+                  ECOM SPEED PRO
+                </span>
+                <span className="text-[9.5px] text-[#475569] font-bold block">
+                  حلول التجارة الإلكترونية والتسويق الرقمي
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Center: Luminous "لوحة التحكم" with Grid Icon */}
+          <div className="flex items-center gap-2.5 text-white font-black text-xl sm:text-2xl drop-shadow-[0_0_15px_rgba(255,255,255,0.7)]">
+            <LayoutGrid className="w-6 h-6 text-cyan-300 drop-shadow-[0_0_10px_rgba(34,211,238,0.9)]" />
+            <span>لوحة التحكم</span>
+          </div>
+
+          {/* Left side in RTL: Profile Pill + Notification + Exit */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            
+            {/* User Profile Pill */}
+            <div className="rounded-full bg-white px-3.5 py-1.5 shadow-[0_4px_20px_rgba(0,30,80,0.2)] border border-white/70 flex items-center gap-2.5 cursor-pointer hover:bg-slate-50 transition-all">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-cyan-400 p-[1.5px] flex items-center justify-center text-white shrink-0 shadow-sm">
+                <User className="w-4 h-4 fill-current" />
+              </div>
+              <div className="text-right hidden sm:block">
+                <span className="text-xs font-black text-[#0a193c] block leading-tight">
+                  أحمد المدير
+                </span>
+                <span className="text-[9.5px] text-blue-600 font-bold block leading-tight">
+                  مدير النظام
+                </span>
+              </div>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            </div>
+
+            {/* Notification Bell with Badge 3 */}
+            <div className="w-10 h-10 rounded-full bg-white shadow-md border border-white/70 flex items-center justify-center relative hover:scale-105 transition-all text-slate-700 cursor-pointer">
+              <Bell className="w-4 h-4 text-slate-700" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ec4899] text-white text-[9px] font-black flex items-center justify-center shadow-sm">
+                3
+              </span>
+            </div>
+
+            {/* Logout / Exit Button */}
+            <a
+              href="/"
+              className="w-10 h-10 rounded-full bg-white shadow-md border border-white/70 flex items-center justify-center text-slate-700 hover:text-rose-600 hover:scale-105 transition-all cursor-pointer"
+              title="العودة للمتجر"
+            >
+              <LogOut className="w-4 h-4 rotate-180" />
+            </a>
+
+          </div>
+
+        </header>
+
+        {/* ======================================================== */}
+        {/* 2. MAIN STAGE (SIDEBAR + MAIN GLASS CARD)                */}
+        {/* ======================================================== */}
+        <div className="flex flex-col xl:flex-row gap-4 items-stretch w-full">
+          
+          {/* ==================================================== */}
+          {/* RIGHT SIDEBAR (FLOATING VERTICAL MENU RAIL)          */}
+          {/* ==================================================== */}
+          <aside className="xl:w-[150px] shrink-0 rounded-[28px] bg-gradient-to-b from-[#0a2364]/95 via-[#06184a]/95 to-[#041238]/95 border border-cyan-400/40 p-3 shadow-[0_15px_40px_rgba(2,10,35,0.6)] flex flex-row xl:flex-col gap-2 justify-between xl:justify-start backdrop-blur-xl overflow-x-auto">
+            
+            {/* 1. الرئيسية */}
+            <button
+              onClick={() => setActiveTab("home")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold ${
+                activeTab === "home"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <Home className="w-4 h-4 shrink-0" />
+              <span>الرئيسية</span>
+            </button>
+
+            {/* 2. الطلبات (ACTIVE GLOWING CAPSULE AS IN SCREENSHOT) */}
+            <button
+              onClick={() => setActiveTab("orders")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs ${
+                activeTab === "orders"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-fuchsia-300/60 font-black scale-[1.02]"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10 font-bold"
+              }`}
+            >
+              <ShoppingCart className="w-4 h-4 shrink-0" />
+              <span>الطلبات</span>
+            </button>
+
+            {/* 3. العملاء */}
+            <button
+              onClick={() => setActiveTab("customers")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold ${
+                activeTab === "customers"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <Users className="w-4 h-4 shrink-0" />
+              <span>العملاء</span>
+            </button>
+
+            {/* 4. الباقات */}
+            <button
+              onClick={() => setActiveTab("packages")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold ${
+                activeTab === "packages"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <Package className="w-4 h-4 shrink-0" />
+              <span>الباقات</span>
+            </button>
+
+            {/* 5. المدفوعات */}
+            <button
+              onClick={() => setActiveTab("payments")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold ${
+                activeTab === "payments"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <CreditCard className="w-4 h-4 shrink-0" />
+              <span>المدفوعات</span>
+            </button>
+
+            {/* 6. التقارير */}
+            <button
+              onClick={() => setActiveTab("reports")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold ${
+                activeTab === "reports"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <TrendingUp className="w-4 h-4 shrink-0" />
+              <span>التقارير</span>
+            </button>
+
+            {/* 7. الإعدادات */}
+            <button
+              onClick={() => setActiveTab("settings")}
+              className={`flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold ${
+                activeTab === "settings"
+                  ? "bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black"
+                  : "text-cyan-100/90 hover:text-white hover:bg-white/10"
+              }`}
+            >
+              <Settings className="w-4 h-4 shrink-0" />
+              <span>الإعدادات</span>
+            </button>
+
+          </aside>
+
+          {/* ==================================================== */}
+          {/* MAIN WHITE GLASSMORPHIC CARD (LARGE WORKSTATION)     */}
+          {/* ==================================================== */}
+          <main className="flex-1 rounded-[32px] bg-gradient-to-b from-[#f8fbff]/95 via-[#f1f6fd]/95 to-[#e8f1fc]/95 border-2 border-white/80 shadow-[0_25px_70px_rgba(0,25,80,0.3),inset_0_1px_2px_rgba(255,255,255,0.9)] p-5 sm:p-6 lg:p-7 flex flex-col gap-5 backdrop-blur-2xl">
+            
+            {/* --- SECTION TITLE --- */}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 p-[2px] shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+                <div className="w-full h-full bg-[#0a1f58] rounded-[14px] flex items-center justify-center text-cyan-300">
+                  <FileSpreadsheet className="w-5 h-5" />
+                </div>
+              </div>
+              <h2 className="text-xl sm:text-2xl font-black text-[#0b1739] tracking-tight">
+                إدارة الطلبات والمدفوعات
+              </h2>
+            </div>
+
+            {/* --- TOP 4 KPI METRIC CARDS --- */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              
+              {/* KPI 1 (Right): إجمالي الطلبات (128) */}
+              <div className="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-[0_4px_20px_rgba(37,99,235,0.06)] flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#60a5fa] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(59,130,246,0.35)] shrink-0">
+                  <ShoppingCart className="w-5 h-5" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-[#64748b] block mb-1">إجمالي الطلبات</span>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">128</div>
+                  <span className="text-[10px] text-[#475569] font-bold mt-1 block">100% من إجمالي الطلبات</span>
+                </div>
+              </div>
+
+              {/* KPI 2: الطلبات المدفوعة (96) */}
+              <div className="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-[0_4px_20px_rgba(37,99,235,0.06)] flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#10b981] to-[#34d399] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(16,185,129,0.35)] shrink-0">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-[#64748b] block mb-1">الطلبات المدفوعة</span>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">96</div>
+                  <span className="text-[10px] text-[#475569] font-bold mt-1 block">75% من إجمالي الطلبات</span>
+                </div>
+              </div>
+
+              {/* KPI 3: قيد المراجعة (12) */}
+              <div className="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-[0_4px_20px_rgba(37,99,235,0.06)] flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#f97316] to-[#fb923c] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(249,115,22,0.35)] shrink-0">
+                  <Hourglass className="w-5 h-5" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-[#64748b] block mb-1">قيد المراجعة</span>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">12</div>
+                  <span className="text-[10px] text-[#475569] font-bold mt-1 block">9.4% من إجمالي الطلبات</span>
+                </div>
+              </div>
+
+              {/* KPI 4 (Left): إجمالي المبيعات (87,500 درهم) */}
+              <div className="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-[0_4px_20px_rgba(37,99,235,0.06)] flex items-center justify-between gap-3 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-[#a855f7] to-[#c084fc] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(168,85,247,0.35)] shrink-0">
+                  <Wallet className="w-5 h-5" />
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-[#64748b] block mb-1">إجمالي المبيعات</span>
+                  <div className="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">87,500 درهم</div>
+                  <span className="text-[10px] text-[#16a34a] font-black mt-1 flex items-center justify-end gap-1">
+                    <span>12%+ من الشهر الماضي</span>
+                    <span>↑</span>
+                  </span>
+                </div>
+              </div>
+
+            </div>
+
+            {/* --- ACTION & FILTER TOOLBAR --- */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-3 w-full pt-1">
+              
+              {/* Search Bar on Right */}
+              <div className="relative w-full md:w-96 order-1 md:order-2">
+                <input
+                  type="text"
+                  placeholder="ابحث باسم العميل أو رقم الهاتف..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] placeholder-[#94a3b8] outline-none focus:border-blue-500 shadow-sm transition-all"
+                />
+                <Search className="w-4 h-4 text-blue-500 absolute right-3.5 top-3" />
+              </div>
+
+              {/* Middle Filters + Left Export Button */}
+              <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto order-2 md:order-1">
+                
+                {/* Export Button (Vibrant Magenta-Blue Gradient) */}
+                <button
+                  onClick={handleExportCSV}
+                  className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#d946ef] via-[#9333ea] to-[#3b82f6] hover:from-[#c026d3] hover:to-[#2563eb] text-white font-black text-xs shadow-[0_4px_18px_rgba(147,51,234,0.35)] flex items-center gap-2 cursor-pointer transition-all hover:scale-105 active:scale-95"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>تصدير البيانات</span>
+                </button>
+
+                {/* Dropdown 1: كل الباقات */}
+                <div className="relative">
+                  <select
+                    value={planFilter}
+                    onChange={(e) => setPlanFilter(e.target.value)}
+                    className="appearance-none px-4 py-2.5 pl-8 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] outline-none shadow-sm cursor-pointer pr-3"
+                  >
+                    <option value="all">كل الباقات</option>
+                    <option value="الهبوط">صفحة الهبوط</option>
+                    <option value="القياسي">المتجر القياسي</option>
+                    <option value="المتقدمة">منصة التجارة المتقدمة</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
+                </div>
+
+                {/* Dropdown 2: طريقة الدفع */}
+                <div className="relative">
+                  <select
+                    value={methodFilter}
+                    onChange={(e) => setMethodFilter(e.target.value)}
+                    className="appearance-none px-4 py-2.5 pl-8 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] outline-none shadow-sm cursor-pointer pr-3"
+                  >
+                    <option value="all">طريقة الدفع</option>
+                    <option value="تحويل">تحويل بنكي</option>
+                    <option value="بطاقة">بطاقة بنكية</option>
+                    <option value="PayPal">PayPal</option>
+                    <option value="YouCan">YouCan Pay</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
+                </div>
+
+                {/* Dropdown 3: حالة الدفع */}
+                <div className="relative">
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="appearance-none px-4 py-2.5 pl-8 rounded-2xl bg-white border border-[#d2e2f3] text-xs font-bold text-[#0b1739] outline-none shadow-sm cursor-pointer pr-3"
+                  >
+                    <option value="all">حالة الدفع</option>
+                    <option value="paid">مدفوع</option>
+                    <option value="review">قيد المراجعة</option>
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-3.5 pointer-events-none" />
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* --- TWO-COLUMN LOWER WORKSTATION --- */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              
+              {/* ==================================================== */}
+              {/* LEFT PART (COL 8 / RTL): سجل المشتريات (PURCHASES TABLE) */}
+              {/* ==================================================== */}
+              <div className="lg:col-span-8 flex flex-col gap-4">
+                
+                {/* Section Title */}
+                <div className="flex items-center gap-2 text-base font-black text-[#0b1739]">
+                  <ShoppingCart className="w-5 h-5 text-purple-600" />
+                  <span>سجل المشتريات</span>
+                </div>
+
+                {/* Table Container */}
+                <div className="overflow-x-auto rounded-2xl border border-[#d8e5f5] bg-white shadow-sm">
+                  <table className="w-full text-right text-xs">
+                    <thead>
+                      <tr className="bg-[#f0f6fd] border-b border-[#e1ecf8] text-[#475569] font-black">
+                        <th className="py-3 px-3.5">العميل</th>
+                        <th className="py-3 px-3.5">رقم الهاتف</th>
+                        <th className="py-3 px-3.5">الباقة المشتراة</th>
+                        <th className="py-3 px-3.5">المبلغ</th>
+                        <th className="py-3 px-3.5">تاريخ الدفع</th>
+                        <th className="py-3 px-3.5">طريقة الدفع</th>
+                        <th className="py-3 px-3.5">البريد الإلكتروني</th>
+                        <th className="py-3 px-3.5">المدينة</th>
+                        <th className="py-3 px-3.5 text-center">الحالة</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#edf3fa]">
+                      {filteredOrders.map((ord) => {
+                        const isSelected = selectedOrder?.id === ord.id;
+                        return (
+                          <tr
+                            key={ord.id}
+                            onClick={() => setSelectedOrder(ord)}
+                            className={`transition-colors cursor-pointer ${
+                              isSelected ? "bg-blue-50/80 font-bold" : "hover:bg-slate-50/80"
+                            }`}
+                          >
+                            {/* العميل */}
+                            <td className="py-3.5 px-3.5">
+                              <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
+                                  <User className="w-3.5 h-3.5" />
+                                </div>
+                                <span className="font-bold text-[#0b1739] whitespace-nowrap">
+                                  {ord.customerName}
+                                </span>
+                              </div>
+                            </td>
+
+                            {/* رقم الهاتف */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap text-[#334155] font-mono">
+                              <div className="flex items-center gap-1.5">
+                                <Phone className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                <span dir="ltr">{ord.customerPhone}</span>
+                              </div>
+                            </td>
+
+                            {/* الباقة المشتراة */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap">
+                              <div className="flex items-center gap-1.5 font-bold text-[#0b1739]">
+                                <Package className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                                <span>{ord.planTitle}</span>
+                              </div>
+                            </td>
+
+                            {/* المبلغ */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap font-black font-mono text-[#0b1739]">
+                              <div className="flex items-center gap-1">
+                                <Coins className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                <span>{ord.price} درهم</span>
+                              </div>
+                            </td>
+
+                            {/* تاريخ الدفع */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap text-[#475569] font-medium">
+                              <div className="flex items-center gap-1.5">
+                                <Calendar className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span>{ord.dateFormatted}</span>
+                              </div>
+                            </td>
+
+                            {/* طريقة الدفع */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap text-[#334155] font-bold">
+                              <div className="flex items-center gap-1.5">
+                                {ord.paymentMethod.includes("تحويل") ? (
+                                  <Building2 className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                ) : (
+                                  <CreditCard className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                                )}
+                                <span>{ord.paymentMethod}</span>
+                              </div>
+                            </td>
+
+                            {/* البريد الإلكتروني */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap text-[#475569] font-mono text-[11px]">
+                              <div className="flex items-center gap-1.5">
+                                <Mail className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span>{ord.customerEmail}</span>
+                              </div>
+                            </td>
+
+                            {/* المدينة */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap text-[#334155] font-bold">
+                              <div className="flex items-center gap-1.5">
+                                <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                                <span>{ord.city}</span>
+                              </div>
+                            </td>
+
+                            {/* الحالة */}
+                            <td className="py-3.5 px-3.5 whitespace-nowrap text-center">
+                              {ord.status === "paid" ? (
+                                <span className="inline-block px-3 py-1 rounded-full bg-[#10b981] text-white font-black text-[11px] shadow-sm">
+                                  مدفوع
+                                </span>
+                              ) : (
+                                <span className="inline-block px-3 py-1 rounded-full bg-[#f59e0b] text-slate-950 font-black text-[11px] shadow-sm">
+                                  قيد المراجعة
+                                </span>
+                              )}
+                            </td>
+
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* --- BOTTOM PROMO & FUTURE BANNER (EXACTLY AS IN SCREENSHOT) --- */}
+                <div className="rounded-2xl bg-gradient-to-r from-[#f0f7ff] via-[#e6f1fd] to-[#f4f9ff] border border-[#d4e4f7] p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 overflow-hidden relative shadow-sm">
+                  
+                  {/* Right side in RTL: 3D Blue Shield + Text */}
+                  <div className="flex items-center gap-3.5 text-right z-10">
+                    <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-[2px] shadow-md shrink-0">
+                      <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center text-blue-600">
+                        <ShieldCheck className="w-7 h-7 text-blue-600" />
+                      </div>
+                    </div>
+                    <div>
+                      <h4 className="text-sm sm:text-base font-black text-[#0b1739]">
+                        معاً نحو مستقبل رقمي أفضل
+                      </h4>
+                      <p className="text-xs text-[#475569] font-medium mt-0.5">
+                        نقدم لك أفضل الحلول والخدمات لتحقيق نجاحك في عالم التجارة الإلكترونية
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Left side in RTL: 3D Tech Graphic Illustration */}
+                  <div className="relative shrink-0 w-64 h-24 sm:w-80 sm:h-28 z-10">
+                    <Image
+                      src="/images/admin_bottom_tech_graphic.webp"
+                      alt="مستقبل التجارة الرقمية والحلول السحابية"
+                      fill
+                      className="object-contain filter drop-shadow-md"
+                    />
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* ==================================================== */}
+              {/* RIGHT PART (COL 4 / RTL): تفاصيل الطلب #ESP-1028     */}
+              {/* ==================================================== */}
+              <div className="lg:col-span-4 rounded-3xl bg-white border border-[#d4e4f7] p-4 sm:p-5 shadow-sm flex flex-col gap-3.5">
+                
+                {/* Header Banner */}
+                <div className="rounded-2xl bg-gradient-to-r from-[#2563eb] via-[#4f46e5] to-[#7c3aed] text-white p-3 flex items-center justify-between shadow-md">
+                  <div className="flex items-center gap-2">
+                    <FileSpreadsheet className="w-4 h-4 text-cyan-200" />
+                    <span className="text-xs sm:text-sm font-black">
+                      تفاصيل الطلب #{selectedOrder.id}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Info Fields Table */}
+                <div className="space-y-2.5 text-xs">
+                  
+                  {/* Field 1: اسم المشتري */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.customerName}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>اسم المشتري</span>
+                      <User className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 2: رقم الهاتف */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <a
+                      href={`https://wa.me/${selectedOrder.customerPhone.replace(/[^0-9]/g, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-mono font-bold text-blue-600 hover:underline flex items-center gap-1"
+                    >
+                      <span dir="ltr">{selectedOrder.customerPhone}</span>
+                    </a>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>رقم الهاتف</span>
+                      <Phone className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 3: الباقة المشتراة */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.planTitle}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>الباقة المشتراة</span>
+                      <Package className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 4: المبلغ */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-black text-[#0b1739] font-mono">{selectedOrder.formattedPrice}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>المبلغ</span>
+                      <Coins className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 5: تاريخ ووقت الدفع */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-bold text-[#334155]">{selectedOrder.dateFormatted}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>تاريخ ووقت الدفع</span>
+                      <Calendar className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 6: طريقة الدفع */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.paymentMethod}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>طريقة الدفع</span>
+                      <Building2 className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 7: البريد الإلكتروني */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-mono text-[#475569] text-[11px]">{selectedOrder.customerEmail}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>البريد الإلكتروني</span>
+                      <Mail className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 8: المدينة */}
+                  <div className="flex items-center justify-between py-1.5 border-b border-[#f1f5f9]">
+                    <span className="font-bold text-[#0b1739]">{selectedOrder.city}</span>
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>المدينة</span>
+                      <MapPin className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                  {/* Field 9: حالة الدفع */}
+                  <div className="flex items-center justify-between py-1.5">
+                    {selectedOrder.status === "paid" ? (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-bold text-xs">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>مدفوع</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold text-xs">
+                        <Hourglass className="w-3.5 h-3.5 text-amber-600" />
+                        <span>قيد المراجعة</span>
+                      </span>
+                    )}
+                    <span className="text-[#64748b] font-bold flex items-center gap-1.5">
+                      <span>حالة الدفع</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-blue-600" />
+                    </span>
+                  </div>
+
+                </div>
+
+                {/* Uploaded Product Photos (User's special request) */}
+                {selectedOrder.productImages && selectedOrder.productImages.length > 0 && (
+                  <div className="pt-2 border-t border-[#f1f5f9]">
+                    <span className="text-[11px] font-black text-[#0b1739] block mb-1.5">
+                      صور المنتج المرفقة ({selectedOrder.productImages.length}):
+                    </span>
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                      {selectedOrder.productImages.map((img, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setLightboxImage(img)}
+                          className="relative w-12 h-12 rounded-xl overflow-hidden border border-[#d2e2f3] hover:border-blue-500 shadow-sm shrink-0 cursor-pointer hover:scale-105 transition-transform"
+                          title="تكبير الصورة"
+                        >
+                          <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bottom Action Button: عرض التفاصيل */}
+                <div className="pt-2">
+                  <button
+                    onClick={() => setDetailModalOpen(true)}
+                    className="w-full py-2.5 px-4 rounded-full border border-blue-600/30 hover:border-blue-600 text-blue-700 hover:bg-blue-50/70 font-black text-xs flex items-center justify-center gap-2 cursor-pointer transition-all shadow-sm"
+                  >
+                    <Eye className="w-4 h-4 text-blue-600" />
+                    <span>عرض التفاصيل</span>
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+          </main>
+
+        </div>
+
       </div>
 
       {/* ======================================================== */}
-      {/* 1. MASTER LUXURY HEADER (ROYAL OBSIDIAN WITH LASER ACCENT) */}
-      {/* ======================================================== */}
-      <header className="sticky top-0 z-30 bg-[#030a1e]/90 backdrop-blur-2xl border-b border-cyan-400/30 shadow-[0_10px_35px_rgba(2,8,26,0.8)]">
-        <div className="max-w-[1550px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
-          
-          {/* Right in RTL: Official Brand Emblem + Title */}
-          <div className="flex items-center gap-3.5">
-            <div className="relative p-1.5 rounded-2xl bg-white shadow-[0_0_25px_rgba(6,182,212,0.6)] shrink-0">
-              <Logo size="sm" showSlogan={false} />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-white tracking-wide">
-                  ECOM SPEED PRO
-                </h1>
-                <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-cyan-500/30 to-blue-500/30 border border-cyan-400/60 text-[10px] font-black text-cyan-300 shadow-[0_0_12px_rgba(6,182,212,0.3)]">
-                  لوحة تحكم الإدارة الخاصة
-                </span>
-              </div>
-              <p className="text-[11px] text-blue-200/80 font-bold flex items-center gap-2 mt-0.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping inline-block" />
-                <span>متصل بالنظام السحابي المباشر ⚡ • المغرب 🇲🇦</span>
-              </p>
-            </div>
-          </div>
-
-          {/* Center in RTL: Live Clock & Telemetry Capsule */}
-          <div className="hidden lg:flex items-center gap-3 px-4 py-1.5 rounded-2xl bg-[#061845]/90 border border-cyan-400/40 shadow-inner">
-            <Clock className="w-4 h-4 text-cyan-400" />
-            <div className="text-right">
-              <span className="text-[10px] text-blue-300/80 block font-bold">توقيت المغرب (GMT+1):</span>
-              <span className="text-xs font-mono font-black text-white">{currentTime || "17:45:00"}</span>
-            </div>
-            <div className="w-[1px] h-6 bg-blue-800 mx-1" />
-            <span className="text-[11px] font-black text-emerald-300 flex items-center gap-1.5">
-              <Zap className="w-3.5 h-3.5 text-emerald-400" />
-              <span>جاهزية 99.9%</span>
-            </span>
-          </div>
-
-          {/* Left in RTL: Quick Controls (Refresh, Sound, Store Link) */}
-          <div className="flex items-center gap-2.5">
-            <button
-              onClick={fetchOrders}
-              className="p-2.5 rounded-2xl bg-[#061845] hover:bg-[#0c2869] border border-cyan-400/40 hover:border-cyan-300 text-cyan-300 hover:text-white transition-all shadow-[0_0_15px_rgba(6,182,212,0.2)] hover:scale-105 active:scale-95 cursor-pointer flex items-center gap-1.5 text-xs font-bold"
-              title="تحديث قائمة الطلبات"
-            >
-              <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin text-cyan-400" : ""}`} />
-              <span className="hidden sm:inline">تحديث</span>
-            </button>
-
-            <button
-              onClick={() => setSoundEnabled(!soundEnabled)}
-              className={`p-2.5 rounded-2xl border transition-all cursor-pointer ${
-                soundEnabled
-                  ? "bg-emerald-500/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.25)]"
-                  : "bg-slate-800/80 border-slate-700 text-slate-400"
-              }`}
-              title={soundEnabled ? "التنبيه الصوتي مفعّل" : "التنبيه الصوتي معطّل"}
-            >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-            </button>
-
-            <a
-              href="/"
-              target="_blank"
-              rel="noreferrer"
-              className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white text-xs font-black shadow-[0_0_20px_rgba(59,130,246,0.4)] flex items-center gap-1.5 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              <span>معاينة المتجر</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
-
-        </div>
-      </header>
-
-      {/* ======================================================== */}
-      {/* 2. MAIN DASHBOARD CONTENT AREA                           */}
-      {/* ======================================================== */}
-      <main className="flex-1 max-w-[1550px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-        
-        {/* KPI METRIC CARDS (4 Luxury Pillars) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          
-          {/* Card 1: Total Revenue */}
-          <div className="relative rounded-3xl bg-gradient-to-br from-[#06153e]/90 via-[#0a2265]/90 to-[#040e2b]/90 border-2 border-amber-400/40 p-5 shadow-[0_15px_35px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden group">
-            <div className="absolute -top-10 -right-10 w-28 h-28 bg-amber-400/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-amber-200/90">إجمالي المبيعات المؤكدة</span>
-              <div className="w-10 h-10 rounded-2xl bg-amber-400/20 border border-amber-400/50 flex items-center justify-center text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.4)]">
-                <Crown className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-400">
-              {totalRevenue.toLocaleString()} د.م
-            </div>
-            <span className="text-[11px] font-bold text-amber-300/80 mt-1 block">
-              عمليات دفع مغربية رسمية وعالمية 🇲🇦
-            </span>
-          </div>
-
-          {/* Card 2: Total Orders */}
-          <div className="relative rounded-3xl bg-gradient-to-br from-[#06153e]/90 via-[#0a2265]/90 to-[#040e2b]/90 border-2 border-cyan-400/40 p-5 shadow-[0_15px_35px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden group">
-            <div className="absolute -top-10 -right-10 w-28 h-28 bg-cyan-400/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-cyan-200/90">إجمالي عدد الطلبات</span>
-              <div className="w-10 h-10 rounded-2xl bg-cyan-400/20 border border-cyan-400/50 flex items-center justify-center text-cyan-300 shadow-[0_0_15px_rgba(6,182,212,0.4)]">
-                <FileText className="w-5 h-5" />
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-cyan-200">
-              {totalOrdersCount} طلب
-            </div>
-            <span className="text-[11px] font-bold text-cyan-300/80 mt-1 block">
-              من جميع مدن المملكة المغربية 🇲🇦
-            </span>
-          </div>
-
-          {/* Card 3: In Progress (Active 48h Deliveries) */}
-          <div className="relative rounded-3xl bg-gradient-to-br from-[#06153e]/90 via-[#0a2265]/90 to-[#040e2b]/90 border-2 border-blue-400/40 p-5 shadow-[0_15px_35px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden group">
-            <div className="absolute -top-10 -right-10 w-28 h-28 bg-blue-400/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-blue-200/90">مشاريع قيد التجهيز الفوري</span>
-              <div className="w-10 h-10 rounded-2xl bg-blue-400/20 border border-blue-400/50 flex items-center justify-center text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.4)]">
-                <Flame className="w-5 h-5 text-rose-400 animate-pulse" />
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-blue-200">
-              {inProgressCount} متجر
-            </div>
-            <span className="text-[11px] font-bold text-blue-300/80 mt-1 block">
-              تسليم قياسي خلال 48 ساعة ⏳
-            </span>
-          </div>
-
-          {/* Card 4: Completed Projects */}
-          <div className="relative rounded-3xl bg-gradient-to-br from-[#06153e]/90 via-[#0a2265]/90 to-[#040e2b]/90 border-2 border-emerald-400/40 p-5 shadow-[0_15px_35px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.15)] overflow-hidden group">
-            <div className="absolute -top-10 -right-10 w-28 h-28 bg-emerald-400/20 rounded-full blur-2xl pointer-events-none" />
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-bold text-emerald-200/90">متاجر تم إطلاقها بنجاح</span>
-              <div className="w-10 h-10 rounded-2xl bg-emerald-400/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.4)]">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-black font-mono text-emerald-300">
-              {completedCount} متجر
-            </div>
-            <span className="text-[11px] font-bold text-emerald-400/80 mt-1 block">
-              تحقق أعلى معدلات تحويل 🚀
-            </span>
-          </div>
-
-        </div>
-
-        {/* SEARCH, STATUS & PLAN FILTERS */}
-        <div className="rounded-3xl bg-[#040e2b]/95 border-2 border-cyan-400/30 p-4 sm:p-5 shadow-[0_20px_50px_rgba(2,10,35,0.7)] flex flex-col md:flex-row items-center justify-between gap-4">
-          
-          {/* Search Bar */}
-          <div className="relative w-full md:w-96">
-            <input
-              type="text"
-              placeholder="ابحث باسم المشتري، رقم الهاتف، الإيميل، رقم الطلب..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2.5 pr-10 rounded-2xl bg-[#061845] border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all"
-            />
-            <Search className="w-4 h-4 text-cyan-400 absolute right-3.5 top-3" />
-          </div>
-
-          {/* Status Tabs */}
-          <div className="flex items-center gap-2 flex-wrap w-full md:w-auto">
-            <span className="text-xs font-black text-blue-200 ml-1 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5 text-cyan-400" />
-              <span>الحالة:</span>
-            </span>
-
-            <button
-              onClick={() => setStatusFilter("all")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                statusFilter === "all"
-                  ? "bg-cyan-500 text-slate-950 shadow-[0_0_15px_rgba(6,182,212,0.5)]"
-                  : "bg-[#061845] text-blue-200 border border-blue-900 hover:border-cyan-400/50"
-              }`}
-            >
-              الكل ({orders.length})
-            </button>
-
-            <button
-              onClick={() => setStatusFilter("new")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                statusFilter === "new"
-                  ? "bg-rose-500 text-white shadow-[0_0_15px_rgba(244,63,94,0.5)]"
-                  : "bg-[#061845] text-rose-300 border border-blue-900 hover:border-rose-400/50"
-              }`}
-            >
-              جديد ({orders.filter((o) => o.status === "new").length})
-            </button>
-
-            <button
-              onClick={() => setStatusFilter("in_progress")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                statusFilter === "in_progress"
-                  ? "bg-amber-400 text-slate-950 shadow-[0_0_15px_rgba(245,158,11,0.5)]"
-                  : "bg-[#061845] text-amber-300 border border-blue-900 hover:border-amber-400/50"
-              }`}
-            >
-              قيد التجهيز ({inProgressCount})
-            </button>
-
-            <button
-              onClick={() => setStatusFilter("completed")}
-              className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
-                statusFilter === "completed"
-                  ? "bg-emerald-500 text-slate-950 shadow-[0_0_15px_rgba(16,185,129,0.5)]"
-                  : "bg-[#061845] text-emerald-300 border border-blue-900 hover:border-emerald-400/50"
-              }`}
-            >
-              تم التسليم ({completedCount})
-            </button>
-          </div>
-
-          {/* Package Filter */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-black text-blue-200">الباقة:</span>
-            <select
-              value={planFilter}
-              onChange={(e) => setPlanFilter(e.target.value)}
-              className="px-3 py-2 rounded-xl bg-[#061845] border border-blue-400/40 text-xs font-bold text-white outline-none focus:border-cyan-400 cursor-pointer"
-            >
-              <option value="all">جميع الباقات الـ 3</option>
-              <option value="landing">صفحة الهبوط (500 د.م)</option>
-              <option value="standard">المتجر القياسي (1500 د.م)</option>
-              <option value="saas">منصة SaaS VIP (5000 د.م)</option>
-            </select>
-          </div>
-
-        </div>
-
-        {/* ======================================================== */}
-        {/* ORDERS LIST & MASTER CARDS                               */}
-        {/* ======================================================== */}
-        {filteredOrders.length === 0 ? (
-          <div className="py-20 text-center rounded-3xl bg-[#040e2b]/80 border-2 border-dashed border-blue-900/60 p-8">
-            <div className="w-16 h-16 rounded-3xl bg-blue-950/60 border border-cyan-400/30 flex items-center justify-center mx-auto mb-4 text-cyan-400">
-              <Search className="w-8 h-8" />
-            </div>
-            <h3 className="text-lg font-black text-white mb-1">لا توجد طلبات تطابق هذا البحث</h3>
-            <p className="text-xs text-blue-200/70 font-semibold max-w-sm mx-auto">
-              تأكد من تعديل كلمات البحث أو الفلتر لرؤية جميع الطلبات والمبيعات الواردة.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {filteredOrders.map((order) => {
-              const isLanding = order.planTitle.includes("الهبوط") || order.planTitle.includes("Landing");
-              const isSaaS = order.planTitle.includes("المتقدمة") || order.planTitle.includes("SaaS");
-
-              const planBadge = isLanding
-                ? { color: "from-rose-500 to-purple-600 text-white", label: "صفحة الهبوط (500 د.م)" }
-                : isSaaS
-                ? { color: "from-amber-400 to-yellow-500 text-slate-950", label: "منصة SaaS VIP (5000 د.م)" }
-                : { color: "from-cyan-500 to-blue-600 text-white", label: "المتجر القياسي (1500 د.م)" };
-
-              const cleanPhone = order.customerPhone.replace(/[^0-9]/g, "");
-              const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-                `مرحباً بك ${order.customerName}، معك فريق إدارة ECOM SPEED PRO بخصوص طلبك رقم ${order.id} لباقة ${order.planTitle}. نحن جاهزون للبدء في تجهيز متجرك فوراً!`
-              )}`;
-
-              return (
-                <div
-                  key={order.id}
-                  className="relative rounded-3xl bg-gradient-to-r from-[#040e2b] via-[#06184a] to-[#040e2b] border-2 border-cyan-400/35 hover:border-cyan-400/70 p-5 sm:p-6 shadow-[0_15px_40px_rgba(2,10,35,0.7)] transition-all duration-300 group"
-                >
-                  {/* Subtle Top Edge Glow */}
-                  <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent pointer-events-none" />
-
-                  <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-5">
-                    
-                    {/* SECTION 1: Customer Identity & Order ID */}
-                    <div className="flex items-start gap-4 min-w-[280px]">
-                      {/* Avatar with Status Ping */}
-                      <div className="relative shrink-0 w-13 h-13 rounded-2xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 p-[2px] shadow-[0_0_20px_rgba(6,182,212,0.4)]">
-                        <div className="w-full h-full bg-[#05143a] rounded-[14px] flex items-center justify-center font-black text-lg text-white">
-                          {order.customerName.charAt(0) || "ع"}
-                        </div>
-                        {order.status === "new" && (
-                          <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-rose-500 border-2 border-[#040e2b] animate-ping" />
-                        )}
-                      </div>
-
-                      <div className="text-right">
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-base font-black text-white tracking-tight">
-                            {order.customerName}
-                          </h4>
-                          <button
-                            onClick={() => handleCopy(order.id, order.id)}
-                            className="px-2 py-0.5 rounded-lg bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 text-[10px] font-mono font-black text-cyan-300 flex items-center gap-1 cursor-pointer transition-colors"
-                            title="نسخ رقم الطلب"
-                          >
-                            <span>{order.id}</span>
-                            {copiedId === order.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                          </button>
-                        </div>
-
-                        {/* Direct WhatsApp & Email Buttons */}
-                        <div className="flex flex-wrap items-center gap-2.5 mt-2">
-                          <a
-                            href={waUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/50 text-emerald-300 text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[0_0_12px_rgba(16,185,129,0.25)]"
-                          >
-                            <WhatsAppIcon size={14} />
-                            <span>{order.customerPhone}</span>
-                          </a>
-
-                          <a
-                            href={`mailto:${order.customerEmail}`}
-                            className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/50 text-purple-200 text-xs font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                          >
-                            <Mail className="w-3 h-3" />
-                            <span className="truncate max-w-[150px]">{order.customerEmail}</span>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* SECTION 2: Selected Package & Price */}
-                    <div className="flex flex-col items-start xl:items-center text-right xl:text-center min-w-[200px]">
-                      <span className={`px-3 py-1 rounded-full text-xs font-black bg-gradient-to-r ${planBadge.color} shadow-sm mb-1`}>
-                        {planBadge.label}
-                      </span>
-                      <div className="text-xl font-black font-mono text-cyan-200 mt-1">
-                        {order.formattedPrice || `${order.price} د.م`}
-                      </div>
-                      <span className="text-[11px] text-blue-200/80 font-bold flex items-center gap-1 mt-0.5">
-                        <Lock className="w-3 h-3 text-cyan-400" />
-                        <span>
-                          {order.paymentMethod === "youcan"
-                            ? "YouCan Pay 🇲🇦"
-                            : order.paymentMethod === "cmi"
-                            ? "CMI المركز النقدي"
-                            : order.paymentMethod === "card"
-                            ? "بطاقة بنكية رسمية"
-                            : "واتساب VIP"}
-                        </span>
-                      </span>
-                    </div>
-
-                    {/* SECTION 3: Product Photos Gallery Preview (USER'S EXPLICIT REQUEST) */}
-                    <div className="flex flex-col items-start min-w-[200px] w-full xl:w-auto">
-                      <span className="text-xs font-black text-cyan-200 mb-1.5 flex items-center gap-1.5">
-                        <span>صور المنتج المطلوب:</span>
-                        <span className="px-1.5 py-0.2 rounded-md bg-cyan-500/20 text-cyan-300 text-[10px] font-mono">
-                          {order.productImages ? order.productImages.length : 0}
-                        </span>
-                      </span>
-
-                      {order.productImages && order.productImages.length > 0 ? (
-                        <div className="flex items-center gap-2 overflow-x-auto max-w-[260px] py-1">
-                          {order.productImages.map((img, idx) => (
-                            <button
-                              key={idx}
-                              onClick={() => setLightboxImage(img)}
-                              className="relative w-12 h-12 rounded-xl overflow-hidden border-2 border-cyan-400/60 hover:border-cyan-300 shadow-md transition-all hover:scale-110 shrink-0 cursor-pointer group"
-                              title="اضغط للتكبير بدقة عالية"
-                            >
-                              <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
-                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                <Eye className="w-4 h-4 text-white" />
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      ) : (
-                        <span className="text-[11px] text-slate-400 font-semibold bg-white/5 px-2.5 py-1 rounded-xl border border-white/10">
-                          لم يرفق صوراً (سيرسلها على واتساب)
-                        </span>
-                      )}
-
-                      {order.productNotes && (
-                        <p className="text-[10px] text-blue-200/70 font-semibold mt-1 truncate max-w-[220px]">
-                          ملاحظة: {order.productNotes}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* SECTION 4: Purchase Date & 48-Hour Delivery Clock */}
-                    <div className="flex flex-col items-start xl:items-end text-right min-w-[190px]">
-                      <span className="text-[10px] text-blue-300/80 font-bold block mb-0.5">
-                        تاريخ وتوقيت الطلب:
-                      </span>
-                      <span className="text-xs font-black text-white font-mono flex items-center gap-1">
-                        <Calendar className="w-3.5 h-3.5 text-cyan-400" />
-                        <span>{formatOrderDate(order.createdAt)}</span>
-                      </span>
-                      <div className="mt-2 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/20 border border-blue-400/30 text-[10px] font-black text-cyan-300">
-                        <Clock className="w-3 h-3 text-cyan-300" />
-                        <span>تسليم قياسي خلال 48 ساعة</span>
-                      </div>
-                    </div>
-
-                    {/* SECTION 5: Status Dropdown & Details Action */}
-                    <div className="flex items-center gap-2.5 w-full xl:w-auto justify-end pt-3 xl:pt-0 border-t xl:border-t-0 border-blue-900/60">
-                      {/* Status Selector Dropdown */}
-                      <select
-                        value={order.status}
-                        onChange={(e) =>
-                          handleUpdateStatus(order.id, e.target.value as "new" | "in_progress" | "completed")
-                        }
-                        className={`px-3 py-2 rounded-2xl text-xs font-black outline-none border cursor-pointer transition-all ${
-                          order.status === "new"
-                            ? "bg-rose-950/80 border-rose-400/60 text-rose-300"
-                            : order.status === "in_progress"
-                            ? "bg-amber-950/80 border-amber-400/60 text-amber-300"
-                            : "bg-emerald-950/80 border-emerald-400/60 text-emerald-300"
-                        }`}
-                      >
-                        <option value="new">جديد 🆕</option>
-                        <option value="in_progress">قيد التجهيز ⏳</option>
-                        <option value="completed">تم التسليم بنجاح ✅</option>
-                      </select>
-
-                      {/* View Details Button */}
-                      <button
-                        onClick={() => setSelectedOrder(order)}
-                        className="px-3.5 py-2 rounded-2xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-400/50 hover:border-cyan-300 text-cyan-300 hover:text-white text-xs font-black transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.25)] flex items-center gap-1.5"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>تفاصيل الفاتورة</span>
-                      </button>
-                    </div>
-
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-      </main>
-
-      {/* ======================================================== */}
-      {/* 3. LIGHTBOX MODAL FOR EXPANDING PRODUCT IMAGES           */}
+      {/* 3. LIGHTBOX FOR EXPANDING PRODUCT IMAGES                 */}
       {/* ======================================================== */}
       {lightboxImage && (
-        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center">
-            
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative max-w-3xl max-h-[90vh] flex flex-col items-center">
             <div className="w-full flex items-center justify-between pb-3 text-white">
-              <span className="text-sm font-black text-cyan-300 flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-cyan-400" />
-                <span>معاينة صورة المنتج المرفوعة بدقة عالية</span>
-              </span>
-              <div className="flex items-center gap-3">
-                <a
-                  href={lightboxImage}
-                  download="product_image.png"
-                  className="px-3.5 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.5)]"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  <span>تحميل الصورة للحاسوب</span>
-                </a>
-                <button
-                  onClick={() => setLightboxImage(null)}
-                  className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
+              <span className="text-xs font-black text-cyan-300">معاينة صورة المنتج بدقة عالية</span>
+              <button
+                onClick={() => setLightboxImage(null)}
+                className="p-1 rounded-lg bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-
-            <div className="rounded-3xl overflow-hidden border-2 border-cyan-400/50 shadow-[0_0_50px_rgba(6,182,212,0.3)] bg-slate-950 max-h-[80vh] flex items-center justify-center">
-              <img
-                src={lightboxImage}
-                alt="معاينة المنتج"
-                className="max-w-full max-h-[75vh] object-contain"
-              />
+            <div className="rounded-2xl overflow-hidden border-2 border-cyan-400 bg-slate-950">
+              <img src={lightboxImage} alt="صورة المنتج" className="max-w-full max-h-[75vh] object-contain" />
             </div>
-
           </div>
         </div>
       )}
 
       {/* ======================================================== */}
-      {/* 4. ORDER DETAIL DRAWER & PRINTABLE INVOICE MODAL         */}
+      {/* 4. MODAL DIALOG FOR "عرض التفاصيل" (FULL ORDER DETAILS)   */}
       {/* ======================================================== */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 bg-[#020718]/85 backdrop-blur-xl flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-gradient-to-b from-[#06184a] to-[#03091e] border-2 border-cyan-400/40 rounded-3xl p-6 sm:p-7 text-white shadow-[0_25px_80px_rgba(2,10,35,0.9)] max-h-[90vh] overflow-y-auto">
+      {detailModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative w-full max-w-lg bg-white rounded-3xl p-6 shadow-2xl border border-blue-100 flex flex-col gap-4 text-right">
             
-            {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-blue-900/60 mb-5">
-              <div className="flex items-center gap-3">
-                <div className="p-1 rounded-xl bg-white">
-                  <Logo size="sm" showSlogan={false} />
-                </div>
-                <div>
-                  <h3 className="text-base sm:text-lg font-black text-white">
-                    فاتورة وبيانات الطلب: {selectedOrder.id}
-                  </h3>
-                  <span className="text-xs text-cyan-300 font-bold block">
-                    {formatOrderDate(selectedOrder.createdAt)}
-                  </span>
-                </div>
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <FileSpreadsheet className="w-5 h-5 text-blue-600" />
+                <h3 className="font-black text-base text-[#0b1739]">
+                  وثيقة الطلب #{selectedOrder.id}
+                </h3>
               </div>
-
               <button
-                onClick={() => setSelectedOrder(null)}
-                className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white cursor-pointer"
+                onClick={() => setDetailModalOpen(false)}
+                className="p-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Customer Details Box */}
-            <div className="rounded-2xl bg-[#040e2b]/80 border border-blue-400/30 p-4 mb-4 space-y-2 text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-blue-900/40">
-                <span className="text-blue-300 font-bold">اسم المشتري:</span>
-                <span className="font-black text-white text-sm">{selectedOrder.customerName}</span>
+            <div className="space-y-2 text-xs bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="font-bold text-slate-500">اسم المشتري:</span>
+                <span className="font-black text-[#0b1739]">{selectedOrder.customerName}</span>
               </div>
-              <div className="flex items-center justify-between pb-2 border-b border-blue-900/40">
-                <span className="text-blue-300 font-bold">رقم الهاتف / واتساب:</span>
-                <span className="font-mono font-black text-emerald-300">{selectedOrder.customerPhone}</span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="font-bold text-slate-500">رقم الهاتف:</span>
+                <span className="font-mono font-bold text-blue-600">{selectedOrder.customerPhone}</span>
               </div>
-              <div className="flex items-center justify-between pb-2 border-b border-blue-900/40">
-                <span className="text-blue-300 font-bold">البريد الإلكتروني:</span>
-                <span className="font-mono font-bold text-white">{selectedOrder.customerEmail}</span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="font-bold text-slate-500">البريد الإلكتروني:</span>
+                <span className="font-mono text-slate-700">{selectedOrder.customerEmail}</span>
               </div>
-              <div className="flex items-center justify-between pb-2 border-b border-blue-900/40">
-                <span className="text-blue-300 font-bold">الباقة المطلوبة:</span>
-                <span className="font-black text-cyan-300">{selectedOrder.planTitle}</span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="font-bold text-slate-500">الباقة:</span>
+                <span className="font-black text-purple-700">{selectedOrder.planTitle}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-blue-300 font-bold">المبلغ الإجمالي:</span>
-                <span className="font-mono text-base font-black text-amber-300">
-                  {selectedOrder.formattedPrice || `${selectedOrder.price} د.م`}
-                </span>
+              <div className="flex justify-between py-1 border-b border-slate-200">
+                <span className="font-bold text-slate-500">المبلغ:</span>
+                <span className="font-black text-emerald-700 font-mono">{selectedOrder.formattedPrice}</span>
+              </div>
+              <div className="flex justify-between py-1">
+                <span className="font-bold text-slate-500">طريقة الدفع:</span>
+                <span className="font-bold text-slate-800">{selectedOrder.paymentMethod}</span>
               </div>
             </div>
 
-            {/* Product Images in Invoice */}
-            <div className="mb-5">
-              <h4 className="text-xs font-black text-cyan-200 mb-2 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
-                <span>صور المنتج المرفقة من العميل:</span>
-              </h4>
-
-              {selectedOrder.productImages && selectedOrder.productImages.length > 0 ? (
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-                  {selectedOrder.productImages.map((img, idx) => (
-                    <div
-                      key={idx}
-                      className="relative rounded-2xl overflow-hidden border border-cyan-400/50 aspect-square group shadow-md"
-                    >
-                      <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-2 transition-opacity">
-                        <button
-                          onClick={() => setLightboxImage(img)}
-                          className="p-1.5 rounded-lg bg-cyan-500 text-black cursor-pointer"
-                          title="تكبير"
-                        >
-                          <Eye className="w-3.5 h-3.5" />
-                        </button>
-                        <a
-                          href={img}
-                          download={`product_${idx + 1}.png`}
-                          className="p-1.5 rounded-lg bg-emerald-500 text-black cursor-pointer"
-                          title="تحميل"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                        </a>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-400 bg-white/5 p-3 rounded-xl border border-white/10 text-center">
-                  لا توجد صور مرفقة في هذا الطلب.
-                </p>
-              )}
-            </div>
-
-            {/* Product Notes */}
-            {selectedOrder.productNotes && (
-              <div className="p-3 rounded-2xl bg-blue-950/40 border border-blue-400/20 text-xs mb-5">
-                <span className="text-blue-300 font-bold block mb-1">ملاحظات العميل:</span>
-                <p className="text-white font-medium">{selectedOrder.productNotes}</p>
-              </div>
-            )}
-
-            {/* Actions: Direct WhatsApp & Close */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 justify-end pt-3 border-t border-blue-900/60">
+            <div className="flex items-center gap-2 pt-2">
               <a
                 href={`https://wa.me/${selectedOrder.customerPhone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                  `مرحباً بك ${selectedOrder.customerName}، معك إدارة ECOM SPEED PRO بخصوص طلبك رقم ${selectedOrder.id}. يسعدنا بدء تجهيز مشروعك فوراً!`
+                  `مرحباً بك ${selectedOrder.customerName}، معك إدارة ECOM SPEED PRO بخصوص طلبك رقم ${selectedOrder.id}.`
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 font-black text-xs flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(16,185,129,0.4)] hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-2 shadow-md transition-all cursor-pointer"
               >
-                <WhatsAppIcon size={18} />
-                <span>محادثة العميل على واتساب فوراً</span>
+                <WhatsAppIcon size={16} />
+                <span>محادثة واتساب فوراً</span>
               </a>
-
               <button
-                onClick={() => setSelectedOrder(null)}
-                className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs cursor-pointer"
+                onClick={() => setDetailModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs cursor-pointer"
               >
                 إغلاق
               </button>
