@@ -346,25 +346,22 @@ export default function Footer({
         </div>
 
         {/* ======================================================== */}
-        {/* 3. TRUST, GUARANTEE & PAYMENT METHODS PILL RIBBON        */}
+        {/* 3. UNIFIED MASTER LUXURY BANNER STRIP (شريط سفلي موحد وفخم) */}
         {/* ======================================================== */}
-        {/* ======================================================== */}
-        {/* 3. LEGENDARY BANK-GRADE SECURITY & PAYMENT VAULT CARD   */}
-        {/* ======================================================== */}
-        <div className="relative rounded-3xl bg-gradient-to-r from-[#040e29] via-[#091f56] to-[#040e29] border-2 border-cyan-500/40 p-6 sm:p-7 shadow-[0_20px_50px_rgba(2,12,38,0.6)] overflow-hidden group">
+        <div className="relative rounded-3xl bg-gradient-to-r from-[#03091e] via-[#06184a] via-[#092265] to-[#03091e] border-2 border-cyan-400/40 text-white p-5 sm:p-7 shadow-[0_25px_65px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)] overflow-hidden group">
           
-          {/* Top Laser Shimmer Beam */}
-          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 via-emerald-400 to-transparent pointer-events-none" />
+          {/* Multi-Spectral Laser Top Accent */}
+          <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-cyan-400 via-blue-500 via-fuchsia-500 via-emerald-400 to-transparent pointer-events-none" />
 
-          {/* Ambient Glows */}
-          <div className="absolute -top-20 -right-20 w-60 h-60 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none" />
+          {/* Deep Ambient Glows */}
+          <div className="absolute -top-24 right-1/4 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 left-1/4 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-6">
+          {/* === ROW 1: Security, 3D Shield, Payment Providers & Policy Icons === */}
+          <div className="relative z-10 flex flex-col xl:flex-row items-center justify-between gap-6 pb-6 border-b border-blue-900/60">
 
-            {/* Pillar 1: Bank-Grade Security & Guarantee */}
+            {/* Part 1: Official 3D Bank Security & Payment Illustration + Title */}
             <div className="flex items-center gap-4 w-full xl:w-auto text-right">
-              {/* Official 3D Bank Security & Payment Illustration */}
               <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-emerald-400 shadow-[0_0_30px_rgba(6,182,212,0.55)] group-hover:scale-105 transition-all duration-300">
                 <div className="w-full h-full bg-white rounded-[14px] sm:rounded-[22px] p-0.5 flex items-center justify-center overflow-hidden">
                   <Image
@@ -391,14 +388,13 @@ export default function Footer({
                 </div>
                 <p className="text-xs sm:text-sm text-blue-200/90 font-bold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                  <span>حماية شاملة لبيانات الدفع وبوابات رسمية معتمدة بالمغرب وعالمياً</span>
+                  <span>حماية شاملة لبيانات الدفع وبوابات رسمية معتمدة بالمغرب وعالمياً 🇲🇦</span>
                 </p>
               </div>
             </div>
 
-            {/* Pillar 2: Crisp Payment Provider Badges */}
+            {/* Part 2: Official Payment Providers (NO BANK TRANSFER) */}
             <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 py-1">
-              
               {/* YouCan Pay Badge */}
               <div
                 className="px-4 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-emerald-400/40 hover:border-emerald-300/80 shadow-[0_4px_16px_rgba(16,185,129,0.18)] hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
@@ -441,21 +437,10 @@ export default function Footer({
                 </div>
                 <span className="text-[11px] font-black text-slate-100">mastercard</span>
               </div>
-
-              {/* Bank Transfer Badge */}
-              <div
-                className="px-3.5 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-cyan-400/40 hover:border-cyan-300/80 shadow-[0_4px_16px_rgba(6,182,212,0.18)] hover:shadow-[0_0_20px_rgba(6,182,212,0.35)] flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer"
-                title="تحويل بنكي فوري معتمد (CIH / Attijari / BMCE)"
-              >
-                <CreditCard className="w-3.5 h-3.5 text-cyan-400" />
-                <span className="text-[11px] font-bold text-cyan-200">تحويل بنكي</span>
-              </div>
-
             </div>
 
-            {/* Pillar 3: Luxurious 3D Emblem Jewels for Privacy & Terms & Guarantee */}
+            {/* Part 3: Luxurious 3D Emblem Jewels for Privacy & Terms & Guarantee */}
             <div className="flex items-center gap-3.5 w-full xl:w-auto justify-center xl:justify-end">
-              
               {/* 1. 3D Luxury Privacy Policy Icon Emblem */}
               <button
                 onClick={() => onOpenPolicyModal?.("privacy")}
@@ -467,7 +452,6 @@ export default function Footer({
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/25 to-transparent pointer-events-none" />
                     <Shield className="w-5 h-5 text-emerald-400 group-hover:scale-115 transition-transform drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
                   </div>
-                  {/* Verified Indicator Dot */}
                   <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#040e29] shadow-xs" />
                 </div>
                 <div className="text-center">
@@ -491,7 +475,6 @@ export default function Footer({
                     <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-transparent pointer-events-none" />
                     <FileText className="w-5 h-5 text-cyan-300 group-hover:scale-115 transition-transform drop-shadow-[0_0_8px_rgba(34,211,238,0.9)]" />
                   </div>
-                  {/* Verified Indicator Dot */}
                   <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cyan-400 border-2 border-[#040e29] shadow-xs" />
                 </div>
                 <div className="text-center">
@@ -514,7 +497,6 @@ export default function Footer({
                   <div className="w-full h-full bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-[13px] flex items-center justify-center overflow-hidden relative">
                     <Award className="w-6 h-6 text-slate-950 group-hover:rotate-12 transition-transform drop-shadow-sm" />
                   </div>
-                  {/* Verified Crown Dot */}
                   <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-300 border-2 border-[#040e29] flex items-center justify-center text-[8px] font-black text-slate-950 shadow-xs">
                     ★
                   </span>
@@ -528,28 +510,12 @@ export default function Footer({
                   </span>
                 </div>
               </button>
-
             </div>
 
           </div>
 
-        </div>
-
-        {/* ======================================================== */}
-        {/* ======================================================== */}
-        {/* 4. MASTER LUXURY BANNER STRIP (شريط بانر فائق الفخامة والانسيابية) */}
-        {/* ======================================================== */}
-        <div className="relative rounded-3xl bg-gradient-to-r from-[#03091e] via-[#06184a] via-[#092265] to-[#03091e] border-2 border-cyan-400/40 text-white p-5 sm:p-6 shadow-[0_25px_65px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)] overflow-hidden group">
-          
-          {/* Multi-Spectral Laser Top Accent */}
-          <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-cyan-400 via-blue-500 via-fuchsia-500 via-emerald-400 to-transparent pointer-events-none" />
-
-          {/* Deep Ambient Glows */}
-          <div className="absolute -top-24 right-1/4 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 left-1/4 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Horizontal Banner Main Bar */}
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-5 pb-4 border-b border-blue-900/60">
+          {/* === ROW 2: Brand Logo, Service Package Pills & Live Server Capsule === */}
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-5 pt-5 pb-4 border-b border-blue-900/60">
             
             {/* Brand Logo & Compact Tagline with 3D Bevel Frame */}
             <div className="flex items-center gap-3.5">
@@ -576,7 +542,6 @@ export default function Footer({
 
             {/* Horizontal Package Action Pills with Glowing Badges */}
             <div className="flex items-center gap-2.5 flex-wrap justify-center">
-              
               {/* Package 1 */}
               <button
                 onClick={scrollToServices}
@@ -621,7 +586,6 @@ export default function Footer({
                 <ShieldCheck className="w-4 h-4 text-cyan-400" />
                 <span>مزايا الأداء</span>
               </button>
-
             </div>
 
             {/* Live Server Indicator Capsule with Cybernetic Neon */}
@@ -642,48 +606,15 @@ export default function Footer({
 
           </div>
 
-          {/* Slim Copyright & Luxury Accents Row */}
-          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-[11px] font-bold text-blue-200/75 gap-3 pt-3">
-            
+          {/* === ROW 3: Slim Copyright & Moroccan Excellence Badge === */}
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-[11px] font-bold text-blue-200/75 gap-3 pt-3.5">
             <p className="text-center sm:text-right">
               © 2026 ECOM SPEED PRO • جميع الحقوق محفوظة لشركة حلول التجارة الإلكترونية والتسويق الرقمي بالمغرب.
             </p>
-
-            {/* Quick Luxury Icon Access for Legal & Trust in Footer Banner */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => onOpenPolicyModal?.("privacy")}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-400/40 text-[10px] text-slate-300 hover:text-emerald-300 transition-all cursor-pointer"
-                title="سياسة الخصوصية"
-              >
-                <Shield className="w-3 h-3 text-emerald-400" />
-                <span>الخصوصية</span>
-              </button>
-
-              <button
-                onClick={() => onOpenPolicyModal?.("terms")}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-[10px] text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
-                title="شروط الاستخدام والأحكام"
-              >
-                <FileText className="w-3 h-3 text-cyan-400" />
-                <span>الشروط</span>
-              </button>
-
-              <button
-                onClick={() => onOpenPolicyModal?.("guarantee")}
-                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-[10px] text-amber-300 transition-all cursor-pointer"
-                title="الضمان الذهبي"
-              >
-                <Award className="w-3 h-3 text-amber-400" />
-                <span>الضمان الذهبي</span>
-              </button>
-
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px]">
-                <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
-                <span className="text-xs">🇲🇦</span>
-              </div>
+            <div className="flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px]">
+              <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
+              <span className="text-xs">🇲🇦</span>
             </div>
-
           </div>
 
         </div>
