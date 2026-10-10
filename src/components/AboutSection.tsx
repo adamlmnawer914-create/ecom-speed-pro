@@ -22,7 +22,7 @@ import Logo from "@/components/Logo";
 export default function AboutSection() {
   const stats = [
     {
-      num: "+500",
+      num: "+20",
       label: "متجر تم إطلاقه بنجاح",
       sub: "في المغرب والعالم العربي",
       gradient: "from-blue-600 to-cyan-500",
@@ -210,8 +210,8 @@ export default function AboutSection() {
 
                 <div className="w-full pt-4 border-t border-blue-100/80 flex items-center justify-around text-center">
                   <div>
-                    <span className="text-sm font-black text-blue-600 block">+15M</span>
-                    <span className="text-[10px] text-slate-500 font-bold">درهم مبيعات لعملائنا</span>
+                    <span className="text-sm font-black text-blue-600 block">100%</span>
+                    <span className="text-[10px] text-slate-500 font-bold">رفع نسبة المبيعات</span>
                   </div>
                   <div className="w-[1px] h-8 bg-blue-200" />
                   <div>
