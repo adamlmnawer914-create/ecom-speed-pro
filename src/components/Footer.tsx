@@ -447,37 +447,80 @@ export default function Footer({
 
             </div>
 
-            {/* Pillar 3: Legendary Interactive Policy & Guarantee Jewel Buttons */}
-            <div className="flex items-center gap-2.5 w-full xl:w-auto justify-center xl:justify-end flex-wrap sm:flex-nowrap">
+            {/* Pillar 3: Luxurious 3D Emblem Jewels for Privacy & Terms & Guarantee */}
+            <div className="flex items-center gap-3.5 w-full xl:w-auto justify-center xl:justify-end">
               
-              {/* Luxury Privacy Policy Button */}
+              {/* 1. 3D Luxury Privacy Policy Icon Emblem */}
               <button
                 onClick={() => onOpenPolicyModal?.("privacy")}
-                className="group px-4 py-2.5 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border-2 border-emerald-400/50 hover:border-emerald-300 text-emerald-300 hover:text-emerald-200 shadow-[0_0_16px_rgba(16,185,129,0.25)] text-xs font-black transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer"
+                className="group relative flex flex-col items-center gap-1.5 cursor-pointer transition-all hover:scale-105 active:scale-95"
                 title="عرض سياسة الخصوصية وحماية البيانات"
               >
-                <Shield className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-                <span>سياسة الخصوصية</span>
+                <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500/30 via-teal-500/40 to-cyan-400/30 p-[2px] border-2 border-emerald-400/70 group-hover:border-emerald-300 shadow-[0_0_20px_rgba(16,185,129,0.35)] group-hover:shadow-[0_0_32px_rgba(16,185,129,0.7)] transition-all">
+                  <div className="w-full h-full bg-[#051c2e] rounded-[13px] flex items-center justify-center overflow-hidden relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/25 to-transparent pointer-events-none" />
+                    <Shield className="w-5 h-5 text-emerald-400 group-hover:scale-115 transition-transform drop-shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                  </div>
+                  {/* Verified Indicator Dot */}
+                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#040e29] shadow-xs" />
+                </div>
+                <div className="text-center">
+                  <span className="text-[11px] font-black text-emerald-300 block group-hover:text-emerald-200 transition-colors">
+                    سياسة الخصوصية
+                  </span>
+                  <span className="text-[9px] font-bold text-emerald-400/80 block">
+                    حماية البيانات 🔒
+                  </span>
+                </div>
               </button>
 
-              {/* Luxury Terms of Service Button */}
+              {/* 2. 3D Luxury Terms & Conditions Icon Emblem */}
               <button
                 onClick={() => onOpenPolicyModal?.("terms")}
-                className="group px-4 py-2.5 rounded-2xl bg-blue-500/15 hover:bg-blue-500/25 border-2 border-blue-400/50 hover:border-blue-300 text-cyan-300 hover:text-white shadow-[0_0_16px_rgba(59,130,246,0.25)] text-xs font-black transition-all hover:scale-105 active:scale-95 flex items-center gap-1.5 cursor-pointer"
-                title="عرض شروط وأحكام الاستخدام والخدمة"
+                className="group relative flex flex-col items-center gap-1.5 cursor-pointer transition-all hover:scale-105 active:scale-95"
+                title="عرض الشروط والأحكام وعقود الخدمة"
               >
-                <FileText className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
-                <span>شروط الاستخدام</span>
+                <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-500/30 via-indigo-500/40 to-cyan-400/30 p-[2px] border-2 border-cyan-400/70 group-hover:border-cyan-300 shadow-[0_0_20px_rgba(6,182,212,0.35)] group-hover:shadow-[0_0_32px_rgba(6,182,212,0.7)] transition-all">
+                  <div className="w-full h-full bg-[#051c3a] rounded-[13px] flex items-center justify-center overflow-hidden relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/25 to-transparent pointer-events-none" />
+                    <FileText className="w-5 h-5 text-cyan-300 group-hover:scale-115 transition-transform drop-shadow-[0_0_8px_rgba(34,211,238,0.9)]" />
+                  </div>
+                  {/* Verified Indicator Dot */}
+                  <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-cyan-400 border-2 border-[#040e29] shadow-xs" />
+                </div>
+                <div className="text-center">
+                  <span className="text-[11px] font-black text-cyan-300 block group-hover:text-white transition-colors">
+                    الشروط والأحكام
+                  </span>
+                  <span className="text-[9px] font-bold text-cyan-400/80 block">
+                    عقود رسمية 📜
+                  </span>
+                </div>
               </button>
 
-              {/* Legendary Golden Guarantee Jewel Button */}
+              {/* 3. 3D Royal Golden Guarantee Emblem */}
               <button
                 onClick={() => onOpenPolicyModal?.("guarantee")}
-                className="group px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(245,158,11,0.6)] hover:shadow-[0_0_35px_rgba(245,158,11,0.9)] transition-all hover:scale-105 active:scale-95 flex items-center gap-2 cursor-pointer"
+                className="group relative flex flex-col items-center gap-1.5 cursor-pointer transition-all hover:scale-105 active:scale-95"
                 title="عرض تفاصيل الضمان الذهبي لراحة البال"
               >
-                <Award className="w-4 h-4 text-slate-950 group-hover:rotate-12 transition-transform" />
-                <span>الضمان الذهبي 🛡️</span>
+                <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-400 via-yellow-300 to-amber-500 p-[2px] border-2 border-yellow-200 shadow-[0_0_25px_rgba(245,158,11,0.65)] group-hover:shadow-[0_0_35px_rgba(245,158,11,0.95)] transition-all">
+                  <div className="w-full h-full bg-gradient-to-tr from-amber-400 to-yellow-300 rounded-[13px] flex items-center justify-center overflow-hidden relative">
+                    <Award className="w-6 h-6 text-slate-950 group-hover:rotate-12 transition-transform drop-shadow-sm" />
+                  </div>
+                  {/* Verified Crown Dot */}
+                  <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-amber-300 border-2 border-[#040e29] flex items-center justify-center text-[8px] font-black text-slate-950 shadow-xs">
+                    ★
+                  </span>
+                </div>
+                <div className="text-center">
+                  <span className="text-[11px] font-black text-amber-300 block group-hover:text-yellow-200 transition-colors">
+                    الضمان الذهبي
+                  </span>
+                  <span className="text-[9px] font-bold text-amber-400/85 block">
+                    راحة بال 100% 🛡️
+                  </span>
+                </div>
               </button>
 
             </div>
@@ -490,82 +533,151 @@ export default function Footer({
         {/* ======================================================== */}
         {/* 4. MASTER LUXURY BANNER STRIP (شريط بانر فائق الفخامة والانسيابية) */}
         {/* ======================================================== */}
-        <div className="relative rounded-2xl sm:rounded-3xl bg-gradient-to-r from-[#05112e] via-[#071842] to-[#040e29] border border-blue-500/30 text-white p-4 sm:p-5 shadow-[0_15px_40px_rgba(2,8,26,0.5)] overflow-hidden">
+        <div className="relative rounded-3xl bg-gradient-to-r from-[#03091e] via-[#06184a] via-[#092265] to-[#03091e] border-2 border-cyan-400/40 text-white p-5 sm:p-6 shadow-[0_25px_65px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.2)] overflow-hidden group">
           
-          {/* Top Laser Accent */}
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-cyan-400/80 via-blue-500/80 to-transparent pointer-events-none" />
+          {/* Multi-Spectral Laser Top Accent */}
+          <div className="absolute top-0 inset-x-0 h-[2.5px] bg-gradient-to-r from-transparent via-cyan-400 via-blue-500 via-fuchsia-500 via-emerald-400 to-transparent pointer-events-none" />
+
+          {/* Deep Ambient Glows */}
+          <div className="absolute -top-24 right-1/4 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-24 left-1/4 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
 
           {/* Horizontal Banner Main Bar */}
-          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-4 pb-3.5 border-b border-blue-900/50">
+          <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-5 pb-4 border-b border-blue-900/60">
             
-            {/* Brand Logo & Compact Tagline */}
-            <div className="flex items-center gap-3">
-              <div className="bg-white rounded-xl p-1.5 shadow-sm border border-white/80 shrink-0">
-                <Logo size="sm" showSlogan={false} />
+            {/* Brand Logo & Compact Tagline with 3D Bevel Frame */}
+            <div className="flex items-center gap-3.5">
+              <div className="relative p-[2px] rounded-2xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-purple-600 shadow-[0_0_20px_rgba(59,130,246,0.5)] shrink-0 group-hover:scale-105 transition-transform">
+                <div className="bg-white rounded-[14px] p-2 shadow-inner">
+                  <Logo size="sm" showSlogan={false} />
+                </div>
               </div>
               <div className="text-right">
-                <span className="text-xs sm:text-sm font-black text-white block">ECOM SPEED PRO</span>
-                <span className="text-[10px] sm:text-[11px] text-blue-200/70 font-semibold block">حلول وهندسة التجارة الإلكترونية بالمغرب</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm sm:text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-white tracking-wide">
+                    ECOM SPEED PRO
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-[9px] font-black text-cyan-300">
+                    رسمي 2026
+                  </span>
+                </div>
+                <span className="text-[11px] text-blue-200/80 font-bold flex items-center gap-1.5 mt-0.5">
+                  <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" />
+                  <span>حلول وهندسة التجارة الإلكترونية الأكثر تطوراً بالمغرب 🇲🇦</span>
+                </span>
               </div>
             </div>
 
-            {/* Horizontal Package Action Pills */}
-            <div className="flex items-center gap-2 flex-wrap justify-center">
+            {/* Horizontal Package Action Pills with Glowing Badges */}
+            <div className="flex items-center gap-2.5 flex-wrap justify-center">
+              
+              {/* Package 1 */}
               <button
                 onClick={scrollToServices}
-                className="px-3.5 py-1.5 rounded-xl bg-[#091d52]/80 hover:bg-[#0e2c7a] border border-blue-800/80 hover:border-rose-400/80 text-xs font-bold text-slate-100 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-rose-950/70 via-red-900/60 to-rose-950/70 hover:from-rose-900 hover:to-red-800 border border-rose-500/50 hover:border-rose-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.25)] hover:shadow-[0_0_25px_rgba(244,63,94,0.55)] hover:scale-105 active:scale-95 group"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                <span>صفحة الهبوط (500 د.م)</span>
+                <Flame className="w-3.5 h-3.5 text-rose-400 group-hover:scale-115 transition-transform" />
+                <span>صفحة الهبوط</span>
+                <span className="px-2 py-0.5 rounded-lg bg-rose-500/30 text-rose-300 font-mono text-[11px] font-black border border-rose-400/30">
+                  500 د.م
+                </span>
               </button>
 
+              {/* Package 2 */}
               <button
                 onClick={scrollToServices}
-                className="px-3.5 py-1.5 rounded-xl bg-[#091d52]/80 hover:bg-[#0e2c7a] border border-blue-800/80 hover:border-cyan-400/80 text-xs font-bold text-slate-100 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-950/70 via-blue-900/60 to-cyan-950/70 hover:from-cyan-900 hover:to-blue-800 border border-cyan-500/50 hover:border-cyan-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.25)] hover:shadow-[0_0_25px_rgba(6,182,212,0.55)] hover:scale-105 active:scale-95 group"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-                <span>المتجر القياسي (1500 د.م)</span>
+                <Zap className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-115 transition-transform" />
+                <span>المتجر القياسي</span>
+                <span className="px-2 py-0.5 rounded-lg bg-cyan-500/30 text-cyan-200 font-mono text-[11px] font-black border border-cyan-400/30">
+                  1500 د.م
+                </span>
               </button>
 
+              {/* Package 3 */}
               <button
                 onClick={scrollToServices}
-                className="px-3.5 py-1.5 rounded-xl bg-[#091d52]/80 hover:bg-[#0e2c7a] border border-blue-800/80 hover:border-amber-400/80 text-xs font-bold text-slate-100 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer shadow-xs hover:scale-105 active:scale-95"
+                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-950/70 via-yellow-950/60 to-amber-950/70 hover:from-amber-900 hover:to-yellow-800 border border-amber-500/50 hover:border-amber-400 text-xs font-black text-amber-100 transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_18px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 group"
               >
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                <span>منصة SaaS VIP (5000 د.م)</span>
+                <Crown className="w-3.5 h-3.5 text-amber-400 group-hover:scale-115 transition-transform" />
+                <span>منصة SaaS VIP</span>
+                <span className="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-mono text-[11px] font-black shadow-sm">
+                  5000 د.م
+                </span>
               </button>
 
+              {/* Features Guarantee Link */}
               <button
                 onClick={scrollToFeatures}
-                className="px-3 py-1.5 rounded-xl bg-blue-950/60 hover:bg-blue-900/70 border border-blue-800/60 hover:border-cyan-400/60 text-xs font-bold text-cyan-300 hover:text-white transition-all flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95"
+                className="px-3.5 py-2 rounded-2xl bg-blue-950/70 hover:bg-blue-900/80 border border-blue-400/40 hover:border-cyan-300 text-xs font-bold text-cyan-300 hover:text-white transition-all flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 shadow-[0_0_12px_rgba(59,130,246,0.2)]"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                <ShieldCheck className="w-4 h-4 text-cyan-400" />
                 <span>مزايا الأداء</span>
               </button>
+
             </div>
 
-            {/* Live Server Indicator Capsule */}
-            <div className="shrink-0 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#081a44]/90 border border-emerald-400/40 shadow-xs">
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
+            {/* Live Server Indicator Capsule with Cybernetic Neon */}
+            <div className="shrink-0 flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#061844]/95 border-2 border-emerald-400/50 shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+              <span className="relative flex h-3 w-3 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
               </span>
-              <span className="text-[11px] font-black text-emerald-300">
-                خوادم سحابية فائقة السرعة 99.9%
-              </span>
+              <div className="text-right">
+                <span className="text-[11px] font-black text-emerald-300 block">
+                  خوادم سحابية فائقة السرعة
+                </span>
+                <span className="text-[9px] font-bold text-emerald-400/80 block">
+                  جاهزية متواصلة 99.9% ⚡
+                </span>
+              </div>
             </div>
 
           </div>
 
-          {/* Slim Copyright & Location Row */}
-          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-[11px] font-bold text-blue-200/70 gap-2 pt-2.5">
+          {/* Slim Copyright & Luxury Accents Row */}
+          <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between text-[11px] font-bold text-blue-200/75 gap-3 pt-3">
+            
             <p className="text-center sm:text-right">
               © 2026 ECOM SPEED PRO • جميع الحقوق محفوظة لشركة حلول التجارة الإلكترونية والتسويق الرقمي بالمغرب.
             </p>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px]">
-              <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
-              <span>🇲🇦</span>
+
+            {/* Quick Luxury Icon Access for Legal & Trust in Footer Banner */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => onOpenPolicyModal?.("privacy")}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 hover:bg-emerald-500/20 border border-white/10 hover:border-emerald-400/40 text-[10px] text-slate-300 hover:text-emerald-300 transition-all cursor-pointer"
+                title="سياسة الخصوصية"
+              >
+                <Shield className="w-3 h-3 text-emerald-400" />
+                <span>الخصوصية</span>
+              </button>
+
+              <button
+                onClick={() => onOpenPolicyModal?.("terms")}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/5 hover:bg-cyan-500/20 border border-white/10 hover:border-cyan-400/40 text-[10px] text-slate-300 hover:text-cyan-300 transition-all cursor-pointer"
+                title="شروط الاستخدام والأحكام"
+              >
+                <FileText className="w-3 h-3 text-cyan-400" />
+                <span>الشروط</span>
+              </button>
+
+              <button
+                onClick={() => onOpenPolicyModal?.("guarantee")}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 text-[10px] text-amber-300 transition-all cursor-pointer"
+                title="الضمان الذهبي"
+              >
+                <Award className="w-3 h-3 text-amber-400" />
+                <span>الضمان الذهبي</span>
+              </button>
+
+              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-200 text-[10px]">
+                <span>مصمم بأعلى معايير الفخامة والسرعة العالمية</span>
+                <span className="text-xs">🇲🇦</span>
+              </div>
             </div>
+
           </div>
 
         </div>
