@@ -22,15 +22,12 @@ export default function Navbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [servicesDropdown, setServicesDropdown] = useState(false);
-  const [productsDropdown, setProductsDropdown] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
-  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
 
   // Clean navigation helper without hashtag (#) in URL
   const navigateToSection = (sectionId: string) => {
     setMobileMenuOpen(false);
     setServicesDropdown(false);
-    setProductsDropdown(false);
     
     if (sectionId === "home") {
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -130,45 +127,7 @@ export default function Navbar({
               )}
             </div>
 
-            {/* 3. Products Dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => setProductsDropdown(true)}
-              onMouseLeave={() => setProductsDropdown(false)}
-            >
-              <button
-                onClick={() => navigateToSection("products")}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-full hover:text-blue-600 transition-colors cursor-pointer"
-              >
-                <span>المنتجات</span>
-                <ChevronDown className="w-4 h-4 text-blue-600 transition-transform duration-200" />
-              </button>
 
-              {productsDropdown && (
-                <div className="absolute top-full right-0 mt-1 w-60 bg-white border border-blue-100 rounded-2xl shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <button
-                    onClick={() => navigateToSection("products")}
-                    className="w-full text-right block px-3 py-2 rounded-xl text-xs font-bold text-[#0a193c] hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    • قوالب المتاجر فائقة السرعة
-                  </button>
-                  <button
-                    onClick={() => navigateToSection("products")}
-                    className="w-full text-right block px-3 py-2 rounded-xl text-xs font-bold text-[#0a193c] hover:bg-blue-50 hover:text-blue-600 transition-colors cursor-pointer"
-                  >
-                    • أنظمة إدارة وتتبع المخزون
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* 4. Blog Tab */}
-            <button
-              onClick={() => navigateToSection("blog")}
-              className="px-3 py-1.5 hover:text-blue-600 transition-colors cursor-pointer"
-            >
-              المدونة
-            </button>
 
             {/* 5. About Tab */}
             <button
@@ -285,18 +244,7 @@ export default function Navbar({
             >
               الخدمات ∨
             </button>
-            <button
-              onClick={() => navigateToSection("products")}
-              className="px-3 py-1 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 shrink-0 cursor-pointer"
-            >
-              المنتجات ∨
-            </button>
-            <button
-              onClick={() => navigateToSection("blog")}
-              className="px-3 py-1 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 shrink-0 cursor-pointer"
-            >
-              المدونة
-            </button>
+
             <button
               onClick={() => navigateToSection("about")}
               className="px-3 py-1 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 shrink-0 cursor-pointer"
@@ -365,39 +313,7 @@ export default function Navbar({
                 )}
               </div>
 
-              {/* Products Collapsible in Drawer */}
-              <div className="rounded-2xl border border-blue-100 overflow-hidden bg-blue-50/40">
-                <button
-                  onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
-                  className="w-full px-4 py-2.5 flex items-center justify-between text-blue-900 font-black cursor-pointer"
-                >
-                  <span>المنتجات والحلول البرمجية</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform ${mobileProductsOpen ? "rotate-180" : ""}`} />
-                </button>
-                {mobileProductsOpen && (
-                  <div className="px-3 pb-3 space-y-1.5 text-xs font-bold">
-                    <button
-                      onClick={() => navigateToSection("products")}
-                      className="w-full text-right p-2 rounded-xl bg-white text-slate-800 hover:text-blue-600 block shadow-xs"
-                    >
-                      • قوالب المتاجر فائقة السرعة
-                    </button>
-                    <button
-                      onClick={() => navigateToSection("products")}
-                      className="w-full text-right p-2 rounded-xl bg-white text-slate-800 hover:text-blue-600 block shadow-xs"
-                    >
-                      • أنظمة إدارة وتتبع المخزون
-                    </button>
-                  </div>
-                )}
-              </div>
 
-              <button
-                onClick={() => navigateToSection("blog")}
-                className="w-full text-right px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-blue-600 transition-colors"
-              >
-                المدونة الرقمية
-              </button>
 
               <button
                 onClick={() => navigateToSection("about")}

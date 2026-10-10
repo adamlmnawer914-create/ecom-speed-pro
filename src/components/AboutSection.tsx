@@ -36,7 +36,7 @@ export default function AboutSection() {
       icon: ShieldCheck,
     },
     {
-      num: "24 ساعة",
+      num: "48 ساعة",
       label: "متوسط وقت التسليم",
       sub: "تسليم قياسي وجاهزية فورية",
       gradient: "from-amber-500 to-orange-500",

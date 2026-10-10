@@ -5,9 +5,7 @@ import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FeaturesRibbon from "@/components/FeaturesRibbon";
 import PricingSection from "@/components/PricingSection";
-import ProductsSection from "@/components/ProductsSection";
 import SocialSection from "@/components/SocialSection";
-import BlogSection from "@/components/BlogSection";
 import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
 import OrderModal from "@/components/OrderModal";
@@ -85,14 +83,8 @@ export default function Home() {
       {/* Services & Pricing Section */}
       <PricingSection onSelectPlan={handleOpenOrder} />
 
-      {/* Products & Templates Section */}
-      <ProductsSection onSelectPlan={handleOpenOrder} />
-
       {/* Futuristic 3D Social Media Stage Section matching user attachment */}
       <SocialSection />
-
-      {/* Digital eCommerce Blog Section */}
-      <BlogSection />
 
       {/* About Us & Vision Section */}
       <AboutSection />
