@@ -92,19 +92,31 @@ export default function AdminDashboardPage() {
   const [newOrderNotes, setNewOrderNotes] = useState("");
 
   // Function to fetch real live orders from backend API & localStorage
+  // Test order IDs to permanently exclude
+  const TEST_ORDER_IDS = new Set(["ESP-849201", "ESP-910442", "ESP-732019"]);
+
+  // Function to fetch real live orders from backend API & localStorage
   const fetchRealOrders = async () => {
     try {
       const res = await fetch("/api/orders");
       const data = await res.json();
       let apiOrders: any[] = [];
       if (data && data.success && Array.isArray(data.orders)) {
-        apiOrders = data.orders;
+        apiOrders = data.orders.filter((o: any) => o && !TEST_ORDER_IDS.has(o.id));
       }
 
       let localOrders: any[] = [];
       try {
         const stored = localStorage.getItem("ecom_speed_pro_orders");
-        if (stored) localOrders = JSON.parse(stored);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            localOrders = parsed.filter((item: any) => item && !TEST_ORDER_IDS.has(item.id));
+            if (localOrders.length !== parsed.length) {
+              localStorage.setItem("ecom_speed_pro_orders", JSON.stringify(localOrders));
+            }
+          }
+        }
       } catch (e) {
         console.warn("Storage warning:", e);
       }
@@ -112,7 +124,7 @@ export default function AdminDashboardPage() {
       const map = new Map<string, OrderItem>();
 
       [...apiOrders, ...localOrders].forEach((item: any) => {
-        if (!item || !item.id) return;
+        if (!item || !item.id || TEST_ORDER_IDS.has(item.id)) return;
         const rawPrice =
           typeof item.price === "number"
             ? item.price
@@ -163,14 +175,17 @@ export default function AdminDashboardPage() {
         (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
+      setOrders(sortedList);
       if (sortedList.length > 0) {
-        setOrders(sortedList);
         setSelectedOrder((prev) => {
           if (!prev) return sortedList[0];
           const found = sortedList.find((o) => o.id === prev.id);
           return found || sortedList[0];
         });
+      } else {
+        setSelectedOrder(null);
       }
+
       setLastSyncTime(
         new Date().toLocaleTimeString("ar-MA", {
           hour: "2-digit",
@@ -1124,8 +1139,20 @@ export default function AdminDashboardPage() {
                         </div>
                       </>
                     ) : (
-                      <div className="text-center py-12 text-slate-400 font-bold text-xs">
-                        اختر طلباً من الجدول لعرض التفاصيل
+                      <div className="text-center py-16 px-4 text-slate-400 font-bold text-xs flex flex-col items-center justify-center gap-3">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50/70 border border-blue-100 flex items-center justify-center text-blue-500">
+                          <FileSpreadsheet className="w-7 h-7 text-blue-500" />
+                        </div>
+                        <div>
+                          <span className="block font-black text-[#0b1739] text-sm mb-1">
+                            لا توجد طلبات محددة
+                          </span>
+                          <span className="block text-slate-400 max-w-xs text-[11px] leading-relaxed">
+                            {orders.length === 0
+                              ? "بانتظار استلام أول طلب شراء حقيقي لتظهر تفاصيله وصور منتجاته هنا."
+                              : "اختر طلباً من الجدول لعرض كامل بياناته وصور منتجاته."}
+                          </span>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1163,8 +1190,42 @@ export default function AdminDashboardPage() {
                         <tbody className="divide-y divide-[#edf3fa]">
                           {filteredOrders.length === 0 ? (
                             <tr>
-                              <td colSpan={9} className="text-center py-10 text-slate-400 font-bold">
-                                لا توجد طلبات مطابقة للبحث حالياً
+                              <td colSpan={9} className="text-center py-14 px-4">
+                                <div className="flex flex-col items-center justify-center gap-3 py-6">
+                                  <div className="w-16 h-16 rounded-3xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center shadow-inner">
+                                    <ShoppingCart className="w-8 h-8 text-blue-500 animate-pulse" />
+                                  </div>
+                                  <div className="text-center max-w-md mx-auto">
+                                    <h4 className="text-base font-black text-[#0b1739]">
+                                      {orders.length === 0
+                                        ? "لا توجد طلبات حتى الآن — بانتظار أول طلب شراء"
+                                        : "لا توجد نتائج مطابقة لبحثك"}
+                                    </h4>
+                                    <p className="text-xs text-slate-500 font-bold mt-1 leading-relaxed">
+                                      {orders.length === 0
+                                        ? "لوحة التحكم متصلة بالسيرفر لحظياً وجاهزة لاستقبال وتسجيل بيانات العملاء الحقيقيين بمجرد طلبهم من المتجر."
+                                        : "جرب تغيير كلمات البحث أو إعادة ضبط الفلاتر لعرض الطلبات."}
+                                    </p>
+                                  </div>
+                                  {orders.length === 0 && (
+                                    <div className="flex items-center gap-2 mt-2">
+                                      <button
+                                        onClick={() => setCreateModalOpen(true)}
+                                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer"
+                                      >
+                                        <PlusCircle className="w-4 h-4" />
+                                        <span>تسجيل طلب يدوي</span>
+                                      </button>
+                                      <a
+                                        href="/"
+                                        className="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer border border-blue-200"
+                                      >
+                                        <ExternalLink className="w-4 h-4" />
+                                        <span>زيارة المتجر</span>
+                                      </a>
+                                    </div>
+                                  )}
+                                </div>
                               </td>
                             </tr>
                           ) : (
@@ -1255,32 +1316,32 @@ export default function AdminDashboardPage() {
                     </div>
 
                     {/* --- BOTTOM PROMO & FUTURE BANNER --- */}
-                    <div className="rounded-2xl bg-gradient-to-r from-[#f0f7ff] via-[#e6f1fd] to-[#f4f9ff] border border-[#d4e4f7] p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 overflow-hidden relative shadow-sm">
+                    <div className="rounded-3xl bg-gradient-to-r from-[#f0f7ff] via-[#e6f1fd] to-[#f4f9ff] border border-[#cbe1f8] p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-6 overflow-hidden relative shadow-sm">
                       
                       {/* Right side in RTL: 3D Blue Shield + Text */}
-                      <div className="flex items-center gap-3.5 text-right z-10">
-                        <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-[2px] shadow-md shrink-0">
+                      <div className="flex items-center gap-4 text-right z-10 flex-1">
+                        <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-400 p-[2px] shadow-md shrink-0">
                           <div className="w-full h-full bg-white rounded-[14px] flex items-center justify-center text-blue-600">
-                            <ShieldCheck className="w-7 h-7 text-blue-600" />
+                            <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8 text-blue-600" />
                           </div>
                         </div>
                         <div>
-                          <h4 className="text-sm sm:text-base font-black text-[#0b1739]">
+                          <h4 className="text-base sm:text-lg font-black text-[#0b1739]">
                             معاً نحو مستقبل رقمي أفضل
                           </h4>
-                          <p className="text-xs text-[#475569] font-medium mt-0.5">
+                          <p className="text-xs sm:text-sm text-[#475569] font-medium mt-1 leading-relaxed">
                             نقدم لك أفضل الحلول والخدمات لتحقيق نجاحك في عالم التجارة الإلكترونية
                           </p>
                         </div>
                       </div>
 
-                      {/* Left side in RTL: 3D Tech Graphic Illustration */}
-                      <div className="relative shrink-0 w-64 h-24 sm:w-80 sm:h-28 z-10">
+                      {/* Left side in RTL: The exact user-uploaded 3D Future Digital Banner */}
+                      <div className="relative shrink-0 w-full sm:w-[320px] md:w-[380px] lg:w-[460px] h-48 sm:h-52 rounded-2xl overflow-hidden border border-cyan-400/50 shadow-[0_8px_25px_rgba(6,182,212,0.35)] z-10 group">
                         <Image
-                          src="/images/admin_bottom_tech_graphic.webp"
-                          alt="مستقبل التجارة الرقمية والحلول السحابية"
+                          src="/images/ecom_future_digital_banner.jpg"
+                          alt="معاً نحو مستقبل رقمي أفضل - ECOM SPEED PRO"
                           fill
-                          className="object-contain filter drop-shadow-md"
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
 
