@@ -98,7 +98,7 @@ export default function Footer({
               <div className="relative shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl p-[2px] bg-gradient-to-tr from-[#00f5d4] via-[#3a86ff] to-[#7928ca] shadow-[0_0_25px_rgba(58,134,255,0.6)] group hover:scale-105 transition-all duration-300">
                 <div className="w-full h-full bg-white rounded-[14px] sm:rounded-[22px] p-1 flex items-center justify-center overflow-hidden">
                   <Image
-                    src="/images/ecom_brand_logo_transparent.png"
+                    src="/images/ecom_brand_logo_transparent.webp"
                     alt="شعار ECOM SPEED PRO ثلاثي الأبعاد"
                     width={160}
                     height={160}
@@ -458,8 +458,8 @@ export default function Footer({
           <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-28 bg-cyan-500/15 blur-3xl rounded-full pointer-events-none" />
           <div className="absolute -bottom-28 -right-28 w-80 h-80 bg-purple-600/10 blur-3xl rounded-full pointer-events-none" />
 
-          {/* 4 Main Columns Grid */}
-          <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-8 pb-8 border-b border-blue-900/50">
+          {/* Main Columns Grid */}
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14 mb-8 pb-8 border-b border-blue-900/50">
             
             {/* ---------------- Col 1: Brand & Mission ---------------- */}
             <div className="flex flex-col justify-between space-y-4">
@@ -572,150 +572,6 @@ export default function Footer({
                   </span>
                   <ChevronLeft className="w-4 h-4 text-cyan-400 group-hover:-translate-x-1 transition-transform" />
                 </button>
-              </div>
-            </div>
-
-            {/* ---------------- Col 3: Quick Links ---------------- */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-2 border-b border-blue-900/50 mb-3.5">
-                <div className="w-6 h-6 rounded-lg bg-blue-500/20 border border-blue-400/40 flex items-center justify-center">
-                  <FileText className="w-3.5 h-3.5 text-blue-300" />
-                </div>
-                <h5 className="text-sm sm:text-base font-black text-white tracking-wide">
-                  روابط سريعة
-                </h5>
-              </div>
-
-              <ul className="space-y-2.5 text-xs sm:text-[13px] font-bold text-slate-200">
-                <li>
-                  <button
-                    onClick={scrollToTop}
-                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-cyan-400/40 hover:text-cyan-300 transition-all flex items-center justify-between group cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 group-hover:scale-125 transition-transform" />
-                      <span>• الصفحة الرئيسية</span>
-                    </div>
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-cyan-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={scrollToServices}
-                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-blue-400/40 hover:text-blue-300 transition-all flex items-center justify-between group cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-blue-400 group-hover:scale-125 transition-transform" />
-                      <span>• مقارنة الباقات والأسعار</span>
-                    </div>
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => onOpenPolicyModal?.("privacy")}
-                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-emerald-400/40 hover:text-emerald-300 transition-all flex items-center justify-between group text-right cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 group-hover:scale-125 transition-transform" />
-                      <span>• سياسة الخصوصية وحماية البيانات</span>
-                    </div>
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => onOpenPolicyModal?.("terms")}
-                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-indigo-400/40 hover:text-indigo-300 transition-all flex items-center justify-between group text-right cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-indigo-400 group-hover:scale-125 transition-transform" />
-                      <span>• شروط الخدمة والاتفاقية</span>
-                    </div>
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => onOpenPolicyModal?.("guarantee")}
-                    className="w-full p-2.5 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-amber-400/40 hover:text-amber-300 transition-all flex items-center justify-between group text-right cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-amber-400 group-hover:scale-125 transition-transform" />
-                      <span>• الضمان الذهبي واسترجاع الأموال</span>
-                    </div>
-                    <ChevronLeft className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-300 group-hover:-translate-x-0.5 transition-transform" />
-                  </button>
-                </li>
-              </ul>
-            </div>
-
-            {/* ---------------- Col 4: Help Center & Sales ---------------- */}
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 pb-2 border-b border-blue-900/50 mb-3.5">
-                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
-                  <Phone className="w-3.5 h-3.5 text-emerald-300" />
-                </div>
-                <h5 className="text-sm sm:text-base font-black text-white tracking-wide">
-                  مركز المساعدة والمبيعات
-                </h5>
-              </div>
-
-              <div className="space-y-2.5">
-                {/* 1. Phone Call */}
-                <a
-                  href={PHONE_LINK}
-                  className="p-3 rounded-2xl bg-[#091d52]/70 hover:bg-[#0e2c7a] border border-blue-800/60 hover:border-cyan-400/60 transition-all flex items-center justify-between text-xs font-bold text-white group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(6,182,212,0.2)]"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-blue-600/30 border border-blue-400/40 flex items-center justify-center">
-                      <Phone className="w-3.5 h-3.5 text-cyan-300" />
-                    </div>
-                    <span dir="ltr" className="font-mono font-bold text-slate-100 text-sm tracking-wide">
-                      {WHATSAPP_NUMBER}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-cyan-300 bg-cyan-950/80 px-2 py-0.5 rounded-md border border-cyan-500/40 font-bold">
-                    اتصال فوري
-                  </span>
-                </a>
-
-                {/* 2. WhatsApp Direct 24/7 */}
-                <a
-                  href={WHATSAPP_LINK}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="p-3 rounded-2xl bg-emerald-950/40 hover:bg-emerald-900/50 border border-emerald-500/40 hover:border-emerald-400 transition-all flex items-center justify-between text-xs font-bold text-emerald-300 group cursor-pointer shadow-sm hover:shadow-[0_4px_18px_rgba(16,185,129,0.25)]"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center">
-                      <WhatsAppIcon size={18} color="#34d399" />
-                    </div>
-                    <span className="font-bold text-slate-100 group-hover:text-emerald-200">
-                      دعم واتساب المباشر 24/7
-                    </span>
-                  </div>
-                  <ChevronLeft className="w-4 h-4 text-emerald-400 group-hover:-translate-x-1 transition-transform" />
-                </a>
-
-                {/* 3. Official Email */}
-                <a
-                  href={EMAIL_LINK}
-                  className="p-3 rounded-2xl bg-purple-950/30 hover:bg-purple-900/40 border border-purple-500/30 hover:border-purple-400/50 transition-all flex items-center gap-2.5 text-xs font-semibold text-slate-200 hover:text-purple-200 group cursor-pointer"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-purple-500/20 border border-purple-400/40 flex items-center justify-center shrink-0">
-                    <Mail className="w-3.5 h-3.5 text-purple-300" />
-                  </div>
-                  <span dir="ltr" className="font-mono text-xs font-bold text-purple-200 truncate block">
-                    support@ecomspeedpro.com
-                  </span>
-                </a>
-
-                {/* 4. Working Hours */}
-                <div className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center gap-2.5 text-[11px] font-bold text-slate-300">
-                  <Clock className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                  <span>طيلة أيام الأسبوع: 09:00 - 22:00</span>
-                </div>
               </div>
             </div>
 

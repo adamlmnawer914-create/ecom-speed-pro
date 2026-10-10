@@ -27,7 +27,7 @@ export default function SearchModal({
       price: "500 درهم",
       badge: "الأكثر طلباً 🔥",
       desc: "صفحة هبوط مخصصة لمنتج رابح بمعدل تحويل مرتفع وسرعة خارقة",
-      image: "/images/card_landing_new.png",
+      image: "/images/card_landing_new.webp",
     },
     {
       id: "standard",
@@ -36,7 +36,7 @@ export default function SearchModal({
       price: "1500 درهم",
       badge: "الأكثر مبيعاً ⚡",
       desc: "متجر متكامل لعرض منتجاتك وتتبع المبيعات والطلبات بكل سلاسة",
-      image: "/images/card_standard_new.png",
+      image: "/images/card_standard_new.webp",
     },
     {
       id: "saas",
@@ -45,7 +45,7 @@ export default function SearchModal({
       price: "5000 درهم",
       badge: "VIP الخيار الأقوى 👑",
       desc: "منصة تجارة إلكترونية متطورة مع لوحة تحكم، أتمتة كاملة، وربط بوابات دفع",
-      image: "/images/card_saas_new.png",
+      image: "/images/card_saas_new.webp",
     },
     {
       id: "templates",
@@ -54,7 +54,7 @@ export default function SearchModal({
       price: "مضمنة مجاناً",
       badge: "ميزة حصرية ✨",
       desc: "تصاميم عصرية جاهزة ومتوافقة بنسبة 100% مع الهواتف الذكية",
-      image: "/images/hero_showcase_luxury.png",
+      image: "/images/hero_showcase_luxury.webp",
     },
     {
       id: "payment",
@@ -63,7 +63,7 @@ export default function SearchModal({
       price: "مجاناً مع الباقات",
       badge: "أمان بنكي 100% 🛡️",
       desc: "تفعيل فوري لبطاقات فيزا، ماستركارد، وبطاقات الدفع المغربية مع حماية SSL",
-      image: "/images/card_saas_new.png",
+      image: "/images/card_saas_new.webp",
     },
   ];
 

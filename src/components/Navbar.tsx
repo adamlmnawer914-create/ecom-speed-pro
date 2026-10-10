@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Search, ShoppingCart, Heart, User, ChevronDown, Menu, X, ArrowLeft, Sparkles, Layers, Phone } from "lucide-react";
+import { Search, ChevronDown, Menu, X, ArrowLeft, Sparkles, Layers, Phone } from "lucide-react";
 import Logo from "@/components/Logo";
 
 interface NavbarProps {
@@ -166,38 +166,7 @@ export default function Navbar({
               </button>
             </form>
 
-            {/* 3 Action Buttons Capsule (Matching the attached image 100%) */}
-            <div className="flex items-center gap-2.5 sm:gap-3.5 bg-white border border-[#dbeafe] rounded-full px-3 sm:px-4 py-1.5 shadow-sm">
-              {/* Shopping Cart Icon with Badge */}
-              <button
-                onClick={onOpenCart}
-                title="سلة المشتريات"
-                className="relative text-[#1d4ed8] hover:scale-110 transition-transform cursor-pointer"
-              >
-                <ShoppingCart className="w-4 h-4 fill-current" />
-                <span className="absolute -top-2.5 -right-2 bg-[#1d4ed8] text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow">
-                  1
-                </span>
-              </button>
 
-              {/* Heart Wishlist */}
-              <button
-                onClick={onOpenWishlist}
-                title="المفضلة والمشاريع المحفوظة"
-                className="text-[#1d4ed8] hover:scale-110 transition-transform cursor-pointer hover:text-rose-500"
-              >
-                <Heart className="w-4 h-4 fill-current" />
-              </button>
-
-              {/* User Account / Portal */}
-              <button
-                onClick={onOpenAccount}
-                title="بوابة العملاء والمستثمرين"
-                className="text-[#1d4ed8] hover:scale-110 transition-transform cursor-pointer hover:text-blue-800"
-              >
-                <User className="w-4 h-4 fill-current" />
-              </button>
-            </div>
 
             {/* Mobile Hamburger Menu Toggle */}
             <button
@@ -330,39 +299,7 @@ export default function Navbar({
               </button>
             </div>
 
-            {/* Quick 3 Actions in Mobile Drawer */}
-            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-black">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenCart?.();
-                }}
-                className="p-2.5 rounded-xl bg-blue-50 text-blue-700 flex flex-col items-center gap-1 border border-blue-200"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                <span>السلة (1)</span>
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenWishlist?.();
-                }}
-                className="p-2.5 rounded-xl bg-pink-50 text-rose-700 flex flex-col items-center gap-1 border border-pink-200"
-              >
-                <Heart className="w-4 h-4" />
-                <span>المفضلة</span>
-              </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  onOpenAccount?.();
-                }}
-                className="p-2.5 rounded-xl bg-indigo-50 text-indigo-700 flex flex-col items-center gap-1 border border-indigo-200"
-              >
-                <User className="w-4 h-4" />
-                <span>حسابي</span>
-              </button>
-            </div>
+
           </div>
         )}
 

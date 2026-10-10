@@ -86,7 +86,7 @@ export default function HeroSection({ onOpenOrderModal, onOpenPackageSelect }: H
               {/* The image itself is the card: rounded corners, smooth luxury shadow, edge-to-edge without outer frame */}
               <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-[0_20px_50px_rgba(30,58,138,0.25)] border border-white/70 transition-all duration-500 hover:shadow-[0_25px_65px_rgba(30,58,138,0.35)] hover:scale-[1.015]">
                 <Image
-                  src="/images/hero_showcase_luxury.png"
+                  src="/images/hero_showcase_luxury.webp"
                   alt="متجر إلكتروني احترافي متكامل Ecom Speed Pro"
                   width={1024}
                   height={683}

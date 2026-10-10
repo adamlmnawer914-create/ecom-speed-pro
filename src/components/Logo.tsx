@@ -32,7 +32,7 @@ export default function Logo({
         style={{ width: iconSize, height: iconSize }}
       >
         <Image
-          src="/images/ecom_brand_logo_transparent.png"
+          src="/images/ecom_brand_logo_transparent.webp"
           alt="ECOM SPEED PRO Logo"
           width={120}
           height={120}

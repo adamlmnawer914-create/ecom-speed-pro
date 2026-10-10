@@ -15,7 +15,7 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
       name: "صفحة الهبوط (Landing Page)",
       subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح",
       price: "500 درهم",
-      image: "/images/card_landing_new.png",
+      image: "/images/card_landing_new.webp",
       badge: {
         text: "الأكثر طلباً",
         icon: Flame,
@@ -41,7 +41,7 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
       name: "المتجر القياسي (Standard Store)",
       subtitle: "متجر متكامل متعدد المنتجات للعلامات التجارية الطموحة",
       price: "1500 درهم",
-      image: "/images/card_standard_new.png",
+      image: "/images/card_standard_new.webp",
       badge: {
         text: "الأكثر مبيعاً",
         icon: Zap,
@@ -67,7 +67,7 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
       name: "منصة التجارة المتقدمة (Advanced SaaS)",
       subtitle: "حل برمجي VIP متكامل لكبار التجار والشركات التوسعية",
       price: "5000 درهم",
-      image: "/images/card_saas_new.png",
+      image: "/images/card_saas_new.webp",
       badge: {
         text: "الخيار الأقوى",
         icon: Crown,

@@ -59,7 +59,7 @@ export default function Home() {
     <main className="relative min-h-screen flex flex-col bg-[#eaf4fd] text-[#0c1833] overflow-x-hidden">
       {/* Store Background matching attached image exactly */}
       <div 
-        className="fixed inset-0 w-full h-full bg-[url('/images/store_bg_master.png')] bg-cover bg-top bg-no-repeat -z-20 pointer-events-none" 
+        className="fixed inset-0 w-full h-full bg-[url('/images/store_bg_master.webp')] bg-cover bg-top bg-no-repeat -z-20 pointer-events-none" 
       />
       
       {/* Main Navbar with Crisp 3D Letter E Logo and complete mobile ribbon */}

@@ -86,10 +86,10 @@ export default function OrderModal({
     : "متجر إلكتروني احترافي متعدد الصفحات";
 
   const planImage = isLanding
-    ? "/images/card_landing_new.png"
+    ? "/images/card_landing_new.webp"
     : isSaaS
-    ? "/images/card_saas_new.png"
-    : "/images/card_standard_new.png";
+    ? "/images/card_saas_new.webp"
+    : "/images/card_standard_new.webp";
 
   const planFeatures = isLanding
     ? [
