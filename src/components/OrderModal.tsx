@@ -44,8 +44,8 @@ export default function OrderModal({
   selectedPrice,
   onOpenPolicyModal,
 }: OrderModalProps) {
-  // Payment methods: "card" | "youcan" | "cmi" | "whatsapp"
-  const [paymentMethod, setPaymentMethod] = useState<"card" | "youcan" | "cmi" | "whatsapp">("card");
+  // Single certified payment method
+  const [paymentMethod, setPaymentMethod] = useState("الأداء بالبطاقة البنكية (Paiement sécurisé par Carte Bancaire)");
 
   // Customer contact info
   const [customerName, setCustomerName] = useState("");
@@ -288,15 +288,7 @@ export default function OrderModal({
 
     const message = `مرحباً وكالة ECOM SPEED PRO 🚀%0Aتم حجز طلب جديد عبر شاشة الدفع الفاخرة:%0A%0A*رقم الطلب:* ${createdOrder?.order_number || orderId}%0A*الباقة المختارة:* ${encodeURIComponent(
       planTitle
-    )}%0A*المبلغ:* ${rawNumericPrice} درهم%0A*طريقة الدفع:* ${
-      paymentMethod === "card"
-        ? "بطاقة بنكية (VISA / Mastercard)"
-        : paymentMethod === "youcan"
-        ? "YouCan Pay المغربية"
-        : paymentMethod === "cmi"
-        ? "بوابة CMI المركز النقدي"
-        : "تأكيد واتساب VIP المباشر"
-    }%0A*الاسم:* ${encodeURIComponent(
+    )}%0A*المبلغ:* ${rawNumericPrice} درهم%0A*طريقة الدفع:* الأداء بالبطاقة البنكية (Paiement sécurisé par Carte Bancaire / CMI / 3D-Secure)%0A*الاسم:* ${encodeURIComponent(
       customerName || cardHolder || "عميل مميز"
     )}%0A*الهاتف:* ${encodeURIComponent(customerPhone || "+212...")}%0A*البريد:* ${encodeURIComponent(
       customerEmail || "غير محدد"
@@ -629,72 +621,68 @@ export default function OrderModal({
               {/* ==================================================== */}
               <div className="lg:col-span-7 flex flex-col gap-4">
                 
-                {/* 1. Payment Method Pills Selection */}
-                <div>
-                  <label className="text-xs font-black text-cyan-200 block mb-2 text-right">
-                    اختر وسيلة الدفع المعتمدة:
-                  </label>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {/* 1. Single Prestigious Payment Option: الأداء بالبطاقة البنكية */}
+                <div className="space-y-2.5">
+                  <div className="relative p-3.5 sm:p-4 rounded-2xl border-2 border-cyan-400 bg-gradient-to-r from-cyan-950/70 via-[#071d54] to-[#0a2366] shadow-[0_0_25px_rgba(6,182,212,0.35)] flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(6,182,212,0.5)] shrink-0">
+                        <CreditCard className="w-5 h-5 text-cyan-100" />
+                      </div>
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="text-xs sm:text-sm font-black text-white">
+                            الأداء بالبطاقة البنكية (Paiement sécurisé par Carte Bancaire)
+                          </h4>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 flex items-center gap-1 shadow-sm">
+                            <Check className="w-2.5 h-2.5 stroke-[3]" />
+                            <span>خيار معتمد 100%</span>
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-cyan-200/90 font-bold mt-0.5">
+                          معالجة بنكية فورية ومؤتمتة مشفرة بأعلى معايير الحماية المصرفية 3D-Secure
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Trust Badges & Card Logos Under Payment Option */}
+                  <div className="p-3 rounded-2xl bg-[#041235]/90 border border-blue-400/30 flex flex-wrap items-center justify-between gap-3 shadow-inner">
                     
-                    {/* Method 1: Card */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("card")}
-                      className={`relative p-2.5 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        paymentMethod === "card"
-                          ? "border-cyan-400 bg-cyan-500/20 shadow-[0_0_20px_rgba(6,182,212,0.4)] scale-[1.02]"
-                          : "border-blue-900/70 bg-[#06143c]/70 hover:bg-[#0a205a]/70 hover:border-blue-700"
-                      }`}
-                    >
-                      <CreditCard className="w-5 h-5 text-cyan-300" />
-                      <span className="text-[11px] font-black text-white">بطاقة بنكية</span>
-                      <span className="text-[9px] text-cyan-300/80 font-bold">VISA / Master</span>
-                    </button>
+                    {/* Logos Group: CMI, Visa, Mastercard */}
+                    <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                      
+                      {/* CMI (Centre Monétique Interbancaire) Badge */}
+                      <div className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-[#002f6c] to-[#04428e] border border-cyan-400/40 flex items-center gap-2 shadow-sm">
+                        <div className="w-2.5 h-2.5 rounded-full bg-[#ffcc00] animate-pulse" />
+                        <span className="text-[12px] font-black tracking-widest text-white font-mono">CMI</span>
+                        <span className="text-[9px] font-bold text-cyan-200">المركز النقدي المغربي 🇲🇦</span>
+                      </div>
 
-                    {/* Method 2: YouCan Pay */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("youcan")}
-                      className={`relative p-2.5 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        paymentMethod === "youcan"
-                          ? "border-emerald-400 bg-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.4)] scale-[1.02]"
-                          : "border-blue-900/70 bg-[#06143c]/70 hover:bg-[#0a205a]/70 hover:border-blue-700"
-                      }`}
-                    >
-                      <Zap className="w-5 h-5 text-emerald-400" />
-                      <span className="text-[11px] font-black text-white">YouCan Pay</span>
-                      <span className="text-[9px] text-emerald-300 font-bold">المغرب 🇲🇦</span>
-                    </button>
+                      {/* Visa Badge */}
+                      <div className="px-3 py-1 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-sm h-7">
+                        <span className="text-[13px] font-black tracking-tighter text-[#00579F] italic font-serif">
+                          VISA
+                        </span>
+                      </div>
 
-                    {/* Method 3: CMI */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("cmi")}
-                      className={`relative p-2.5 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        paymentMethod === "cmi"
-                          ? "border-blue-400 bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.4)] scale-[1.02]"
-                          : "border-blue-900/70 bg-[#06143c]/70 hover:bg-[#0a205a]/70 hover:border-blue-700"
-                      }`}
-                    >
-                      <ShieldCheck className="w-5 h-5 text-blue-300" />
-                      <span className="text-[11px] font-black text-white">CMI المركز</span>
-                      <span className="text-[9px] text-blue-300 font-bold">بنوك المغرب</span>
-                    </button>
+                      {/* Mastercard Badge */}
+                      <div className="px-3 py-1 rounded-xl bg-[#141414] border border-white/20 flex items-center justify-center gap-1.5 shadow-sm h-7">
+                        <div className="flex -space-x-1.5">
+                          <span className="w-3.5 h-3.5 rounded-full bg-[#eb001b] inline-block shadow-sm" />
+                          <span className="w-3.5 h-3.5 rounded-full bg-[#f79e1b] inline-block opacity-95 shadow-sm" />
+                        </div>
+                        <span className="text-[9px] font-bold text-white tracking-tight">mastercard</span>
+                      </div>
 
-                    {/* Method 4: WhatsApp VIP Concierge */}
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("whatsapp")}
-                      className={`relative p-2.5 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 transition-all cursor-pointer ${
-                        paymentMethod === "whatsapp"
-                          ? "border-emerald-400 bg-emerald-500/25 shadow-[0_0_20px_rgba(16,185,129,0.45)] scale-[1.02]"
-                          : "border-blue-900/70 bg-[#06143c]/70 hover:bg-[#0a205a]/70 hover:border-blue-700"
-                      }`}
-                    >
-                      <WhatsAppIcon size={20} />
-                      <span className="text-[11px] font-black text-white">واتساب VIP</span>
-                      <span className="text-[9px] text-emerald-300 font-bold">تأكيد فوري</span>
-                    </button>
+                    </div>
+
+                    {/* Security Lock Badge with Statement */}
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/15 border border-emerald-400/35 text-emerald-300 shadow-sm">
+                      <Lock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span className="text-[11px] font-black">
+                        دفع آمن ومشفّر 100% (256-bit SSL)
+                      </span>
+                    </div>
 
                   </div>
                 </div>
@@ -816,142 +804,116 @@ export default function OrderModal({
                     />
                   </div>
 
-                  {/* Step C: Card Inputs (Visible when 'card' is selected) */}
-                  {paymentMethod === "card" && (
-                    <div className="rounded-2xl bg-[#071a48]/75 border border-cyan-400/30 p-3.5 space-y-3 animate-in fade-in duration-200">
-                      
-                      {/* Card Number */}
+                  {/* Step C: Secure Bank Card Input Fields (Paiement par Carte Bancaire) */}
+                  <div className="rounded-2xl bg-[#071a48]/85 border border-cyan-400/35 p-3.5 space-y-3 shadow-lg">
+                    
+                    {/* Card Section Header */}
+                    <div className="flex items-center justify-between pb-1 border-b border-blue-900/50">
+                      <span className="text-xs font-black text-cyan-200 flex items-center gap-1.5">
+                        <CreditCard className="w-3.5 h-3.5 text-cyan-400" />
+                        <span>بيانات البطاقة المصرفية (Sécurité Bancaire)</span>
+                      </span>
+                      <span className="text-[10px] text-emerald-300 font-bold flex items-center gap-1">
+                        <Lock className="w-2.5 h-2.5" />
+                        <span>تشفير 256-Bit</span>
+                      </span>
+                    </div>
+
+                    {/* Card Number */}
+                    <div>
+                      <label className="text-[11px] font-bold text-cyan-200 block mb-1">
+                        رقم البطاقة المصرفية
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          dir="ltr"
+                          placeholder="1234 5678 9012 3456"
+                          value={cardNumber}
+                          onChange={handleCardNumberChange}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-10 tracking-widest shadow-inner"
+                        />
+                        <CreditCard className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
+                      </div>
+                    </div>
+
+                    {/* Expiry & CVV */}
+                    <div className="grid grid-cols-2 gap-3">
                       <div>
                         <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                          رقم البطاقة المصرفية
+                          تاريخ الانتهاء
                         </label>
                         <div className="relative">
                           <input
                             type="text"
                             required
                             dir="ltr"
-                            placeholder="1234 5678 9012 3456"
-                            value={cardNumber}
-                            onChange={handleCardNumberChange}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-10 tracking-widest"
+                            placeholder="MM/YY"
+                            value={expiryDate}
+                            onChange={handleExpiryChange}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 shadow-inner"
                           />
-                          <CreditCard className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
+                          <Calendar className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
                         </div>
                       </div>
 
-                      {/* Expiry & CVV */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                            تاريخ الانتهاء
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              required
-                              dir="ltr"
-                              placeholder="MM/YY"
-                              value={expiryDate}
-                              onChange={handleExpiryChange}
-                              className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9"
-                            />
-                            <Calendar className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                            رمز الأمان (CVV)
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="password"
-                              required
-                              dir="ltr"
-                              placeholder="123"
-                              value={cvv}
-                              onChange={handleCvvChange}
-                              className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 tracking-widest"
-                            />
-                            <Lock className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Cardholder Name */}
                       <div>
                         <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                          اسم صاحب البطاقة (كما يظهر عليها)
+                          رمز الأمان (CVV)
                         </label>
                         <div className="relative">
                           <input
-                            type="text"
+                            type="password"
                             required
-                            placeholder="MOHAMED EL ALAOUI"
-                            value={cardHolder}
-                            onChange={(e) => setCardHolder(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 uppercase"
+                            dir="ltr"
+                            placeholder="123"
+                            value={cvv}
+                            onChange={handleCvvChange}
+                            className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 tracking-widest shadow-inner"
                           />
-                          <User className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
+                          <Lock className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
                         </div>
                       </div>
-
                     </div>
-                  )}
 
-                  {/* Notice when YouCan Pay is selected */}
-                  {paymentMethod === "youcan" && (
-                    <div className="rounded-2xl bg-emerald-950/40 border border-emerald-400/40 p-4 text-center space-y-1.5 animate-in fade-in duration-200">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-black">
-                        <span>YouCan Pay المغربية 🇲🇦</span>
+                    {/* Cardholder Name */}
+                    <div>
+                      <label className="text-[11px] font-bold text-cyan-200 block mb-1">
+                        اسم صاحب البطاقة (كما يظهر عليها)
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          placeholder="MOHAMED EL ALAOUI"
+                          value={cardHolder}
+                          onChange={(e) => setCardHolder(e.target.value)}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 uppercase shadow-inner"
+                        />
+                        <User className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
                       </div>
-                      <p className="text-xs text-blue-100 font-bold leading-relaxed">
-                        دفع فوري ومؤتمت ومحمي عبر بوابة YouCan Pay الرسمية. سيتم معالجة العملية بأمان دون أي عمولات إضافية.
-                      </p>
                     </div>
-                  )}
 
-                  {/* Notice when CMI is selected */}
-                  {paymentMethod === "cmi" && (
-                    <div className="rounded-2xl bg-blue-950/40 border border-blue-400/40 p-4 text-center space-y-1.5 animate-in fade-in duration-200">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-blue-500/20 text-cyan-300 text-[11px] font-black">
-                        <span>Centre Monétique Interbancaire (CMI) 🏛️</span>
-                      </div>
-                      <p className="text-xs text-blue-100 font-bold leading-relaxed">
-                        الدفع البنكي المغربي الرسمي المعتمد لجميع الأبناك المغربية (CIH, Attijariwafa, Banque Populaire) بحماية 3D-Secure.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Notice when WhatsApp VIP is selected */}
-                  {paymentMethod === "whatsapp" && (
-                    <div className="rounded-2xl bg-emerald-950/40 border border-emerald-400/50 p-4 text-center space-y-2 animate-in fade-in duration-200">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-black">
-                        <span>تأكيد VIP عبر مستشارك الخاص ⚡</span>
-                      </div>
-                      <p className="text-xs text-blue-100 font-bold leading-relaxed">
-                        سيتم ربطك فوراً بمستشار التجارة الإلكترونية المخصص لبدء تجهيز متجرك ومتابعة تفاصيل الدفع والتسليم.
-                      </p>
-                    </div>
-                  )}
+                  </div>
 
                   {/* 3. The Grand CTA Button (فخم وخرافي) */}
                   <div className="pt-2">
                     <button
                       type="submit"
                       disabled={isProcessing}
-                      className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-cyan-400 via-blue-600 to-fuchsia-600 hover:from-cyan-300 hover:via-blue-500 hover:to-fuchsia-500 text-white font-black text-sm sm:text-base shadow-[0_0_30px_rgba(6,182,212,0.55)] hover:shadow-[0_0_45px_rgba(6,182,212,0.85)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                      className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-cyan-400 via-blue-600 to-indigo-600 hover:from-cyan-300 hover:via-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-[0_0_30px_rgba(6,182,212,0.55)] hover:shadow-[0_0_45px_rgba(6,182,212,0.85)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
                     >
                       {isProcessing ? (
                         <>
                           <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          <span>جاري تأكيد وتشفير الطلب وحفظ صور المنتجات...</span>
+                          <span>جاري التحقق ومعالجة الدفع البنكي بأمان...</span>
                         </>
                       ) : (
                         <>
                           <Lock className="w-5 h-5 text-cyan-200 group-hover:scale-110 transition-transform" />
                           <span>
-                            تأكيد الطلب والدفع الآمن ({formattedPrice})
+                            تأكيد الطلب والدفع الآمن بالبطاقة ({formattedPrice})
                           </span>
                           <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
                         </>
@@ -964,6 +926,24 @@ export default function OrderModal({
                     <p className="text-[11px] text-blue-200/70 font-bold flex items-center justify-center gap-2">
                       <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
                       <span>بياناتك مشفرة ومحمية بالكامل • ضمان ذهبي لراحة البال 100%</span>
+                    </p>
+                  </div>
+
+                  {/* Smart WhatsApp Safety Net (حركة ذكية لحماية أي مبيعة قد تفلت) */}
+                  <div className="pt-2.5 border-t border-blue-900/50 text-center">
+                    <p className="text-xs text-blue-200/90 font-medium flex items-center justify-center gap-1.5 flex-wrap">
+                      <span>واجهتك مشكلة في الدفع بالبطاقة؟</span>
+                      <a
+                        href={`https://wa.me/212762357491?text=${encodeURIComponent(
+                          `مرحباً فريق الدعم الفني Ecom Speed Pro 🚀\nواجهت صعوبة في إتمام الدفع بالبطاقة البنكية للباقة: ${planTitle} (${formattedPrice}).\nأرجو المساعدة لإتمام العملية وتأكيد طلبي.`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-black text-cyan-300 hover:text-cyan-100 underline decoration-cyan-400/60 hover:decoration-cyan-200 transition-all inline-flex items-center gap-1.5 cursor-pointer bg-cyan-950/50 hover:bg-cyan-900/70 px-3 py-1 rounded-full border border-cyan-400/40 shadow-sm"
+                      >
+                        <WhatsAppIcon size={14} />
+                        <span>[تواصل مع الدعم الفني عبر واتساب]</span>
+                      </a>
                     </p>
                   </div>
 
