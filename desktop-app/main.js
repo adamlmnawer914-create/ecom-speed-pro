@@ -40,33 +40,8 @@ function createWindow() {
     callback({ requestHeaders: details.requestHeaders });
   });
 
-  // Determine target URL: Auto-detect local development server if running, else load live production
-  function resolveAndLoadUrl() {
-    if (process.env.ADMIN_URL) {
-      mainWindow.loadURL(process.env.ADMIN_URL);
-      return;
-    }
-
-    const http = require("http");
-    const checkReq = http.get("http://127.0.0.1:3000/api/health", { timeout: 300 }, (res) => {
-      if (res.statusCode === 200) {
-        mainWindow.loadURL(`http://localhost:3000/admin?desktop_token=${DESKTOP_AUTH_SECRET}`);
-      } else {
-        mainWindow.loadURL(`https://ecom-speed-pro.vercel.app/admin?desktop_token=${DESKTOP_AUTH_SECRET}`);
-      }
-    });
-
-    checkReq.on("error", () => {
-      mainWindow.loadURL(`https://ecom-speed-pro.vercel.app/admin?desktop_token=${DESKTOP_AUTH_SECRET}`);
-    });
-
-    checkReq.on("timeout", () => {
-      checkReq.destroy();
-      mainWindow.loadURL(`https://ecom-speed-pro.vercel.app/admin?desktop_token=${DESKTOP_AUTH_SECRET}`);
-    });
-  }
-
-  resolveAndLoadUrl();
+  // Load the standalone native desktop dashboard directly from computer files
+  mainWindow.loadFile(path.join(__dirname, "index.html"));
 
   mainWindow.once("ready-to-show", () => {
     mainWindow.show();
