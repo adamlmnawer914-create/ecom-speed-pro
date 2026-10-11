@@ -217,7 +217,7 @@
       </aside>
 
       <!-- MAIN WORKSTATION -->
-      <main class="flex-1 rounded-[32px] bg-gradient-to-b from-[#f8fbff]/95 via-[#f1f6fd]/95 to-[#e8f1fc]/95 border-2 border-white/80 shadow-[0_25px_70px_rgba(0,25,80,0.3)] p-5 sm:p-6 lg:p-7 flex flex-col gap-5 backdrop-blur-2xl">
+      <main class="flex-1 rounded-[32px] bg-gradient-to-b from-[#f8fbff]/95 via-[#f1f6fd]/95 to-[#e8f1fc]/95 border-2 border-white/80 shadow-[0_25px_70px_rgba(0,25,80,0.3)] p-5 sm:p-6 lg:p-7 flex flex-col gap-5 backdrop-blur-2xl min-h-[680px]">
         
         <!-- Section Header -->
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-blue-100 pb-3">
@@ -229,7 +229,7 @@
             </div>
             <div>
               <h2 id="sectionTitle" class="text-xl sm:text-2xl font-black text-[#0b1739]">إدارة الطلبات والمدفوعات الحية</h2>
-              <p class="text-xs text-slate-500 font-bold">برنامج سطح المكتب المستقل — متصل بالسيرفر لحظياً</p>
+              <p id="sectionDesc" class="text-xs text-slate-500 font-bold">برنامج سطح المكتب المستقل — متصل بالسيرفر لحظياً</p>
             </div>
           </div>
 
@@ -239,91 +239,700 @@
           </div>
         </div>
 
-        <!-- 4 KPI CARDS -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#3b82f6] to-[#60a5fa] text-white flex items-center justify-center shadow-md shrink-0">
-              <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+        <!-- ========================================== -->
+        <!-- TAB 1: ORDERS (الطلبات) -->
+        <!-- ========================================== -->
+        <div id="tabContent-orders" class="tab-pane flex flex-col gap-5">
+          <!-- 4 KPI CARDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#3b82f6] to-[#60a5fa] text-white flex items-center justify-center shadow-md shrink-0">
+                <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-[#64748b] block mb-1">إجمالي الطلبات</span>
+                <div id="kpiTotalOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+              </div>
             </div>
-            <div class="text-right">
-              <span class="text-xs font-bold text-[#64748b] block mb-1">إجمالي الطلبات</span>
-              <div id="kpiTotalOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+
+            <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#10b981] to-[#34d399] text-white flex items-center justify-center shadow-md shrink-0">
+                <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-[#64748b] block mb-1">الطلبات المكتملة</span>
+                <div id="kpiCompletedOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#f97316] to-[#fb923c] text-white flex items-center justify-center shadow-md shrink-0">
+                <i data-lucide="hourglass" class="w-5 h-5"></i>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-[#64748b] block mb-1">قيد المراجعة</span>
+                <div id="kpiReviewOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+              </div>
+            </div>
+
+            <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#a855f7] to-[#c084fc] text-white flex items-center justify-center shadow-md shrink-0">
+                <i data-lucide="wallet" class="w-5 h-5"></i>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-bold text-[#64748b] block mb-1">إجمالي المبيعات</span>
+                <div id="kpiTotalRevenue" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0 درهم</div>
+              </div>
             </div>
           </div>
 
-          <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#10b981] to-[#34d399] text-white flex items-center justify-center shadow-md shrink-0">
-              <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+          <!-- SEARCH & FILTER BAR -->
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-blue-100 shadow-sm">
+            <div class="flex-1 min-w-[240px] relative">
+              <input id="searchInput" type="text" placeholder="ابحث باسم العميل أو رقم الهاتف..." class="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500 transition-colors">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 right-3"></i>
             </div>
-            <div class="text-right">
-              <span class="text-xs font-bold text-[#64748b] block mb-1">الطلبات المكتملة</span>
-              <div id="kpiCompletedOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+
+            <div class="flex items-center gap-2">
+              <select id="statusFilter" class="py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
+                <option value="all">جميع الحالات</option>
+                <option value="pending">قيد المراجعة</option>
+                <option value="in_progress">جاري التجهيز</option>
+                <option value="completed">مكتمل ومسلّم</option>
+              </select>
+
+              <button onclick="openNewOrderModal()" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                <span>طلب جديد</span>
+              </button>
+
+              <button id="btnExportCSV" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>تصدير CSV</span>
+              </button>
             </div>
           </div>
 
-          <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#f97316] to-[#fb923c] text-white flex items-center justify-center shadow-md shrink-0">
-              <i data-lucide="hourglass" class="w-5 h-5"></i>
+          <!-- ORDERS TABLE CONTAINER -->
+          <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
+                <tr>
+                  <th class="p-3.5">الطلب</th>
+                  <th class="p-3.5">العميل</th>
+                  <th class="p-3.5">الهاتف</th>
+                  <th class="p-3.5">الباقة</th>
+                  <th class="p-3.5">المبلغ</th>
+                  <th class="p-3.5">الدفع</th>
+                  <th class="p-3.5">الحالة</th>
+                  <th class="p-3.5">رابط المتجر</th>
+                  <th class="p-3.5 text-center">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="ordersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: HOME / DASHBOARD (الرئيسية) -->
+        <!-- ========================================== -->
+        <div id="tabContent-home" class="tab-pane hidden flex flex-col gap-5">
+          <!-- 4 Executive Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+            <div class="rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 shadow-lg relative overflow-hidden">
+              <div class="relative z-10">
+                <span class="text-xs font-bold text-blue-200 block mb-1">صافي الإيرادات التراكمية</span>
+                <div id="homeTotalRevenue" class="text-3xl font-black font-mono">0 درهم</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-300 font-bold">
+                  <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
+                  <span>نمو مستمر +100% هذا الشهر</span>
+                </div>
+              </div>
+              <i data-lucide="circle-dollar-sign" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
             </div>
-            <div class="text-right">
-              <span class="text-xs font-bold text-[#64748b] block mb-1">قيد المراجعة</span>
-              <div id="kpiReviewOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+
+            <div class="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-5 shadow-lg relative overflow-hidden">
+              <div class="relative z-10">
+                <span class="text-xs font-bold text-emerald-200 block mb-1">متوسط قيمة الطلب (AOV)</span>
+                <div id="homeAvgOrderValue" class="text-3xl font-black font-mono">0 درهم</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-200 font-bold">
+                  <i data-lucide="award" class="w-3.5 h-3.5"></i>
+                  <span>باقة المتجر القياسي هي الأكثر طلباً</span>
+                </div>
+              </div>
+              <i data-lucide="wallet" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
+            </div>
+
+            <div class="rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-700 text-white p-5 shadow-lg relative overflow-hidden">
+              <div class="relative z-10">
+                <span class="text-xs font-bold text-purple-200 block mb-1">معدل تسليم المشاريع</span>
+                <div id="homeCompletionRate" class="text-3xl font-black font-mono">100%</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-purple-200 font-bold">
+                  <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
+                  <span>التزام تام بمواعيد التسليم (24-48 ساعة)</span>
+                </div>
+              </div>
+              <i data-lucide="check-circle" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
+            </div>
+
+            <div class="rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 shadow-lg relative overflow-hidden">
+              <div class="relative z-10">
+                <span class="text-xs font-bold text-amber-100 block mb-1">العملاء النشطون</span>
+                <div id="homeActiveCustomers" class="text-3xl font-black font-mono">0 عميل</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-amber-100 font-bold">
+                  <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                  <span>قاعدة عملاء مستمرة في التوسع</span>
+                </div>
+              </div>
+              <i data-lucide="user-check" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
             </div>
           </div>
 
-          <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3">
-            <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-[#a855f7] to-[#c084fc] text-white flex items-center justify-center shadow-md shrink-0">
-              <i data-lucide="wallet" class="w-5 h-5"></i>
+          <!-- 2 Columns: Plan Revenue Distribution + Live Activity Feed -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+            <!-- Column 1: Plan Distribution -->
+            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col gap-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="pie-chart" class="w-5 h-5 text-blue-600"></i>
+                  <h3 class="font-black text-sm text-slate-800">توزيع المبيعات حسب الباقات</h3>
+                </div>
+                <span class="text-[11px] text-slate-400 font-bold">تحليل الإيرادات الحية</span>
+              </div>
+
+              <div id="homePlanBars" class="space-y-4">
+                <!-- Injected via JavaScript -->
+              </div>
             </div>
-            <div class="text-right">
-              <span class="text-xs font-bold text-[#64748b] block mb-1">إجمالي المبيعات</span>
-              <div id="kpiTotalRevenue" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0 درهم</div>
+
+            <!-- Column 2: Live Activity Feed -->
+            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col gap-4">
+              <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center gap-2">
+                  <i data-lucide="activity" class="w-5 h-5 text-emerald-600"></i>
+                  <h3 class="font-black text-sm text-slate-800">آخر العمليات والطلبات الواردة</h3>
+                </div>
+                <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  تحديث فوري
+                </span>
+              </div>
+
+              <div id="homeRecentFeed" class="space-y-2.5">
+                <!-- Injected via JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Row: Diagnostics & Action Strip -->
+          <div class="bg-gradient-to-r from-[#0b1e4f] to-[#041238] rounded-2xl p-4 text-white flex flex-wrap items-center justify-between gap-3 shadow-lg border border-cyan-400/30">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-500/20 border border-cyan-400/40 flex items-center justify-center text-cyan-300">
+                <i data-lucide="shield-check" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h4 class="text-xs font-black text-white">حالة الخادم وتزامن البيانات</h4>
+                <p class="text-[11px] text-cyan-200/80">Next.js Local (Port 3000) متصل • سحابة Vercel متزامنة • قاعدة البيانات آمنة</p>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button onclick="pingServerTest()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                <i data-lucide="radio" class="w-3.5 h-3.5 text-cyan-300"></i>
+                <span>فحص الاتصال</span>
+              </button>
+              <button onclick="playOrderChime(); triggerToast('تم تشغيل صوت الرنين بنجاح');" class="px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-200 border border-emerald-400/30 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5 text-emerald-300"></i>
+                <span>اختبار رنين الإشعار</span>
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- SEARCH & FILTER BAR -->
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-blue-100 shadow-sm">
-          <div class="flex-1 min-w-[240px] relative">
-            <input id="searchInput" type="text" placeholder="ابحث باسم العميل أو رقم الهاتف..." class="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 right-3"></i>
+        <!-- ========================================== -->
+        <!-- TAB 3: CUSTOMERS (العملاء CRM) -->
+        <!-- ========================================== -->
+        <div id="tabContent-customers" class="tab-pane hidden flex flex-col gap-5">
+          <!-- CRM Top Stat Strip -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-500 font-bold block mb-1">إجمالي العملاء المسجلين</span>
+                <span id="crmTotalCustomers" class="text-2xl font-black font-mono text-slate-900">0</span>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <i data-lucide="users" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-500 font-bold block mb-1">عملاء متميزون (VIP)</span>
+                <span id="crmVipCustomers" class="text-2xl font-black font-mono text-emerald-600">0</span>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                <i data-lucide="crown" class="w-5 h-5"></i>
+              </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-2xl border border-blue-100 shadow-sm flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-500 font-bold block mb-1">متوسط إنفاق العميل</span>
+                <span id="crmAvgCustomerSpend" class="text-2xl font-black font-mono text-purple-600">0 درهم</span>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                <i data-lucide="badge-percent" class="w-5 h-5"></i>
+              </div>
+            </div>
           </div>
 
-          <div class="flex items-center gap-2">
-            <select id="statusFilter" class="py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
-              <option value="all">جميع الحالات</option>
-              <option value="pending">قيد المراجعة</option>
-              <option value="in_progress">جاري التجهيز</option>
-              <option value="completed">مكتمل ومسلّم</option>
-            </select>
-
-            <button id="btnExportCSV" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer">
+          <!-- Search Customer Bar -->
+          <div class="bg-white p-3 rounded-2xl border border-blue-100 shadow-sm flex items-center justify-between gap-3">
+            <div class="flex-1 relative">
+              <input id="customerSearchInput" oninput="renderCustomersTab()" type="text" placeholder="ابحث باسم العميل أو رقم الهاتف في سجل العملاء..." class="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500 transition-colors">
+              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 right-3"></i>
+            </div>
+            <button onclick="exportCustomersCSV()" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
               <i data-lucide="download" class="w-4 h-4"></i>
-              <span>تصدير CSV</span>
+              <span>تصدير سجل العملاء</span>
             </button>
           </div>
+
+          <!-- Customers Table -->
+          <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
+                <tr>
+                  <th class="p-3.5">العميل</th>
+                  <th class="p-3.5">رقم الهاتف</th>
+                  <th class="p-3.5">عدد الطلبات</th>
+                  <th class="p-3.5">إجمالي المشتريات</th>
+                  <th class="p-3.5">آخر باقة</th>
+                  <th class="p-3.5">آخر طلب</th>
+                  <th class="p-3.5 text-center">إجراءات التواصل</th>
+                </tr>
+              </thead>
+              <tbody id="customersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- ORDERS TABLE CONTAINER -->
-        <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
-          <table class="w-full text-right text-xs">
-            <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
-              <tr>
-                <th class="p-3.5">الطلب</th>
-                <th class="p-3.5">العميل</th>
-                <th class="p-3.5">الهاتف</th>
-                <th class="p-3.5">الباقة</th>
-                <th class="p-3.5">المبلغ</th>
-                <th class="p-3.5">الدفع</th>
-                <th class="p-3.5">الحالة</th>
-                <th class="p-3.5">رابط التسليم</th>
-                <th class="p-3.5 text-center">إجراءات</th>
-              </tr>
-            </thead>
-            <tbody id="ordersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
-              <!-- Dynamically populated rows -->
-            </tbody>
-          </table>
+        <!-- ========================================== -->
+        <!-- TAB 4: PRODUCTS / PACKAGES (الباقات) -->
+        <!-- ========================================== -->
+        <div id="tabContent-products" class="tab-pane hidden flex flex-col gap-5">
+          <div class="text-right">
+            <h3 class="text-base font-black text-slate-900">باقات وخدمات إيكوم سبيد برو الجاهزة</h3>
+            <p class="text-xs text-slate-500 font-bold">يمكنك إنشاء طلب فوري لأي باقة أو مشاركة تفاصيلها مع العميل</p>
+          </div>
+
+          <!-- 3 Luxury Packages Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Package 1: Landing Page (500 MAD) -->
+            <div class="rounded-3xl bg-white border border-blue-100 p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-blue-300 transition-all group relative overflow-hidden">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[11px] font-black">
+                    تسليم سريع 24 ساعة ⚡
+                  </span>
+                  <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
+                    <i data-lucide="zap" class="w-5 h-5"></i>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="text-lg font-black text-slate-900">صفحة هبوط احترافية</h4>
+                  <p class="text-xs text-slate-500 mt-1">Landing Page فائقة السرعة للمنتج الفردي والعروض المباشرة</p>
+                </div>
+
+                <div class="py-2 border-y border-slate-100 flex items-baseline gap-1">
+                  <span class="text-3xl font-black font-mono text-[#0b1739]">500</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي</span>
+                </div>
+
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> دومين مجاني واستضافة لسنة</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> متجاوبة بالكامل للهاتف والكمبيوتر</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط مباشر مع WhatsApp للطلبات</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط TikTok Pixel و Facebook Pixel</li>
+                </ul>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات:</span>
+                  <span id="prodCount-landing" class="font-mono text-blue-700 font-black">0 طلبات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('صفحة هبوط احترافية (500 MAD)')" class="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>إنشاء طلب جديد لهذه الباقة</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Package 2: Standard Store (1500 MAD) - Best Seller -->
+            <div class="rounded-3xl bg-gradient-to-b from-white to-blue-50/50 border-2 border-amber-400/80 p-6 shadow-xl flex flex-col justify-between hover:scale-[1.02] transition-all group relative overflow-hidden">
+              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-[11px] shadow-md flex items-center gap-1">
+                <i data-lucide="sparkles" class="w-3 h-3"></i>
+                <span>الباقة الأكثر طلباً ⭐</span>
+              </div>
+
+              <div class="space-y-4 pt-2">
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-black">
+                    متجر كامل وشامل
+                  </span>
+                  <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-600">
+                    <i data-lucide="store" class="w-5 h-5"></i>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="text-lg font-black text-slate-900">المتجر الإلكتروني القياسي</h4>
+                  <p class="text-xs text-slate-500 mt-1">متجر تجارة إلكترونية كامل ومتكامل جاهز للبيع الفوري</p>
+                </div>
+
+                <div class="py-2 border-y border-amber-100 flex items-baseline gap-1">
+                  <span class="text-3xl font-black font-mono text-amber-600">1,500</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي</span>
+                </div>
+
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> متجر إلكتروني متكامل عالي السرعة</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط بوابة YouCan Pay و CMI للبطاقات البنكية</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> تجهيز 10 منتجات رابحة بتصاميمها</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> صفحات الخصوصية والشروط وتتبع الشحنات</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> تدريب كامل بالفيديو على الإدارة</li>
+                </ul>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-amber-100 space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات:</span>
+                  <span id="prodCount-store" class="font-mono text-amber-600 font-black">0 طلبات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('المتجر القياسي (1,500 MAD)')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
+                  <i data-lucide="plus-circle" class="w-4 h-4 text-slate-950"></i>
+                  <span>إنشاء طلب جديد لهذه الباقة</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Package 3: SaaS / VIP (5000 MAD) -->
+            <div class="rounded-3xl bg-white border border-purple-100 p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-purple-300 transition-all group relative overflow-hidden">
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <span class="px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-black">
+                    للمشاريع الكبرى 👑
+                  </span>
+                  <div class="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600">
+                    <i data-lucide="crown" class="w-5 h-5"></i>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 class="text-lg font-black text-slate-900">النظام السحابي المتكامل VIP</h4>
+                  <p class="text-xs text-slate-500 mt-1">حلول متقدمة للعلامات التجارية والشركات المتنامية</p>
+                </div>
+
+                <div class="py-2 border-y border-slate-100 flex items-baseline gap-1">
+                  <span class="text-3xl font-black font-mono text-purple-700">5,000</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي</span>
+                </div>
+
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> منصة تجارة إلكترونية سحابية مخصصة</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط أوتوماتيكي مع شركات الشحن والتوصيل (API)</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> إدارة المخزون، الفواتير، ونقاط البيع</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> إطلاق وإدارة حملات إعلانية ممولة</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> دعم فني VIP ومدير حساب خاص مدار الساعة</li>
+                </ul>
+              </div>
+
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات:</span>
+                  <span id="prodCount-vip" class="font-mono text-purple-700 font-black">0 طلبات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('النظام المتكامل VIP (5,000 MAD)')" class="w-full py-2.5 rounded-xl bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>إنشاء طلب جديد لهذه الباقة</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 5: PAYMENTS (المدفوعات) -->
+        <!-- ========================================== -->
+        <div id="tabContent-payments" class="tab-pane hidden flex flex-col gap-5">
+          <!-- 3 Gateways Summary Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Gateway 1: Cards & CMI -->
+            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black text-[10px]">
+                    نشطة وآمنة 100% 🟢
+                  </span>
+                  <div class="flex items-center gap-1 text-[11px] font-black text-blue-700">
+                    <span>CMI</span> • <span>Visa</span> • <span>Mastercard</span>
+                  </div>
+                </div>
+                <h4 class="font-black text-slate-900 text-sm">البطاقة البنكية (Carte Bancaire)</h4>
+                <p class="text-[11px] text-slate-500 mt-1">بوابة YouCan Pay المعتمدة مع تشفير 3D Secure للأداء الفوري</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-bold">المحصل بنكياً:</span>
+                <span id="payGateRev-card" class="text-lg font-black font-mono text-emerald-600">0 درهم</span>
+              </div>
+            </div>
+
+            <!-- Gateway 2: COD -->
+            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-black text-[10px]">
+                    متاحة ومفعلة 📦
+                  </span>
+                  <span class="text-[11px] font-mono font-bold text-slate-500">Paiement à la livraison</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-sm">الدفع عند الاستلام (COD)</h4>
+                <p class="text-[11px] text-slate-500 mt-1">تأكيد الطلبات هاتفياً وتحصيل المبالغ نقداً بعد التسليم والمعاينة</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-bold">إجمالي المعاملات:</span>
+                <span id="payGateRev-cod" class="text-lg font-black font-mono text-blue-600">0 درهم</span>
+              </div>
+            </div>
+
+            <!-- Gateway 3: Wire Transfer -->
+            <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between mb-3">
+                  <span class="px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-700 font-black text-[10px]">
+                    للشركات والباقات الكبرى 🏦
+                  </span>
+                  <span class="text-[11px] font-mono font-bold text-slate-500">RIB Direct</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-sm">التحويل البنكي المباشر</h4>
+                <p class="text-[11px] text-slate-500 mt-1">تحويل مباشر إلى الحساب البنكي الرسمي مع إشعار بالوصل</p>
+              </div>
+              <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-bold">إجمالي التحويلات:</span>
+                <span id="payGateRev-bank" class="text-lg font-black font-mono text-purple-600">0 درهم</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Transactions Table -->
+          <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
+            <div class="p-3.5 border-b border-slate-100 flex items-center justify-between">
+              <h4 class="font-black text-xs text-slate-800">سجل المعاملات والمدفوعات الحية</h4>
+              <span id="paymentsCountText" class="text-[11px] text-slate-500 font-bold">0 عمليات مسجلة</span>
+            </div>
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
+                <tr>
+                  <th class="p-3.5">معرف المعاملة</th>
+                  <th class="p-3.5">العميل</th>
+                  <th class="p-3.5">الباقة</th>
+                  <th class="p-3.5">المبلغ</th>
+                  <th class="p-3.5">طريقة الدفع</th>
+                  <th class="p-3.5">حالة التحصيل</th>
+                  <th class="p-3.5">التاريخ والوقت</th>
+                </tr>
+              </thead>
+              <tbody id="paymentsTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
+                <!-- Dynamically populated rows -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 6: REPORTS (التقارير) -->
+        <!-- ========================================== -->
+        <div id="tabContent-reports" class="tab-pane hidden flex flex-col gap-5">
+          <!-- Executive Financial Box -->
+          <div class="bg-gradient-to-br from-[#0c235e] via-[#071947] to-[#041033] rounded-3xl p-6 text-white border border-cyan-400/30 shadow-xl flex flex-col gap-5">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+              <div>
+                <span class="px-2.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-mono text-[10px] font-bold">
+                  FINANCIAL OVERVIEW 2026
+                </span>
+                <h3 class="text-xl font-black text-white mt-1">التقرير المالي التنفيذي العام</h3>
+              </div>
+              <div class="flex items-center gap-2">
+                <button onclick="window.print()" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                  <i data-lucide="printer" class="w-4 h-4"></i>
+                  <span>طباعة التقرير</span>
+                </button>
+                <button onclick="exportOrdersCSV()" class="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer">
+                  <i data-lucide="download" class="w-4 h-4"></i>
+                  <span>تصدير CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Financial Metrics Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-right">
+              <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span class="text-xs text-cyan-200/80 font-bold block mb-1">صافي الإيرادات الكلية</span>
+                <div id="repTotalRev" class="text-2xl font-black font-mono text-amber-300">0 د.م</div>
+              </div>
+
+              <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span class="text-xs text-cyan-200/80 font-bold block mb-1">المعاملات المكتملة</span>
+                <div id="repCompletedCount" class="text-2xl font-black font-mono text-emerald-400">0</div>
+              </div>
+
+              <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span class="text-xs text-cyan-200/80 font-bold block mb-1">قيد المراجعة والتجهيز</span>
+                <div id="repPendingCount" class="text-2xl font-black font-mono text-amber-400">0</div>
+              </div>
+
+              <div class="bg-white/5 rounded-2xl p-4 border border-white/10">
+                <span class="text-xs text-cyan-200/80 font-bold block mb-1">الرسوم والضرائب</span>
+                <div class="text-2xl font-black font-mono text-slate-300">0.00 د.م</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Monthly Performance Breakdown -->
+          <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <i data-lucide="calendar" class="w-5 h-5 text-blue-600"></i>
+                <h4 class="font-black text-sm text-slate-800">ملخص الأداء الشهري</h4>
+              </div>
+              <span class="text-xs text-slate-400 font-bold">سنة 2026</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-right text-xs">
+                <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
+                  <tr>
+                    <th class="p-3">الفترة</th>
+                    <th class="p-3">عدد الطلبات</th>
+                    <th class="p-3">المبيعات المحققة</th>
+                    <th class="p-3">متوسط الطلب</th>
+                    <th class="p-3">الحالة</th>
+                  </tr>
+                </thead>
+                <tbody id="reportsMonthlyTable" class="divide-y divide-slate-100 font-bold text-slate-700">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- TAB 7: SETTINGS / SECURITY (الأمان) -->
+        <!-- ========================================== -->
+        <div id="tabContent-settings" class="tab-pane hidden flex flex-col gap-5">
+          <!-- Security Token Panel -->
+          <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
+                  <i data-lucide="key-round" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="font-black text-sm text-slate-900">مفاتيح التوثيق والأمان المشفرة</h4>
+                  <p class="text-[11px] text-slate-500">حماية تطبيق سطح المكتب من أي اختراق أو وصول غير مصرح</p>
+                </div>
+              </div>
+              <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 font-black text-[11px] flex items-center gap-1">
+                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                نظام محمي 100%
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <div>
+                <label class="block text-xs font-bold text-slate-600 mb-1">الرمز السري المعتمد لبرنامج سطح المكتب (Secret Token):</label>
+                <div class="flex items-center gap-2">
+                  <input type="text" readonly value="ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono font-bold text-slate-800">
+                  <button onclick="navigator.clipboard.writeText('ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b'); triggerToast('تم نسخ الرمز السري بنجاح');" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>نسخ</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="text-xs text-slate-400 font-bold block mb-1">الرقم السري الإداري للطوارئ:</span>
+                  <span class="text-sm font-black font-mono text-purple-700">2026</span>
+                </div>
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                  <span class="text-xs text-slate-400 font-bold block mb-1">حالة الحظر على المتصفحات:</span>
+                  <span class="text-xs font-black text-emerald-700 flex items-center gap-1">
+                    <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                    مغلق تماماً — لا يمكن لأي متصفح خارجي فتحه
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagnostics & Testing Panel -->
+          <div class="bg-white rounded-2xl p-5 border border-blue-100 shadow-sm flex flex-col gap-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <div class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
+                  <i data-lucide="wrench" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <h4 class="font-black text-sm text-slate-900">أدوات الفحص والصيانة السريعة</h4>
+                  <p class="text-[11px] text-slate-500">اختبار اتصال السيرفر، رنين التنبيه، والنسخ الاحتياطي</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onclick="pingServerTest()" class="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-right flex flex-col justify-between transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-black text-xs text-slate-900">فحص الخادم</span>
+                  <i data-lucide="radio" class="w-4 h-4 text-blue-600"></i>
+                </div>
+                <p id="settingsPingStatus" class="text-[11px] text-slate-500">اضغط لفحص استجابة http://localhost:3000</p>
+              </button>
+
+              <button onclick="playOrderChime(); triggerToast('تم تشغيل رنين التنبيه الثنائي بنجاح');" class="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-right flex flex-col justify-between transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-black text-xs text-slate-900">تجربة رنين التنبيه</span>
+                  <i data-lucide="bell-ring" class="w-4 h-4 text-emerald-600"></i>
+                </div>
+                <p class="text-[11px] text-slate-500">تشغيل نغمة الإشعار المزدوجة الخاصة بالطلبات الجديدة</p>
+              </button>
+
+              <button onclick="backupOrdersJSON()" class="p-4 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-right flex flex-col justify-between transition-all cursor-pointer">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="font-black text-xs text-slate-900">نسخة احتياطية</span>
+                  <i data-lucide="hard-drive-download" class="w-4 h-4 text-purple-600"></i>
+                </div>
+                <p class="text-[11px] text-slate-500">تنزيل نسخة JSON كاملة من قاعدة بيانات الطلبات</p>
+              </button>
+            </div>
+          </div>
+
+          <!-- Version Info -->
+          <div class="p-4 rounded-2xl bg-slate-100 text-slate-600 text-xs font-bold flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="info" class="w-4 h-4 text-slate-400"></i>
+              <span>Ecom Speed Pro — تطبيق سطح المكتب المستقل v2.4.0</span>
+            </div>
+            <span class="font-mono text-[11px] text-slate-500">Build: 2026.10-desktop</span>
+          </div>
         </div>
 
       </main>
@@ -332,18 +941,112 @@
 
   </div>
 
-  <!-- ORDER DETAILS MODAL -->
+  <!-- ========================================== -->
+  <!-- MODAL: ORDER DETAILS -->
+  <!-- ========================================== -->
   <div id="orderDetailModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-100 text-right animate-in zoom-in-95 duration-200">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <h3 id="modalOrderNumber" class="text-lg font-black text-slate-900">تفاصيل الطلب</h3>
-        <button onclick="closeModal()" class="p-1 rounded-lg hover:bg-slate-100 text-slate-500"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <button onclick="closeModal()" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
       <div id="modalOrderContent" class="space-y-3 text-xs">
         <!-- Content inserted dynamically -->
       </div>
-      <div class="mt-5 pt-3 border-t border-slate-100 flex justify-end">
-        <button onclick="closeModal()" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs">إغلاق</button>
+      <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+        <div id="modalActionButtons" class="flex items-center gap-2"></div>
+        <button onclick="closeModal()" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs cursor-pointer">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: NEW ORDER (طلب جديد) -->
+  <!-- ========================================== -->
+  <div id="newOrderModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 text-right animate-in zoom-in-95 duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+          </div>
+          <h3 class="text-lg font-black text-slate-900">تسجيل طلب جديد يدوياً</h3>
+        </div>
+        <button onclick="closeNewOrderModal()" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="newOrderForm" onsubmit="handleCreateNewOrder(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">اسم العميل *</label>
+          <input id="inputNewOrderName" type="text" required placeholder="مثال: كريم المنصوري" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">رقم الهاتف *</label>
+          <input id="inputNewOrderPhone" type="tel" required placeholder="مثال: 0612345678" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">الباقة المختارة *</label>
+          <select id="inputNewOrderPlan" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+            <option value="المتجر القياسي (1,500 MAD)">المتجر الإلكتروني القياسي (1,500 MAD)</option>
+            <option value="صفحة هبوط احترافية (500 MAD)">صفحة هبوط احترافية (500 MAD)</option>
+            <option value="النظام المتكامل VIP (5,000 MAD)">النظام السحابي المتكامل VIP (5,000 MAD)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">طريقة الدفع</label>
+          <select id="inputNewOrderPayment" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+            <option value="بطاقة بنكية (Carte Bancaire)">الأداء بالبطاقة البنكية (Carte Bancaire)</option>
+            <option value="الدفع عند الاستلام (COD)">الدفع عند الاستلام (COD)</option>
+            <option value="تحويل بنكي (Virement)">تحويل بنكي (Virement)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">ملاحظات أو رابط المتجر (اختياري)</label>
+          <input id="inputNewOrderNotes" type="text" placeholder="ملاحظات أو رابط تسليم المتجر..." class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+        </div>
+
+        <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" onclick="closeNewOrderModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">إلغاء</button>
+          <button type="submit" id="btnSubmitNewOrder" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-black shadow-md cursor-pointer">حفظ وإنشاء الطلب الآن</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EDIT ORDER STATUS / STORE LINK -->
+  <!-- ========================================== -->
+  <div id="editOrderModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-right animate-in zoom-in-95 duration-200">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+        <h3 id="editModalTitle" class="text-base font-black text-slate-900">تعديل حالة الطلب</h3>
+        <button onclick="closeEditModal()" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <input type="hidden" id="editOrderId">
+      <div class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">حالة الطلب</label>
+          <select id="editOrderStatus" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800">
+            <option value="pending">قيد المراجعة 🟡</option>
+            <option value="in_progress">جاري التجهيز 🔵</option>
+            <option value="completed">مكتمل ومسلّم 🟢</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">رابط المتجر المسلّم (Store URL)</label>
+          <input id="editOrderUrl" type="url" placeholder="https://..." class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-mono text-slate-800" dir="ltr">
+        </div>
+
+        <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button onclick="closeEditModal()" class="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold cursor-pointer">إلغاء</button>
+          <button onclick="saveOrderEdits()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black shadow-md cursor-pointer">حفظ التغييرات</button>
+        </div>
       </div>
     </div>
   </div>
@@ -353,6 +1056,7 @@
     const DESKTOP_AUTH_SECRET = "ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b";
     let apiBase = "http://localhost:3000";
     let orders = [];
+    let currentTab = "orders";
     let pageZoom = 1.0;
 
     // Dual-Tone Audio Alert Chime
@@ -367,7 +1071,7 @@
           const gain = ctx.createGain();
           osc.type = "sine";
           osc.frequency.setValueAtTime(freq, time);
-          gain.gain.setValueAtTime(0.3, time);
+          gain.gain.setValueAtTime(0.35, time);
           gain.gain.exponentialRampToValueAtTime(0.0001, time + dur);
           osc.connect(gain);
           gain.connect(ctx.destination);
@@ -404,12 +1108,117 @@
       apiBase = "https://ecom-speed-pro.vercel.app";
     }
 
-    // Fetch Orders with Multi-Source Redundancy (Local Disk + Local Next.js + Cloud Vercel)
+    // Tab Definitions
+    const TAB_METADATA = {
+      orders: {
+        title: "إدارة الطلبات والمدفوعات الحية",
+        desc: "سجل الطلبات الواردة لحظياً — فوري ومحمي",
+        icon: "shopping-cart"
+      },
+      home: {
+        title: "مركز التحليلات والقيادة الفوري",
+        desc: "نظرة شمولية على مؤشرات المبيعات، نمو المنصة، وحالة النظام",
+        icon: "home"
+      },
+      customers: {
+        title: "سجل العملاء وإدارة العلاقات (CRM)",
+        desc: "بيانات العملاء الفريدين، سجل مشترياتهم، والتواصل المباشر عبر واتساب",
+        icon: "users"
+      },
+      products: {
+        title: "باقات وخدمات إيكوم سبيد برو",
+        desc: "إدارة الباقات والأسعار والعروض — جاهزة للطلب الفوري",
+        icon: "package"
+      },
+      payments: {
+        title: "بوابات الدفع والمعاملات المالية",
+        desc: "مراقبة بوابات الدفع الإلكترونية، المعاملات البنكية المباشرة، وسجل التحصيل",
+        icon: "credit-card"
+      },
+      reports: {
+        title: "التقارير المالية والتحليلية الشاملة",
+        desc: "ملخص الأداء المالي، سجل المبيعات، وأدوات التصدير والطباعة الرسمية",
+        icon: "trending-up"
+      },
+      settings: {
+        title: "أمان النظام وإعدادات الحماية",
+        desc: "مفاتيح التوثيق المشفرة، حظر المتصفحات، وأدوات صيانة برنامج سطح المكتب",
+        icon: "settings"
+      }
+    };
+
+    // SWITCH TAB - The heart of navigation!
+    function switchTab(tab) {
+      if (!TAB_METADATA[tab]) tab = "orders";
+      currentTab = tab;
+
+      // 1. Update Sidebar Buttons Styling
+      document.querySelectorAll(".tab-button").forEach(b => {
+        b.className = "tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold text-cyan-100/90 hover:text-white hover:bg-white/10";
+      });
+      const activeBtn = document.getElementById(`tabBtn-${tab}`);
+      if (activeBtn) {
+        activeBtn.className = "tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black";
+      }
+
+      // 2. Hide all tab panes
+      document.querySelectorAll(".tab-pane").forEach(pane => {
+        pane.classList.add("hidden");
+      });
+
+      // 3. Show active tab pane
+      const targetPane = document.getElementById(`tabContent-${tab}`);
+      if (targetPane) {
+        targetPane.classList.remove("hidden");
+      }
+
+      // 4. Update Header Title, Desc, and Icon
+      const meta = TAB_METADATA[tab];
+      document.getElementById("sectionTitle").innerText = meta.title;
+      document.getElementById("sectionDesc").innerText = meta.desc;
+      const iconEl = document.getElementById("sectionIcon");
+      if (iconEl) {
+        iconEl.setAttribute("data-lucide", meta.icon);
+      }
+
+      // 5. Trigger view render for this tab
+      renderActiveTab();
+      lucide.createIcons();
+      triggerToast(`تم الانتقال إلى: ${meta.title}`);
+    }
+
+    function renderActiveTab() {
+      switch (currentTab) {
+        case "orders":
+          renderOrdersTab();
+          break;
+        case "home":
+          renderHomeTab();
+          break;
+        case "customers":
+          renderCustomersTab();
+          break;
+        case "products":
+          renderProductsTab();
+          break;
+        case "payments":
+          renderPaymentsTab();
+          break;
+        case "reports":
+          renderReportsTab();
+          break;
+        case "settings":
+          renderSettingsTab();
+          break;
+      }
+    }
+
+    // Fetch Orders with Multi-Source Redundancy
     async function fetchOrders() {
       let combined = [];
       const seenIds = new Set();
 
-      // 1. If running inside Electron, read local data/orders.json directly (0ms latency, 100% offline-proof)
+      // 1. Electron local filesystem read
       if (typeof window !== "undefined" && window.require) {
         try {
           const fs = window.require("fs");
@@ -429,7 +1238,7 @@
         } catch (e) {}
       }
 
-      // 2. Fetch from Local API (http://localhost:3000)
+      // 2. Local Next.js API
       try {
         const res = await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}&t=${Date.now()}`, {
           headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
@@ -448,7 +1257,7 @@
         }
       } catch (e) {}
 
-      // 3. Fetch from Production Vercel Cloud (https://ecom-speed-pro.vercel.app)
+      // 3. Vercel Cloud API
       try {
         const resCloud = await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}&t=${Date.now()}`, {
           headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
@@ -467,10 +1276,10 @@
         }
       } catch (e) {}
 
-      // Sort by newest created_at first
+      // Sort newest first
       combined.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
 
-      // Detect newly arrived order!
+      // Detect newly arrived order
       if (orders.length > 0 && combined.length > orders.length) {
         const newest = combined[0];
         const existingIds = new Set(orders.map(o => o.id));
@@ -482,14 +1291,33 @@
       }
 
       orders = combined;
-      renderDashboard();
+
+      // Update Header Stats
+      const totalCount = orders.length;
+      const totalRev = orders.reduce((sum, o) => sum + (parseInt(String(o.price || "1500").replace(/[^0-9]/g, ""), 10) || 1500), 0);
+      document.getElementById("headerOrdersCount").innerText = `${totalCount} طلبات مسجلة`;
+      document.getElementById("headerRevenueCount").innerText = `${totalRev.toLocaleString()} د.م مبيعات`;
+
+      renderActiveTab();
     }
 
-    // Render Dashboard
-    function renderDashboard() {
+    // Helper: parse price
+    function getOrderPrice(o) {
+      if (o.price && typeof o.price === "number") return o.price;
+      const str = String(o.price || o.plan_tier || o.planTitle || "1500");
+      const match = str.match(/([0-9,]+)/);
+      if (match) {
+        const num = parseInt(match[1].replace(/,/g, ""), 10);
+        if (!isNaN(num) && num > 0) return num;
+      }
+      return 1500;
+    }
+
+    // 1. RENDER ORDERS TAB
+    function renderOrdersTab() {
       const tbody = document.getElementById("ordersTableBody");
-      const searchVal = document.getElementById("searchInput").value.trim().toLowerCase();
-      const statusVal = document.getElementById("statusFilter").value;
+      const searchVal = (document.getElementById("searchInput")?.value || "").trim().toLowerCase();
+      const statusVal = document.getElementById("statusFilter")?.value || "all";
 
       const filtered = orders.filter(o => {
         const name = (o.customer_name || o.customerName || "").toLowerCase();
@@ -499,21 +1327,18 @@
         return matchesSearch && matchesStatus;
       });
 
-      // Update KPI
       const totalCount = orders.length;
       const completedCount = orders.filter(o => o.status === "completed" || o.status === "paid").length;
-      const reviewCount = orders.filter(o => o.status === "pending").length;
-      const totalRev = orders.reduce((sum, o) => sum + (parseInt(String(o.price || "1500").replace(/[^0-9]/g, ""), 10) || 1500), 0);
+      const reviewCount = orders.filter(o => o.status === "pending" || !o.status).length;
+      const totalRev = orders.reduce((sum, o) => sum + getOrderPrice(o), 0);
 
       document.getElementById("kpiTotalOrders").innerText = totalCount;
       document.getElementById("kpiCompletedOrders").innerText = completedCount;
       document.getElementById("kpiReviewOrders").innerText = reviewCount;
       document.getElementById("kpiTotalRevenue").innerText = totalRev.toLocaleString() + " درهم";
-      document.getElementById("headerOrdersCount").innerText = `${totalCount} طلبات مسجلة`;
-      document.getElementById("headerRevenueCount").innerText = `${totalRev.toLocaleString()} د.م مبيعات`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-bold">لا توجد طلبات مسجلة حتى الآن</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-slate-400 font-bold">لا توجد طلبات تطابق البحث</td></tr>`;
         return;
       }
 
@@ -523,15 +1348,16 @@
         const name = o.customer_name || o.customerName || "عميل مميز";
         const phone = o.phone_number || o.customerPhone || "—";
         const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
-        const price = o.price || 1500;
+        const price = getOrderPrice(o);
         const status = o.status || "pending";
         const deliveredUrl = o.delivered_url || o.deliveredUrl || "";
+        const cleanPhone = phone.replace(/[^0-9]/g, "");
 
         const statusBadge = status === "completed"
-          ? `<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">مكتمل 🟢</span>`
+          ? `<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black cursor-pointer hover:bg-emerald-200" onclick="openEditModal('${id}')">مكتمل 🟢</span>`
           : status === "in_progress"
-          ? `<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">جاري التجهيز 🔵</span>`
-          : `<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black">قيد المراجعة 🟡</span>`;
+          ? `<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black cursor-pointer hover:bg-blue-200" onclick="openEditModal('${id}')">جاري التجهيز 🔵</span>`
+          : `<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black cursor-pointer hover:bg-amber-200" onclick="openEditModal('${id}')">قيد المراجعة 🟡</span>`;
 
         return `
           <tr class="hover:bg-blue-50/50 transition-colors">
@@ -545,16 +1371,320 @@
             <td class="p-3.5">
               ${deliveredUrl 
                 ? `<a href="${deliveredUrl}" target="_blank" class="text-cyan-600 hover:underline flex items-center gap-1 font-mono text-[11px]"><i data-lucide="external-link" class="w-3 h-3"></i> رابط المتجر</a>`
-                : `<span class="text-slate-400 text-[11px]">قيد البرمجة...</span>`}
+                : `<button onclick="openEditModal('${id}')" class="text-slate-400 hover:text-blue-600 text-[11px] flex items-center gap-1 cursor-pointer"><i data-lucide="plus" class="w-3 h-3"></i> إضافة رابط</button>`}
             </td>
             <td class="p-3.5 text-center flex items-center justify-center gap-1.5">
-              <button onclick="viewOrder('${id}')" class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700" title="تفاصيل"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
-              <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700" title="حذف"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              <button onclick="viewOrder('${id}')" class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 cursor-pointer" title="تفاصيل"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>
+              <button onclick="openEditModal('${id}')" class="p-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 cursor-pointer" title="تعديل الحالة والرابط"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+              ${cleanPhone ? `<a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك.')}" target="_blank" class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer" title="مراسلة عبر واتساب"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
+              <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </td>
           </tr>
         `;
       }).join("");
 
+      lucide.createIcons();
+    }
+
+    // 2. RENDER HOME TAB
+    function renderHomeTab() {
+      const totalCount = orders.length;
+      const totalRev = orders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const aov = totalCount > 0 ? Math.round(totalRev / totalCount) : 0;
+      const completedCount = orders.filter(o => o.status === "completed" || o.status === "paid").length;
+      const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 100;
+      
+      const uniquePhones = new Set(orders.map(o => (o.phone_number || o.customerPhone || "").trim()).filter(Boolean));
+
+      document.getElementById("homeTotalRevenue").innerText = totalRev.toLocaleString() + " درهم";
+      document.getElementById("homeAvgOrderValue").innerText = aov.toLocaleString() + " درهم";
+      document.getElementById("homeCompletionRate").innerText = `${completionRate}%`;
+      document.getElementById("homeActiveCustomers").innerText = `${uniquePhones.size || totalCount} عميل`;
+
+      // Plan Distribution breakdown
+      let countLanding = 0, revLanding = 0;
+      let countStore = 0, revStore = 0;
+      let countVip = 0, revVip = 0;
+
+      orders.forEach(o => {
+        const p = getOrderPrice(o);
+        const planStr = (o.plan_tier || o.planTitle || "").toLowerCase();
+        if (p <= 500 || planStr.includes("500") || planStr.includes("هبوط") || planStr.includes("landing")) {
+          countLanding++;
+          revLanding += p;
+        } else if (p >= 4000 || planStr.includes("5000") || planStr.includes("vip") || planStr.includes("سحابي")) {
+          countVip++;
+          revVip += p;
+        } else {
+          countStore++;
+          revStore += p;
+        }
+      });
+
+      const maxRev = Math.max(totalRev, 1);
+      const pctLanding = Math.round((revLanding / maxRev) * 100);
+      const pctStore = Math.round((revStore / maxRev) * 100);
+      const pctVip = Math.round((revVip / maxRev) * 100);
+
+      document.getElementById("homePlanBars").innerHTML = `
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-black">
+            <span class="text-blue-700">المتجر القياسي (1,500 د.م)</span>
+            <span class="font-mono text-slate-800">${revStore.toLocaleString()} د.م (${countStore} طلبات - ${pctStore}%)</span>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-500" style="width: ${Math.max(pctStore, 5)}%"></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-black">
+            <span class="text-emerald-700">صفحة هبوط سريعة (500 د.م)</span>
+            <span class="font-mono text-slate-800">${revLanding.toLocaleString()} د.م (${countLanding} طلبات - ${pctLanding}%)</span>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500" style="width: ${Math.max(pctLanding, 5)}%"></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-black">
+            <span class="text-purple-700">النظام المتكامل VIP (5,000 د.م)</span>
+            <span class="font-mono text-slate-800">${revVip.toLocaleString()} د.م (${countVip} طلبات - ${pctVip}%)</span>
+          </div>
+          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-600 transition-all duration-500" style="width: ${Math.max(pctVip, 5)}%"></div>
+          </div>
+        </div>
+      `;
+
+      // Live Recent Activity Feed
+      const recent = orders.slice(0, 5);
+      if (recent.length === 0) {
+        document.getElementById("homeRecentFeed").innerHTML = `<p class="text-center text-slate-400 py-6 font-bold text-xs">لا توجد أنشطة مسجلة بعد</p>`;
+      } else {
+        document.getElementById("homeRecentFeed").innerHTML = recent.map(o => {
+          const name = o.customer_name || o.customerName || "عميل جديد";
+          const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
+          const price = getOrderPrice(o);
+          const time = o.created_at ? new Date(o.created_at).toLocaleTimeString("ar-MA", { hour: "2-digit", minute: "2-digit" }) : "اليوم";
+          const status = o.status || "pending";
+          const badge = status === "completed" 
+            ? `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 text-[10px] font-black">مكتمل 🟢</span>`
+            : `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-black">قيد التجهيز 🟡</span>`;
+
+          return `
+            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/50 transition-colors">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs">
+                  ${name.charAt(0) || "ع"}
+                </div>
+                <div>
+                  <h5 class="font-black text-xs text-slate-900">${name}</h5>
+                  <span class="text-[10px] text-slate-500 font-bold">${plan} • ${price.toLocaleString()} د.م</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                ${badge}
+                <span class="font-mono text-[10px] text-slate-400 font-bold">${time}</span>
+              </div>
+            </div>
+          `;
+        }).join("");
+      }
+
+      lucide.createIcons();
+    }
+
+    // 3. RENDER CUSTOMERS TAB
+    function renderCustomersTab() {
+      const searchVal = (document.getElementById("customerSearchInput")?.value || "").trim().toLowerCase();
+      const tbody = document.getElementById("customersTableBody");
+
+      // Aggregate customers by phone or name
+      const customerMap = new Map();
+      orders.forEach(o => {
+        const phone = (o.phone_number || o.customerPhone || "").trim();
+        const name = (o.customer_name || o.customerName || "عميل").trim();
+        const key = phone || name;
+        if (!customerMap.has(key)) {
+          customerMap.set(key, {
+            name,
+            phone,
+            ordersCount: 0,
+            totalSpend: 0,
+            lastPlan: o.plan_tier || o.planTitle || "المتجر القياسي",
+            lastOrderDate: o.created_at || "—",
+            orderIds: []
+          });
+        }
+        const c = customerMap.get(key);
+        c.ordersCount++;
+        c.totalSpend += getOrderPrice(o);
+        c.orderIds.push(o.id);
+        if (o.created_at && (!c.lastOrderDate || new Date(o.created_at) > new Date(c.lastOrderDate))) {
+          c.lastOrderDate = o.created_at;
+          c.lastPlan = o.plan_tier || o.planTitle || c.lastPlan;
+        }
+      });
+
+      const customerList = Array.from(customerMap.values());
+      const totalCustomers = customerList.length;
+      const vipCount = customerList.filter(c => c.ordersCount > 1 || c.totalSpend >= 3000).length;
+      const totalSpendAll = customerList.reduce((sum, c) => sum + c.totalSpend, 0);
+      const avgSpend = totalCustomers > 0 ? Math.round(totalSpendAll / totalCustomers) : 0;
+
+      document.getElementById("crmTotalCustomers").innerText = totalCustomers;
+      document.getElementById("crmVipCustomers").innerText = vipCount;
+      document.getElementById("crmAvgCustomerSpend").innerText = avgSpend.toLocaleString() + " درهم";
+
+      const filtered = customerList.filter(c => {
+        return !searchVal || c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal);
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">لا يوجد عملاء يطابقون البحث</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(c => {
+        const cleanPhone = c.phone.replace(/[^0-9]/g, "");
+        const formattedDate = c.lastOrderDate && c.lastOrderDate !== "—" ? new Date(c.lastOrderDate).toLocaleDateString("ar-MA") : "مؤخراً";
+        const waLink = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم ' + c.name + '، نتواصل معك من إدارة Ecom Speed Pro.')}` : null;
+
+        return `
+          <tr class="hover:bg-blue-50/50 transition-colors">
+            <td class="p-3.5 flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-white flex items-center justify-center font-black text-xs shrink-0">
+                ${c.name.charAt(0) || "ع"}
+              </div>
+              <div>
+                <span class="font-black text-slate-900 block">${c.name}</span>
+                ${c.ordersCount > 1 ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[9px] font-black">عميل متكرر ⭐</span>` : ''}
+              </div>
+            </td>
+            <td class="p-3.5 font-mono text-slate-600" dir="ltr">${c.phone || "—"}</td>
+            <td class="p-3.5 font-mono font-black text-blue-700">${c.ordersCount} طلبات</td>
+            <td class="p-3.5 font-mono font-black text-emerald-600">${c.totalSpend.toLocaleString()} د.م</td>
+            <td class="p-3.5 text-slate-700">${c.lastPlan}</td>
+            <td class="p-3.5 text-slate-500 font-mono text-[11px]">${formattedDate}</td>
+            <td class="p-3.5 text-center flex items-center justify-center gap-1.5">
+              ${waLink ? `
+                <a href="${waLink}" target="_blank" class="px-2.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm transition-all" title="مراسلة عبر واتساب">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>واتساب</span>
+                </a>
+              ` : ''}
+              <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="p-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 cursor-pointer" title="عرض طلبات هذا العميل"><i data-lucide="folder-search" class="w-3.5 h-3.5"></i></button>
+              <button onclick="deleteCustomerData('${c.phone}', '${c.name}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف العميل"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    // 4. RENDER PRODUCTS TAB
+    function renderProductsTab() {
+      let countLanding = 0, countStore = 0, countVip = 0;
+      orders.forEach(o => {
+        const p = getOrderPrice(o);
+        const planStr = (o.plan_tier || o.planTitle || "").toLowerCase();
+        if (p <= 500 || planStr.includes("500") || planStr.includes("هبوط") || planStr.includes("landing")) {
+          countLanding++;
+        } else if (p >= 4000 || planStr.includes("5000") || planStr.includes("vip") || planStr.includes("سحابي")) {
+          countVip++;
+        } else {
+          countStore++;
+        }
+      });
+
+      document.getElementById("prodCount-landing").innerText = `${countLanding} طلبات`;
+      document.getElementById("prodCount-store").innerText = `${countStore} طلبات`;
+      document.getElementById("prodCount-vip").innerText = `${countVip} طلبات`;
+      lucide.createIcons();
+    }
+
+    // 5. RENDER PAYMENTS TAB
+    function renderPaymentsTab() {
+      const tbody = document.getElementById("paymentsTableBody");
+      let revCard = 0, revCod = 0, revBank = 0;
+
+      orders.forEach(o => {
+        const p = getOrderPrice(o);
+        const m = (o.payment_method || "").toLowerCase();
+        if (m.includes("cod") || m.includes("استلام") || m.includes("livraison")) {
+          revCod += p;
+        } else if (m.includes("virement") || m.includes("تحويل")) {
+          revBank += p;
+        } else {
+          revCard += p;
+        }
+      });
+
+      document.getElementById("payGateRev-card").innerText = revCard.toLocaleString() + " درهم";
+      document.getElementById("payGateRev-cod").innerText = revCod.toLocaleString() + " درهم";
+      document.getElementById("payGateRev-bank").innerText = revBank.toLocaleString() + " درهم";
+      document.getElementById("paymentsCountText").innerText = `${orders.length} عمليات مسجلة`;
+
+      if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">لا توجد معاملات مسجلة حتى الآن</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = orders.map((o, idx) => {
+        const num = o.order_number || `#ESP-${(o.id || "").slice(0, 6)}`;
+        const name = o.customer_name || o.customerName || "عميل";
+        const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
+        const price = getOrderPrice(o);
+        const method = o.payment_method || "بطاقة بنكية (CMI/Visa)";
+        const status = o.status === "completed" || o.status === "paid"
+          ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">مدفوع ومؤكد 🟢</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black">بانتظار التأكيد 🟡</span>`;
+        const date = o.created_at ? new Date(o.created_at).toLocaleString("ar-MA") : "مؤخراً";
+
+        return `
+          <tr class="hover:bg-blue-50/50 transition-colors">
+            <td class="p-3.5 font-mono font-black text-blue-700">TXN-${num}</td>
+            <td class="p-3.5 font-black text-slate-900">${name}</td>
+            <td class="p-3.5">${plan}</td>
+            <td class="p-3.5 font-mono font-black text-emerald-600">${price.toLocaleString()} د.م</td>
+            <td class="p-3.5">${method}</td>
+            <td class="p-3.5">${status}</td>
+            <td class="p-3.5 font-mono text-[11px] text-slate-500">${date}</td>
+          </tr>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    // 6. RENDER REPORTS TAB
+    function renderReportsTab() {
+      const totalRev = orders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const completedCount = orders.filter(o => o.status === "completed" || o.status === "paid").length;
+      const pendingCount = orders.filter(o => o.status === "pending" || !o.status).length;
+
+      document.getElementById("repTotalRev").innerText = totalRev.toLocaleString() + " د.م";
+      document.getElementById("repCompletedCount").innerText = completedCount;
+      document.getElementById("repPendingCount").innerText = pendingCount;
+
+      const tbody = document.getElementById("reportsMonthlyTable");
+      tbody.innerHTML = `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="p-3 font-black text-slate-900">أكتوبر 2026 (الشهر الحالي)</td>
+          <td class="p-3 font-mono font-black text-blue-700">${orders.length} طلبات</td>
+          <td class="p-3 font-mono font-black text-emerald-600">${totalRev.toLocaleString()} درهم</td>
+          <td class="p-3 font-mono text-slate-600">${orders.length > 0 ? Math.round(totalRev / orders.length).toLocaleString() : 0} درهم</td>
+          <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">نشط ومستمر 🟢</span></td>
+        </tr>
+      `;
+      lucide.createIcons();
+    }
+
+    // 7. RENDER SETTINGS TAB
+    function renderSettingsTab() {
       lucide.createIcons();
     }
 
@@ -588,7 +1718,7 @@
       const cust = document.getElementById("liveBannerCustomerText");
 
       time.innerText = new Date().toLocaleTimeString("ar-MA");
-      cust.innerHTML = `العميل: <span class="text-cyan-300">${order.customer_name || "عميل جديد"}</span> — ${order.plan_tier || "باقة المتجر"} (${(order.price || 1500).toLocaleString()} د.م)`;
+      cust.innerHTML = `العميل: <span class="text-cyan-300">${order.customer_name || "عميل جديد"}</span> — ${order.plan_tier || "باقة المتجر"} (${getOrderPrice(order).toLocaleString()} د.م)`;
       banner.classList.remove("hidden");
     }
 
@@ -613,25 +1743,104 @@
       document.getElementById("zoomPercentText").innerText = "100%";
     };
 
-    // CSV Export
-    document.getElementById("btnExportCSV").onclick = () => {
-      const headers = ["ID", "Customer", "Phone", "Plan", "Price", "Status"];
-      const rows = orders.map(o => [o.id, o.customer_name || o.customerName, o.phone_number || o.customerPhone, o.plan_tier || o.planTitle, o.price || 1500, o.status || "pending"]);
+    // CSV Exports
+    function exportOrdersCSV() {
+      const headers = ["Order_Number", "Customer_Name", "Phone", "Plan", "Price_MAD", "Payment_Method", "Status", "Store_URL", "Date"];
+      const rows = orders.map(o => [
+        o.order_number || o.id,
+        `"${(o.customer_name || o.customerName || '').replace(/"/g, '""')}"`,
+        `"${(o.phone_number || o.customerPhone || '').replace(/"/g, '""')}"`,
+        `"${(o.plan_tier || o.planTitle || '').replace(/"/g, '""')}"`,
+        getOrderPrice(o),
+        `"${(o.payment_method || 'بطاقة بنكية').replace(/"/g, '""')}"`,
+        o.status || 'pending',
+        `"${(o.delivered_url || '').replace(/"/g, '""')}"`,
+        o.created_at || ''
+      ]);
       const csv = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
       const a = document.createElement("a");
       a.href = encodeURI(csv);
-      a.download = `orders_${Date.now()}.csv`;
+      a.download = `ecom_speed_pro_orders_${Date.now()}.csv`;
       a.click();
-      triggerToast("تم تنزيل ملف التقرير CSV بنجاح");
-    };
+      triggerToast("تم تنزيل تقرير الطلبات CSV بنجاح");
+    }
+    document.getElementById("btnExportCSV").onclick = exportOrdersCSV;
 
-    // Delete Order
+    function exportCustomersCSV() {
+      const customerMap = new Map();
+      orders.forEach(o => {
+        const phone = (o.phone_number || o.customerPhone || "").trim();
+        const name = (o.customer_name || o.customerName || "عميل").trim();
+        const key = phone || name;
+        if (!customerMap.has(key)) {
+          customerMap.set(key, { name, phone, ordersCount: 0, totalSpend: 0 });
+        }
+        const c = customerMap.get(key);
+        c.ordersCount++;
+        c.totalSpend += getOrderPrice(o);
+      });
+      const headers = ["Customer_Name", "Phone", "Total_Orders", "Total_Spend_MAD"];
+      const rows = Array.from(customerMap.values()).map(c => [
+        `"${c.name.replace(/"/g, '""')}"`,
+        `"${c.phone.replace(/"/g, '""')}"`,
+        c.ordersCount,
+        c.totalSpend
+      ]);
+      const csv = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const a = document.createElement("a");
+      a.href = encodeURI(csv);
+      a.download = `ecom_speed_pro_customers_${Date.now()}.csv`;
+      a.click();
+      triggerToast("تم تنزيل تقرير سجل العملاء CSV بنجاح");
+    }
+
+    function backupOrdersJSON() {
+      const json = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(orders, null, 2));
+      const a = document.createElement("a");
+      a.href = json;
+      a.download = `orders_backup_${Date.now()}.json`;
+      a.click();
+      triggerToast("تم تنزيل نسخة احتياطية من قاعدة البيانات بنجاح");
+    }
+
+    // Ping Server Test
+    async function pingServerTest() {
+      const statusEl = document.getElementById("settingsPingStatus");
+      if (statusEl) statusEl.innerText = "جاري الفحص...";
+      const start = Date.now();
+      try {
+        const res = await fetch(`${apiBase}/api/health?t=${Date.now()}`, { signal: AbortSignal.timeout(2000) });
+        const latency = Date.now() - start;
+        if (res.ok) {
+          triggerToast(`السيرفر متصل بنجاح 🟢 (${latency}ms)`);
+          if (statusEl) statusEl.innerText = `السيرفر متصل ومستقر (${latency}ms)`;
+        } else {
+          triggerToast(`استجابة غير متوقعة: ${res.status}`);
+          if (statusEl) statusEl.innerText = `كود الاستجابة: ${res.status}`;
+        }
+      } catch (e) {
+        triggerToast("فشل الاتصال بالسيرفر المحلي 🔴");
+        if (statusEl) statusEl.innerText = "فشل الاتصال — تأكد من تشغيل السيرفر";
+      }
+    }
+
+    // Filter orders by a specific customer
+    function filterOrdersByCustomer(query) {
+      switchTab("orders");
+      const input = document.getElementById("searchInput");
+      if (input) {
+        input.value = query;
+        renderOrdersTab();
+      }
+    }
+
+    // Delete Single Order
     async function deleteOrder(id) {
       if (!confirm("هل أنت متأكد من حذف هذا الطلب نهائياً؟")) return;
       orders = orders.filter(o => o.id !== id);
-      renderDashboard();
+      renderActiveTab();
 
-      // Delete locally from file if running in Electron
+      // Delete locally from file in Electron
       if (typeof window !== "undefined" && window.require) {
         try {
           const fs = window.require("fs");
@@ -646,7 +1855,7 @@
         } catch (e) {}
       }
 
-      // Delete from Local API
+      // Delete via API
       try {
         await fetch(`http://localhost:3000/api/orders?id=${encodeURIComponent(id)}&token=${DESKTOP_AUTH_SECRET}`, {
           method: "DELETE",
@@ -654,7 +1863,6 @@
         });
       } catch (e) {}
 
-      // Delete from Vercel API
       try {
         await fetch(`https://ecom-speed-pro.vercel.app/api/orders?id=${encodeURIComponent(id)}&token=${DESKTOP_AUTH_SECRET}`, {
           method: "DELETE",
@@ -665,21 +1873,86 @@
       triggerToast("تم حذف الطلب بنجاح");
     }
 
-    // View Order
+    // Delete Entire Customer Data
+    async function deleteCustomerData(phone, name) {
+      if (!confirm(`هل أنت متأكد من حذف العميل "${name}" وجميع طلباته نهائياً؟`)) return;
+      orders = orders.filter(o => {
+        const p = (o.phone_number || o.customerPhone || "").trim();
+        const n = (o.customer_name || o.customerName || "").trim();
+        if (phone && p === phone) return false;
+        if (name && n === name) return false;
+        return true;
+      });
+      renderActiveTab();
+
+      // Electron delete
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(p)) {
+            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }
+
+      // API delete
+      try {
+        await fetch(`http://localhost:3000/api/orders?phone=${encodeURIComponent(phone)}&customer=${encodeURIComponent(name)}&token=${DESKTOP_AUTH_SECRET}`, {
+          method: "DELETE",
+          headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET }
+        });
+      } catch (e) {}
+
+      try {
+        await fetch(`https://ecom-speed-pro.vercel.app/api/orders?phone=${encodeURIComponent(phone)}&customer=${encodeURIComponent(name)}&token=${DESKTOP_AUTH_SECRET}`, {
+          method: "DELETE",
+          headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET }
+        });
+      } catch (e) {}
+
+      triggerToast("تم حذف سجل العميل وطلباته بنجاح");
+    }
+
+    // View Order Details Modal
     function viewOrder(id) {
       const o = orders.find(x => x.id === id);
       if (!o) return;
-      document.getElementById("modalOrderNumber").innerText = `تفاصيل الطلب: ${o.order_number || o.orderNumber || id}`;
+      const num = o.order_number || o.orderNumber || `#ESP-${id.slice(0, 6)}`;
+      const name = o.customer_name || o.customerName || "عميل";
+      const phone = o.phone_number || o.customerPhone || "—";
+      const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
+      const price = getOrderPrice(o);
+      const method = o.payment_method || "بطاقة بنكية";
+      const status = o.status || "pending";
+      const url = o.delivered_url || o.deliveredUrl || "";
+      const date = o.created_at ? new Date(o.created_at).toLocaleString("ar-MA") : "مؤخراً";
+
+      document.getElementById("modalOrderNumber").innerText = `تفاصيل الطلب: ${num}`;
       document.getElementById("modalOrderContent").innerHTML = `
-        <div class="grid grid-cols-2 gap-2 p-3 bg-slate-50 rounded-xl">
-          <div><span class="text-slate-400">الاسم:</span> <strong class="text-slate-900">${o.customer_name || o.customerName}</strong></div>
-          <div><span class="text-slate-400">الهاتف:</span> <strong class="text-slate-900">${o.phone_number || o.customerPhone}</strong></div>
-          <div><span class="text-slate-400">الباقة:</span> <strong class="text-slate-900">${o.plan_tier || o.planTitle}</strong></div>
-          <div><span class="text-slate-400">المبلغ:</span> <strong class="text-emerald-600">${o.price || 1500} د.م</strong></div>
+        <div class="grid grid-cols-2 gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+          <div><span class="text-slate-400 block mb-0.5">اسم العميل:</span> <strong class="text-slate-900 text-sm">${name}</strong></div>
+          <div><span class="text-slate-400 block mb-0.5">رقم الهاتف:</span> <strong class="text-slate-900 font-mono text-sm" dir="ltr">${phone}</strong></div>
+          <div><span class="text-slate-400 block mb-0.5">الباقة المختارة:</span> <strong class="text-slate-900">${plan}</strong></div>
+          <div><span class="text-slate-400 block mb-0.5">المبلغ المطلوب:</span> <strong class="text-emerald-600 font-mono text-sm">${price.toLocaleString()} د.م</strong></div>
+          <div><span class="text-slate-400 block mb-0.5">طريقة الدفع:</span> <strong class="text-slate-900">${method}</strong></div>
+          <div><span class="text-slate-400 block mb-0.5">حالة الطلب:</span> <strong class="text-blue-700">${status}</strong></div>
+          <div class="col-span-2"><span class="text-slate-400 block mb-0.5">تاريخ التسجيل:</span> <span class="text-slate-600 font-mono">${date}</span></div>
+          ${url ? `<div class="col-span-2 pt-2 border-t border-slate-200"><span class="text-slate-400 block mb-0.5">رابط المتجر المسلّم:</span> <a href="${url}" target="_blank" class="text-cyan-600 font-mono hover:underline flex items-center gap-1">${url}</a></div>` : ''}
         </div>
       `;
+
+      document.getElementById("modalActionButtons").innerHTML = `
+        <button onclick="closeModal(); openEditModal('${id}');" class="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer">
+          <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+          <span>تعديل الحالة</span>
+        </button>
+      `;
+
       document.getElementById("orderDetailModal").classList.remove("hidden");
       document.getElementById("orderDetailModal").classList.add("flex");
+      lucide.createIcons();
     }
 
     function closeModal() {
@@ -687,28 +1960,156 @@
       document.getElementById("orderDetailModal").classList.remove("flex");
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll(".tab-button").forEach(b => {
-        b.className = "tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold text-cyan-100/90 hover:text-white hover:bg-white/10";
-      });
-      const activeBtn = document.getElementById(`tabBtn-${tab}`);
-      if (activeBtn) {
-        activeBtn.className = "tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold bg-gradient-to-r from-[#d946ef] via-[#a855f7] to-[#3b82f6] text-white shadow-[0_0_25px_rgba(217,70,239,0.7)] font-black";
-      }
-      triggerToast(`تم الانتقال إلى قسم: ${tab}`);
+    // Edit Order Status Modal
+    function openEditModal(id) {
+      const o = orders.find(x => x.id === id);
+      if (!o) return;
+      document.getElementById("editOrderId").value = id;
+      document.getElementById("editOrderStatus").value = o.status || "pending";
+      document.getElementById("editOrderUrl").value = o.delivered_url || o.deliveredUrl || "";
+      document.getElementById("editModalTitle").innerText = `تعديل الطلب: ${o.order_number || id.slice(0, 8)}`;
+      document.getElementById("editOrderModal").classList.remove("hidden");
+      document.getElementById("editOrderModal").classList.add("flex");
     }
 
+    function closeEditModal() {
+      document.getElementById("editOrderModal").classList.add("hidden");
+      document.getElementById("editOrderModal").classList.remove("flex");
+    }
+
+    async function saveOrderEdits() {
+      const id = document.getElementById("editOrderId").value;
+      const status = document.getElementById("editOrderStatus").value;
+      const delivered_url = document.getElementById("editOrderUrl").value.trim();
+
+      const o = orders.find(x => x.id === id);
+      if (o) {
+        o.status = status;
+        o.delivered_url = delivered_url;
+      }
+      closeEditModal();
+      renderActiveTab();
+
+      // Electron disk write
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(p)) {
+            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }
+
+      // API Patch
+      try {
+        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
+          },
+          body: JSON.stringify({ id, status, delivered_url })
+        });
+      } catch (e) {}
+
+      try {
+        await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
+          },
+          body: JSON.stringify({ id, status, delivered_url })
+        });
+      } catch (e) {}
+
+      triggerToast("تم تحديث حالة الطلب بنجاح");
+    }
+
+    // New Order Modal
+    function openNewOrderModal() {
+      document.getElementById("inputNewOrderName").value = "";
+      document.getElementById("inputNewOrderPhone").value = "";
+      document.getElementById("inputNewOrderNotes").value = "";
+      document.getElementById("newOrderModal").classList.remove("hidden");
+      document.getElementById("newOrderModal").classList.add("flex");
+    }
+
+    function openNewOrderModalWithPlan(plan) {
+      openNewOrderModal();
+      document.getElementById("inputNewOrderPlan").value = plan;
+    }
+
+    function closeNewOrderModal() {
+      document.getElementById("newOrderModal").classList.add("hidden");
+      document.getElementById("newOrderModal").classList.remove("flex");
+    }
+
+    async function handleCreateNewOrder(e) {
+      e.preventDefault();
+      const name = document.getElementById("inputNewOrderName").value.trim();
+      const phone = document.getElementById("inputNewOrderPhone").value.trim();
+      const plan = document.getElementById("inputNewOrderPlan").value;
+      const payment = document.getElementById("inputNewOrderPayment").value;
+      const notes = document.getElementById("inputNewOrderNotes").value.trim();
+
+      const payload = {
+        customer_name: name,
+        phone_number: phone,
+        plan_tier: plan,
+        payment_method: payment,
+        product_notes: notes,
+        status: "pending"
+      };
+
+      closeNewOrderModal();
+      triggerToast("جاري إنشاء الطلب وإرساله للسيرفر...");
+
+      try {
+        const res = await fetch(`${apiBase}/api/orders`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.order) {
+            orders.unshift(data.order);
+            playOrderChime();
+            showLiveBanner(data.order);
+            renderActiveTab();
+            triggerToast("تم إنشاء الطلب بنجاح! ⚡");
+          }
+        }
+      } catch (err) {
+        console.error("Create order error:", err);
+      }
+
+      fetchOrders();
+    }
+
+    // Attach Top Header Button
+    const topNewBtn = document.getElementById("btnOpenNewOrderModal");
+    if (topNewBtn) {
+      topNewBtn.onclick = openNewOrderModal;
+    }
+
+    // Attach Refresh & Search
     document.getElementById("btnRefresh").onclick = fetchOrders;
-    document.getElementById("searchInput").oninput = renderDashboard;
-    document.getElementById("statusFilter").onchange = renderDashboard;
+    document.getElementById("searchInput").oninput = renderOrdersTab;
+    document.getElementById("statusFilter").onchange = renderOrdersTab;
 
     // Initialize
     (async () => {
       await initBackend();
       await fetchOrders();
       startRealtimeStream();
+      switchTab("orders");
       lucide.createIcons();
     })();
   </script>
 </body>
 </html>
+
