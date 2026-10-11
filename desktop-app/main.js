@@ -15,12 +15,12 @@ function createWindow() {
     title: "ECOM SPEED PRO | لوحة تحكم الإدارة الفاخرة (برنامج سطح المكتب المعتمد)",
     backgroundColor: "#020718",
     autoHideMenuBar: true,
-    show: false,
+    show: true,
     icon: iconPath,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true,
-      enableRemoteModule: false,
+      nodeIntegration: true,
+      contextIsolation: false,
+      webSecurity: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
@@ -42,11 +42,7 @@ function createWindow() {
 
   // Load the standalone native desktop dashboard directly from computer files
   mainWindow.loadFile(path.join(__dirname, "index.html"));
-
-  mainWindow.once("ready-to-show", () => {
-    mainWindow.show();
-    mainWindow.focus();
-  });
+  mainWindow.focus();
 
   // Handle external links (like WhatsApp) in user default browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {

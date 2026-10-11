@@ -1,17 +1,11 @@
 @echo off
-chcp 65001 >nul
-title ECOM SPEED PRO - لوحة تحكم الإدارة الفاخرة
-
-echo ========================================================
-echo    🚀 جاري تشغيل برنامج لوحة تحكم ECOM SPEED PRO المستقل...
-echo ========================================================
-
+taskkill /f /im electron.exe >nul 2>&1
 cd /d "%~dp0desktop-app"
-
-if exist "node_modules\.bin\electron.cmd" (
+if exist "node_modules\electron\dist\electron.exe" (
+    start "" "node_modules\electron\dist\electron.exe" .
+) else if exist "node_modules\.bin\electron.cmd" (
     start "" "node_modules\.bin\electron.cmd" .
 ) else (
     start "" npx electron .
 )
-
 exit
