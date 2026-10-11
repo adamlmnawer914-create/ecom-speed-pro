@@ -120,8 +120,6 @@ function playOrderChime() {
 export default function AdminDashboardPage() {
   // Desktop Application Authorization State (Browser Lockout)
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [pinInput, setPinInput] = useState("");
-  const [pinError, setPinError] = useState("");
   const [realtimeConnected, setRealtimeConnected] = useState(false);
   const [liveNewOrderBanner, setLiveNewOrderBanner] = useState<{
     id: string;
@@ -156,58 +154,33 @@ export default function AdminDashboardPage() {
     phone?: string;
   } | null>(null);
 
-  // Check desktop app authorization on mount (حظر التصفح عبر المتصفح وقصره على برنامج سطح المكتب)
+  // Check desktop app authorization on mount (حظر التصفح عبر المتصفح بنسبة 100% وقصره على تطبيق سطح المكتب)
   useEffect(() => {
-    const urlParams =
-      typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
-    const tokenFromUrl =
-      urlParams?.get("desktop_token") || urlParams?.get("token");
-
-    const savedToken =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem("ecom_speed_pro_desktop_token") ||
-          localStorage.getItem("ecom_speed_pro_desktop_token")
-        : null;
-
-    const isElectron =
+    const isDesktopApp =
       typeof window !== "undefined" &&
       Boolean(
         (window as any).ecomDesktop?.isDesktop ||
           (window as any).isEcomSpeedProDesktop ||
-          (navigator.userAgent && navigator.userAgent.includes("SecureAdminClient"))
+          (typeof navigator !== "undefined" &&
+            navigator.userAgent &&
+            navigator.userAgent.includes("SecureAdminClient/9f8d1c7a4b"))
       );
 
-    if (
-      isElectron ||
-      validateAdminToken(tokenFromUrl) ||
-      validateAdminToken(savedToken)
-    ) {
+    if (isDesktopApp) {
       setIsAuthorized(true);
-      if (tokenFromUrl && typeof window !== "undefined") {
-        try {
-          sessionStorage.setItem("ecom_speed_pro_desktop_token", tokenFromUrl);
-          localStorage.setItem("ecom_speed_pro_desktop_token", tokenFromUrl);
-        } catch (e) {}
-      }
+      try {
+        sessionStorage.setItem("ecom_speed_pro_desktop_token", DESKTOP_SECRET_TOKEN);
+        localStorage.setItem("ecom_speed_pro_desktop_token", DESKTOP_SECRET_TOKEN);
+      } catch (e) {}
     } else {
+      // Any regular browser (Chrome, Edge, Safari...) is strictly blocked
       setIsAuthorized(false);
+      try {
+        localStorage.removeItem("ecom_speed_pro_desktop_token");
+        sessionStorage.removeItem("ecom_speed_pro_desktop_token");
+      } catch (e) {}
     }
   }, []);
-
-  const handleUnlockWithPin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validateAdminToken(pinInput)) {
-      try {
-        sessionStorage.setItem("ecom_speed_pro_desktop_token", pinInput.trim());
-        localStorage.setItem("ecom_speed_pro_desktop_token", pinInput.trim());
-      } catch (e) {}
-      setIsAuthorized(true);
-      setPinError("");
-      triggerNotification("تم التحقق بنجاح! مرحباً بك في لوحة تحكم الإدارة 🛡️");
-    } else {
-      setPinError("رمز الطوارئ PIN غير صحيح. الوصول محظور عبر متصفحات الويب.");
-    }
-  };
 
   const getAuthToken = () => {
     try {
@@ -309,6 +282,7 @@ export default function AdminDashboardPage() {
 
   // Function to fetch real live orders from backend API & localStorage
   const fetchRealOrders = async () => {
+    if (isAuthorized !== true) return;
     try {
       const deletedSet = getLocalDeletedIds();
 
@@ -500,7 +474,7 @@ export default function AdminDashboardPage() {
 
   // Real-Time EventSource Stream & Fast Heartbeat Sync ("في نفس اللحظة ⚡")
   useEffect(() => {
-    if (isAuthorized === false) return;
+    if (isAuthorized !== true) return;
 
     fetchRealOrders();
 
@@ -1084,7 +1058,7 @@ export default function AdminDashboardPage() {
   };
 
   // Security Lockout Screen for unauthorized browser access (حظر التصفح عبر الويب لتفادي الاختراق)
-  if (isAuthorized === false) {
+  if (isAuthorized !== true) {
     return (
       <div
         dir="rtl"
@@ -1109,15 +1083,15 @@ export default function AdminDashboardPage() {
 
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-black mb-3">
             <Lock className="w-3.5 h-3.5" />
-            <span>منطقة إدارة محمية مشفرة | الوصول محظور عبر المتصفح</span>
+            <span>منطقة إدارة محمية مشفرة | الوصول محظور تماماً عبر المتصفح</span>
           </div>
 
           <h1 className="text-xl sm:text-2xl font-black text-white mb-2.5">
-            لوحة التحكم مخصصة حصرياً لبرنامج سطح المكتب
+            لوحة التحكم تعمل فقط على برنامج حاسوبك الشخصي
           </h1>
 
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6 font-medium">
-            تم إيقاف وحظر الوصول عبر متصفحات الويب العادية لحماية المنصة بنسبة 100% ومنع أي محاولة اختراق أو تجسس على المبيعات. لوحة التحكم تعمل حصرياً عبر تطبيق <span className="text-cyan-300 font-bold">ECOM SPEED PRO Desktop</span> المعتمد على حاسوبك الشخصي.
+            بناءً على طلبك المشدد للحماية من أي محاولة اختراق، تم إيقاف وإلغاء إمكانية فتح لوحة التحكم نهائياً عبر أي متصفح ويب. لوحة التحكم تعمل حصرياً ومباشرة عبر برنامج <span className="text-cyan-300 font-bold">ECOM SPEED PRO Desktop</span> المعتمد على حاسوبك الشخصي.
           </p>
 
           <div className="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-4 mb-6 text-right space-y-2">
@@ -1125,47 +1099,14 @@ export default function AdminDashboardPage() {
               <Monitor className="w-4 h-4 text-cyan-400" />
               <span>كيفية تشغيل لوحة التحكم من حاسوبك:</span>
             </div>
-            <p className="text-[12px] text-slate-400 leading-relaxed">
-              انقر مرتين على ملف <code className="bg-slate-800 px-2 py-0.5 rounded text-amber-300 font-mono text-[11px] border border-slate-700">launch-admin-desktop.bat</code> الموجود على سطح مكتبك أو في مجلد المشروع لتشغيل البرنامج المستقل والمؤمّن فوراً.
+            <p className="text-[12px] text-slate-300 leading-relaxed">
+              انقر مرتين على ملف <code className="bg-slate-800 px-2.5 py-1 rounded-lg text-amber-300 font-mono text-[12px] border border-slate-700 font-black">launch-admin-desktop.bat</code> الموجود على سطح مكتبك أو في مجلد المشروع لتشغيل البرنامج المستقل والمؤمّن فوراً.
             </p>
           </div>
 
-          {/* Emergency PIN Unlock for the Owner */}
-          <form onSubmit={handleUnlockWithPin} className="w-full space-y-3">
-            <div className="text-right">
-              <label className="text-[11px] font-bold text-slate-400 block mb-1">
-                فتح الطوارئ المباشر لمالك المتجر (رمز PIN أو مفتاح الأمان):
-              </label>
-              <div className="relative">
-                <input
-                  type="password"
-                  value={pinInput}
-                  onChange={(e) => {
-                    setPinInput(e.target.value);
-                    setPinError("");
-                  }}
-                  placeholder="أدخل رمز الطوارئ (2026)..."
-                  className="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-right"
-                />
-                <KeyRound className="w-4 h-4 text-slate-500 absolute top-1/2 -translate-y-1/2 right-3 pointer-events-none" />
-              </div>
-              {pinError && (
-                <p className="text-[11px] text-rose-400 mt-1 font-bold">{pinError}</p>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>تأكيد الهوية وفتح لوحة التحكم</span>
-            </button>
-          </form>
-
           <a
             href="/"
-            className="mt-5 text-xs text-slate-400 hover:text-white transition-colors underline font-medium"
+            className="w-full py-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2"
           >
             ← العودة إلى واجهة المتجر الرئيسية
           </a>
