@@ -10,6 +10,8 @@ import {
   getDeletedIds,
   Order,
 } from "@/lib/db";
+import { isAuthorizedDesktopRequest } from "@/lib/security";
+import { broadcastOrderEvent } from "@/lib/broadcast";
 
 // GET /api/orders
 // Supported queries: ?id=UUID or ?phone=06... or no param (all orders)
@@ -43,6 +45,17 @@ export async function GET(req: Request) {
       return NextResponse.json({ success: true, orders, deletedIds }, { headers: noCacheHeaders });
     }
 
+    // Protect all orders list: accessible only via authorized Desktop App
+    if (!isAuthorizedDesktopRequest(req)) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "الوصول إلى سجل الطلبات محظور خارج تطبيق سطح المكتب المعتمد",
+        },
+        { status: 403, headers: noCacheHeaders }
+      );
+    }
+
     const orders = await getAllOrders();
     return NextResponse.json({ success: true, orders, deletedIds }, { headers: noCacheHeaders });
   } catch (error) {
@@ -73,6 +86,14 @@ export async function POST(req: Request) {
 
     const newOrder = await createOrder(orderPayload);
 
+    // Instant real-time broadcast to connected desktop dashboards
+    broadcastOrderEvent({
+      type: "ORDER_CREATED",
+      order: newOrder,
+      orderId: newOrder.id,
+      timestamp: Date.now(),
+    });
+
     return NextResponse.json({
       success: true,
       order: newOrder,
@@ -90,6 +111,13 @@ export async function POST(req: Request) {
 // PATCH /api/orders (Update status / delivered_url)
 export async function PATCH(req: Request) {
   try {
+    if (!isAuthorizedDesktopRequest(req)) {
+      return NextResponse.json(
+        { success: false, message: "غير مصرح بتعديل البيانات خارج تطبيق الإدارة المعتمد" },
+        { status: 403 }
+      );
+    }
+
     const body = await req.json();
     const { id, status, delivered_url } = body;
 
@@ -112,6 +140,14 @@ export async function PATCH(req: Request) {
       );
     }
 
+    // Instant real-time broadcast
+    broadcastOrderEvent({
+      type: "ORDER_UPDATED",
+      order: updated,
+      orderId: id,
+      timestamp: Date.now(),
+    });
+
     return NextResponse.json({ success: true, order: updated });
   } catch (error) {
     console.error("PATCH /api/orders error:", error);
@@ -125,6 +161,13 @@ export async function PATCH(req: Request) {
 // DELETE /api/orders
 export async function DELETE(req: Request) {
   try {
+    if (!isAuthorizedDesktopRequest(req)) {
+      return NextResponse.json(
+        { success: false, message: "غير مصرح بحذف البيانات خارج تطبيق الإدارة المعتمد" },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     const phone = searchParams.get("phone");
@@ -139,10 +182,20 @@ export async function DELETE(req: Request) {
 
     if (id) {
       await deleteOrder(id);
+      broadcastOrderEvent({
+        type: "ORDER_DELETED",
+        orderId: id,
+        timestamp: Date.now(),
+      });
     }
 
     if (phone || customer) {
       await deleteCustomerOrders(phone || "", customer || "");
+      broadcastOrderEvent({
+        type: "ORDER_DELETED",
+        orderId: id || undefined,
+        timestamp: Date.now(),
+      });
     }
 
     return NextResponse.json({ success: true, message: "تم حذف البيانات بنجاح" });

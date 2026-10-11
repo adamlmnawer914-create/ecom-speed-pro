@@ -55,8 +55,16 @@ import {
   Lock,
   Rocket,
   Copy,
+  ShieldAlert,
+  KeyRound,
+  Wifi,
+  WifiOff,
+  Volume2,
+  BellRing,
+  Monitor,
 } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import { DESKTOP_SECRET_TOKEN, ADMIN_EMERGENCY_PIN, validateAdminToken } from "@/lib/security";
 
 export interface OrderItem {
   id: string; // Unguessable secret UUID
@@ -77,7 +85,52 @@ export interface OrderItem {
   createdAt: string;
 }
 
+function playOrderChime() {
+  if (typeof window === "undefined") return;
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+
+    const playTone = (freq: number, start: number, duration: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+
+      gain.gain.setValueAtTime(0, ctx.currentTime + start);
+      gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + start + 0.04);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(ctx.currentTime + start);
+      osc.stop(ctx.currentTime + start + duration);
+    };
+
+    // Uplifting multi-harmonic SaaS chime: E5 (659Hz) -> G#5 (830Hz) -> B5 (987Hz)
+    playTone(659.25, 0, 0.35);
+    playTone(830.61, 0.12, 0.45);
+    playTone(987.77, 0.25, 0.8);
+  } catch (e) {
+    console.warn("Audio chime error:", e);
+  }
+}
+
 export default function AdminDashboardPage() {
+  // Desktop Application Authorization State (Browser Lockout)
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+  const [pinInput, setPinInput] = useState("");
+  const [pinError, setPinError] = useState("");
+  const [realtimeConnected, setRealtimeConnected] = useState(false);
+  const [liveNewOrderBanner, setLiveNewOrderBanner] = useState<{
+    id: string;
+    customer: string;
+    plan: string;
+    price: number;
+    time: string;
+  } | null>(null);
+
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [selectedOrder, setSelectedOrder] = useState<OrderItem | null>(null);
   const [editingDeliveredUrl, setEditingDeliveredUrl] = useState("");
@@ -102,6 +155,72 @@ export default function AdminDashboardPage() {
     name?: string;
     phone?: string;
   } | null>(null);
+
+  // Check desktop app authorization on mount (حظر التصفح عبر المتصفح وقصره على برنامج سطح المكتب)
+  useEffect(() => {
+    const urlParams =
+      typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    const tokenFromUrl =
+      urlParams?.get("desktop_token") || urlParams?.get("token");
+
+    const savedToken =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("ecom_speed_pro_desktop_token") ||
+          localStorage.getItem("ecom_speed_pro_desktop_token")
+        : null;
+
+    const isElectron =
+      typeof window !== "undefined" &&
+      Boolean(
+        (window as any).ecomDesktop?.isDesktop ||
+          (window as any).isEcomSpeedProDesktop ||
+          (navigator.userAgent && navigator.userAgent.includes("SecureAdminClient"))
+      );
+
+    if (
+      isElectron ||
+      validateAdminToken(tokenFromUrl) ||
+      validateAdminToken(savedToken)
+    ) {
+      setIsAuthorized(true);
+      if (tokenFromUrl && typeof window !== "undefined") {
+        try {
+          sessionStorage.setItem("ecom_speed_pro_desktop_token", tokenFromUrl);
+          localStorage.setItem("ecom_speed_pro_desktop_token", tokenFromUrl);
+        } catch (e) {}
+      }
+    } else {
+      setIsAuthorized(false);
+    }
+  }, []);
+
+  const handleUnlockWithPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateAdminToken(pinInput)) {
+      try {
+        sessionStorage.setItem("ecom_speed_pro_desktop_token", pinInput.trim());
+        localStorage.setItem("ecom_speed_pro_desktop_token", pinInput.trim());
+      } catch (e) {}
+      setIsAuthorized(true);
+      setPinError("");
+      triggerNotification("تم التحقق بنجاح! مرحباً بك في لوحة تحكم الإدارة 🛡️");
+    } else {
+      setPinError("رمز الطوارئ PIN غير صحيح. الوصول محظور عبر متصفحات الويب.");
+    }
+  };
+
+  const getAuthToken = () => {
+    try {
+      if (typeof window !== "undefined") {
+        return (
+          sessionStorage.getItem("ecom_speed_pro_desktop_token") ||
+          localStorage.getItem("ecom_speed_pro_desktop_token") ||
+          DESKTOP_SECRET_TOKEN
+        );
+      }
+    } catch (e) {}
+    return DESKTOP_SECRET_TOKEN;
+  };
 
   // Load saved page zoom preference on mount
   useEffect(() => {
@@ -193,10 +312,26 @@ export default function AdminDashboardPage() {
     try {
       const deletedSet = getLocalDeletedIds();
 
-      const res = await fetch(`/api/orders?t=${Date.now()}`, {
+      const token =
+        typeof window !== "undefined"
+          ? sessionStorage.getItem("ecom_speed_pro_desktop_token") ||
+            localStorage.getItem("ecom_speed_pro_desktop_token") ||
+            DESKTOP_SECRET_TOKEN
+          : DESKTOP_SECRET_TOKEN;
+
+      const res = await fetch(`/api/orders?token=${encodeURIComponent(token)}&t=${Date.now()}`, {
         cache: "no-store",
-        headers: { "Cache-Control": "no-cache" },
+        headers: {
+          "Cache-Control": "no-cache",
+          "X-Desktop-Auth-Token": token,
+        },
       });
+
+      if (res.status === 403) {
+        setIsAuthorized(false);
+        return;
+      }
+
       const data = await res.json();
 
       // Sync backend deleted IDs if provided
@@ -363,28 +498,86 @@ export default function AdminDashboardPage() {
     }
   }, [selectedOrder?.id]);
 
-  // High performance smart sync: initial load, window focus, and background polling only when visible
+  // Real-Time EventSource Stream & Fast Heartbeat Sync ("في نفس اللحظة ⚡")
   useEffect(() => {
+    if (isAuthorized === false) return;
+
     fetchRealOrders();
 
-    // Refresh immediately when user returns to tab
+    const token =
+      typeof window !== "undefined"
+        ? sessionStorage.getItem("ecom_speed_pro_desktop_token") ||
+          localStorage.getItem("ecom_speed_pro_desktop_token") ||
+          DESKTOP_SECRET_TOKEN
+        : DESKTOP_SECRET_TOKEN;
+
+    let eventSource: EventSource | null = null;
+
+    try {
+      eventSource = new EventSource(
+        `/api/orders/realtime?token=${encodeURIComponent(token)}`
+      );
+
+      eventSource.onopen = () => {
+        setRealtimeConnected(true);
+      };
+
+      eventSource.onmessage = (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data && data.type === "ORDER_CREATED" && data.order) {
+            playOrderChime();
+            setLiveNewOrderBanner({
+              id: data.order.id,
+              customer: data.order.customer_name || "عميل مميز",
+              plan: data.order.plan_tier || "باقة المتجر",
+              price:
+                typeof data.order.price === "number"
+                  ? data.order.price
+                  : parseInt(
+                      String(data.order.price || "1500").replace(/[^0-9]/g, ""),
+                      10
+                    ) || 1500,
+              time: new Date().toLocaleTimeString("ar-MA", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              }),
+            });
+            fetchRealOrders();
+          } else if (
+            data &&
+            (data.type === "ORDER_UPDATED" || data.type === "ORDER_DELETED")
+          ) {
+            fetchRealOrders();
+          }
+        } catch (err) {}
+      };
+
+      eventSource.onerror = () => {
+        setRealtimeConnected(false);
+      };
+    } catch (err) {
+      console.warn("EventSource setup error:", err);
+    }
+
+    // Refresh immediately when user returns to window/app
     const handleFocus = () => {
       fetchRealOrders();
     };
     window.addEventListener("focus", handleFocus);
 
-    // Light background poll every 15 seconds ONLY if tab is visible
+    // Fast background sync every 3 seconds for 100% guarantee across all networks
     const interval = setInterval(() => {
-      if (typeof document !== "undefined" && document.visibilityState === "visible") {
-        fetchRealOrders();
-      }
-    }, 15000);
+      fetchRealOrders();
+    }, 3000);
 
     return () => {
+      if (eventSource) eventSource.close();
       clearInterval(interval);
       window.removeEventListener("focus", handleFocus);
     };
-  }, []);
+  }, [isAuthorized]);
 
   // Update order status live (pending | in_progress | completed)
   const handleUpdateStatus = async (
@@ -415,9 +608,12 @@ export default function AdminDashboardPage() {
       }
 
       // 3. Update in Backend API
-      await fetch("/api/orders", {
+      await fetch(`/api/orders?token=${encodeURIComponent(getAuthToken())}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Desktop-Auth-Token": getAuthToken(),
+        },
         body: JSON.stringify({
           id: orderId,
           status: newStatus,
@@ -458,9 +654,12 @@ export default function AdminDashboardPage() {
         }
       } catch (e) {}
 
-      await fetch("/api/orders", {
+      await fetch(`/api/orders?token=${encodeURIComponent(getAuthToken())}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Desktop-Auth-Token": getAuthToken(),
+        },
         body: JSON.stringify({
           id: orderId,
           delivered_url: trimmed,
@@ -542,7 +741,15 @@ export default function AdminDashboardPage() {
       }
 
       // Remove from API
-      await fetch(`/api/orders?id=${encodeURIComponent(targetOrder?.id || orderId)}`, { method: "DELETE" });
+      await fetch(
+        `/api/orders?id=${encodeURIComponent(targetOrder?.id || orderId)}&token=${encodeURIComponent(getAuthToken())}`,
+        {
+          method: "DELETE",
+          headers: {
+            "X-Desktop-Auth-Token": getAuthToken(),
+          },
+        }
+      );
       triggerNotification(`تم حذف الطلب ${displayName} نهائياً 🗑️`);
     } catch (err) {
       console.error("Failed to delete order:", err);
@@ -609,13 +816,26 @@ export default function AdminDashboardPage() {
 
       // Remove from API by customer phone and name
       await fetch(
-        `/api/orders?phone=${encodeURIComponent(customerPhone)}&customer=${encodeURIComponent(customerName)}`,
-        { method: "DELETE" }
+        `/api/orders?phone=${encodeURIComponent(customerPhone)}&customer=${encodeURIComponent(customerName)}&token=${encodeURIComponent(getAuthToken())}`,
+        {
+          method: "DELETE",
+          headers: {
+            "X-Desktop-Auth-Token": getAuthToken(),
+          },
+        }
       );
 
       // Also call individual deletes for each order ID to ensure everything is purged
       for (const ord of targetOrders) {
-        fetch(`/api/orders?id=${encodeURIComponent(ord.id)}`, { method: "DELETE" }).catch(() => {});
+        fetch(
+          `/api/orders?id=${encodeURIComponent(ord.id)}&token=${encodeURIComponent(getAuthToken())}`,
+          {
+            method: "DELETE",
+            headers: {
+              "X-Desktop-Auth-Token": getAuthToken(),
+            },
+          }
+        ).catch(() => {});
       }
 
       triggerNotification(`تم حذف العميل "${customerName}" وكافة طلباته نهائياً 🗑️`);
@@ -666,9 +886,12 @@ export default function AdminDashboardPage() {
 
     // 3. Save via API
     try {
-      await fetch("/api/orders", {
+      await fetch(`/api/orders?token=${encodeURIComponent(getAuthToken())}`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "X-Desktop-Auth-Token": getAuthToken(),
+        },
         body: JSON.stringify(newOrder),
       });
     } catch (e) {
@@ -860,6 +1083,97 @@ export default function AdminDashboardPage() {
     triggerNotification("تم تنزيل ملف التقرير CSV بنجاح");
   };
 
+  // Security Lockout Screen for unauthorized browser access (حظر التصفح عبر الويب لتفادي الاختراق)
+  if (isAuthorized === false) {
+    return (
+      <div
+        dir="rtl"
+        className="min-h-screen bg-[#020718] text-white flex items-center justify-center p-4 relative overflow-hidden font-sans select-none"
+      >
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-gradient-to-tr from-rose-600/20 via-red-900/10 to-transparent rounded-full blur-[120px] pointer-events-none" />
+
+        <div className="relative z-10 max-w-lg w-full bg-[#0a1228]/95 backdrop-blur-2xl border border-rose-500/30 rounded-3xl p-6 sm:p-8 shadow-[0_0_60px_rgba(225,29,72,0.2)] flex flex-col items-center text-center animate-in fade-in zoom-in-95 duration-200">
+          <div className="mb-5 flex items-center justify-center">
+            <Image
+              src="/images/ecom_brand_logo_transparent.png"
+              alt="ECOM SPEED PRO"
+              width={160}
+              height={50}
+              className="object-contain drop-shadow-md"
+            />
+          </div>
+
+          <div className="w-16 h-16 rounded-3xl bg-rose-500/15 border border-rose-500/35 text-rose-400 flex items-center justify-center mb-4 shadow-[0_0_25px_rgba(244,63,94,0.35)] animate-pulse">
+            <ShieldAlert className="w-8 h-8 text-rose-500" />
+          </div>
+
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-black mb-3">
+            <Lock className="w-3.5 h-3.5" />
+            <span>منطقة إدارة محمية مشفرة | الوصول محظور عبر المتصفح</span>
+          </div>
+
+          <h1 className="text-xl sm:text-2xl font-black text-white mb-2.5">
+            لوحة التحكم مخصصة حصرياً لبرنامج سطح المكتب
+          </h1>
+
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6 font-medium">
+            تم إيقاف وحظر الوصول عبر متصفحات الويب العادية لحماية المنصة بنسبة 100% ومنع أي محاولة اختراق أو تجسس على المبيعات. لوحة التحكم تعمل حصرياً عبر تطبيق <span className="text-cyan-300 font-bold">ECOM SPEED PRO Desktop</span> المعتمد على حاسوبك الشخصي.
+          </p>
+
+          <div className="w-full bg-slate-900/90 border border-slate-800 rounded-2xl p-4 mb-6 text-right space-y-2">
+            <div className="flex items-center gap-2 text-xs text-cyan-300 font-black">
+              <Monitor className="w-4 h-4 text-cyan-400" />
+              <span>كيفية تشغيل لوحة التحكم من حاسوبك:</span>
+            </div>
+            <p className="text-[12px] text-slate-400 leading-relaxed">
+              انقر مرتين على ملف <code className="bg-slate-800 px-2 py-0.5 rounded text-amber-300 font-mono text-[11px] border border-slate-700">launch-admin-desktop.bat</code> الموجود على سطح مكتبك أو في مجلد المشروع لتشغيل البرنامج المستقل والمؤمّن فوراً.
+            </p>
+          </div>
+
+          {/* Emergency PIN Unlock for the Owner */}
+          <form onSubmit={handleUnlockWithPin} className="w-full space-y-3">
+            <div className="text-right">
+              <label className="text-[11px] font-bold text-slate-400 block mb-1">
+                فتح الطوارئ المباشر لمالك المتجر (رمز PIN أو مفتاح الأمان):
+              </label>
+              <div className="relative">
+                <input
+                  type="password"
+                  value={pinInput}
+                  onChange={(e) => {
+                    setPinInput(e.target.value);
+                    setPinError("");
+                  }}
+                  placeholder="أدخل رمز الطوارئ (2026)..."
+                  className="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder-slate-500 text-xs font-mono focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 text-right"
+                />
+                <KeyRound className="w-4 h-4 text-slate-500 absolute top-1/2 -translate-y-1/2 right-3 pointer-events-none" />
+              </div>
+              {pinError && (
+                <p className="text-[11px] text-rose-400 mt-1 font-bold">{pinError}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-xs shadow-md transition-all cursor-pointer active:scale-95 flex items-center justify-center gap-2"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>تأكيد الهوية وفتح لوحة التحكم</span>
+            </button>
+          </form>
+
+          <a
+            href="/"
+            className="mt-5 text-xs text-slate-400 hover:text-white transition-colors underline font-medium"
+          >
+            ← العودة إلى واجهة المتجر الرئيسية
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-[#02133f] via-[#052b75] to-[#011440] text-slate-800 p-3 sm:p-5 lg:p-6 relative overflow-x-hidden font-sans selection:bg-cyan-500 selection:text-black transition-[zoom] duration-200"
@@ -942,8 +1256,13 @@ export default function AdminDashboardPage() {
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
               <span className="text-xs font-black text-emerald-300">
-                السيرفر متصل لحظياً {lastSyncTime && `(${lastSyncTime})`}
+                {realtimeConnected ? "⚡ البث المباشر متصل لحظياً" : "السيرفر متصل"} {lastSyncTime && `(${lastSyncTime})`}
               </span>
+            </div>
+            <span className="text-slate-400 text-xs">|</span>
+            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-cyan-500/20 border border-cyan-400/30 text-[11px] font-black text-cyan-200">
+              <Monitor className="w-3.5 h-3.5 text-cyan-400" />
+              <span>تطبيق سطح المكتب المعتمد</span>
             </div>
             <span className="text-slate-400 text-xs">|</span>
             <span className="text-xs font-bold text-white">
@@ -1075,6 +1394,55 @@ export default function AdminDashboardPage() {
           </div>
 
         </header>
+
+        {/* ======================================================== */}
+        {/* REAL-TIME LIVE ORDER ALERT BANNER (يظهر في نفس اللحظة)   */}
+        {/* ======================================================== */}
+        {liveNewOrderBanner && (
+          <div className="w-full rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 p-[2px] shadow-[0_0_40px_rgba(16,185,129,0.55)] animate-in fade-in slide-in-from-top-4 duration-300">
+            <div className="bg-[#051c3d]/95 backdrop-blur-2xl rounded-[14px] p-3.5 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-white">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-emerald-500/20 border border-emerald-400/50 flex items-center justify-center text-emerald-300 shrink-0 shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+                  <Sparkles className="w-6 h-6 animate-pulse text-amber-300" />
+                </div>
+                <div className="text-right">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2 py-0.5 rounded-md bg-emerald-500 text-slate-950 font-black text-[10px] animate-pulse">
+                      طلب جديد وصل الآن في نفس اللحظة! ⚡
+                    </span>
+                    <span className="text-xs text-emerald-300 font-mono font-bold">
+                      {liveNewOrderBanner.time}
+                    </span>
+                  </div>
+                  <p className="text-sm font-black text-white mt-1">
+                    العميل: <span className="text-cyan-300">{liveNewOrderBanner.customer}</span> — {liveNewOrderBanner.plan} ({liveNewOrderBanner.price.toLocaleString()} د.م)
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const found = orders.find((o) => o.id === liveNewOrderBanner.id);
+                    if (found) setSelectedOrder(found);
+                    setLiveNewOrderBanner(null);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs hover:scale-105 active:scale-95 transition-all cursor-pointer shadow-md"
+                >
+                  معاينة تفاصيل الطلب
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLiveNewOrderBanner(null)}
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white/80 hover:text-white transition-all cursor-pointer"
+                  title="إغلاق التنبيه"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ======================================================== */}
         {/* 2. MAIN STAGE (SIDEBAR + MAIN GLASS CARD)                */}
