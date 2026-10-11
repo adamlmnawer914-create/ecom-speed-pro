@@ -69,17 +69,27 @@ export function getDeletedIds(): Set<string> {
     return globalThis.__ECOM_DELETED_CACHE__;
   }
   const set = new Set<string>();
+  const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim());
+
   try {
     if (fs.existsSync(TMP_DELETED_FILE)) {
       const data = JSON.parse(fs.readFileSync(TMP_DELETED_FILE, "utf-8"));
-      if (Array.isArray(data)) data.forEach((item: string) => set.add(item));
+      if (Array.isArray(data)) {
+        data.forEach((item: string) => {
+          if (typeof item === "string" && isUuid(item)) set.add(item.trim());
+        });
+      }
     }
   } catch (e) {}
 
   try {
     if (fs.existsSync(LOCAL_DELETED_FILE)) {
       const data = JSON.parse(fs.readFileSync(LOCAL_DELETED_FILE, "utf-8"));
-      if (Array.isArray(data)) data.forEach((item: string) => set.add(item));
+      if (Array.isArray(data)) {
+        data.forEach((item: string) => {
+          if (typeof item === "string" && isUuid(item)) set.add(item.trim());
+        });
+      }
     }
   } catch (e) {}
 
@@ -91,9 +101,11 @@ function recordDeletedId(id: string) {
   if (!id) return;
   const set = getDeletedIds();
   const clean = id.trim();
+  // Only record UUID format, never serial numbers like #ESP-101
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean)) {
+    return;
+  }
   set.add(clean);
-  set.add(clean.replace(/^#/, ""));
-  set.add("#" + clean.replace(/^#/, ""));
 
   const arr = Array.from(set);
   const json = JSON.stringify(arr, null, 2);
@@ -146,15 +158,13 @@ function readLocalOrders(): Order[] {
 
   const deletedSet = getDeletedIds();
   const validRaw = rawList.filter((item: any) => {
-    if (!item) return false;
-    const id = item.id;
-    const num = item.order_number || item.orderNumber;
-    return !deletedSet.has(id) && (!num || !deletedSet.has(num));
+    if (!item || !item.id) return false;
+    return !deletedSet.has(item.id);
   });
 
   const mapped: Order[] = validRaw.map((item: any) => ({
     id: item.id || crypto.randomUUID(),
-    order_number: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || "101"}`,
+    order_number: item.order_number || item.orderNumber || `#ESP-${item.id?.slice(0, 6) || Math.floor(10000 + Math.random() * 90000)}`,
     customer_name: item.customer_name || item.customerName || "عميل مميز",
     phone_number: item.phone_number || item.customerPhone || item.phone || "",
     plan_tier: item.plan_tier || item.planTitle || item.plan || "المتجر القياسي (1,500 MAD)",
@@ -237,11 +247,7 @@ function writeLocalOtp(otps: OtpVerification[]): void {
  */
 export async function getOrderById(id: string): Promise<Order | null> {
   const deletedSet = getDeletedIds();
-  if (
-    deletedSet.has(id) ||
-    deletedSet.has(id.replace(/^#/, "")) ||
-    deletedSet.has("#" + id.replace(/^#/, ""))
-  ) {
+  if (deletedSet.has(id)) {
     return null;
   }
 
@@ -254,7 +260,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
         .maybeSingle();
 
       if (!error && data) {
-        if (deletedSet.has(data.id) || (data.order_number && deletedSet.has(data.order_number))) {
+        if (deletedSet.has(data.id)) {
           return null;
         }
         return data as Order;
@@ -267,7 +273,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
   // Fallback to local
   const orders = readLocalOrders();
   const found = orders.find((o) => o.id === id || o.order_number === id);
-  if (found && (deletedSet.has(found.id) || deletedSet.has(found.order_number))) {
+  if (found && deletedSet.has(found.id)) {
     return null;
   }
   return found || null;
@@ -289,7 +295,7 @@ export async function getOrdersByPhone(phoneNumber: string): Promise<Order[]> {
 
       if (!error && Array.isArray(data)) {
         return (data as Order[]).filter((o) => {
-          if (!o || deletedSet.has(o.id) || (o.order_number && deletedSet.has(o.order_number))) {
+          if (!o || !o.id || deletedSet.has(o.id)) {
             return false;
           }
           const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
@@ -304,7 +310,7 @@ export async function getOrdersByPhone(phoneNumber: string): Promise<Order[]> {
   // Fallback to local
   const orders = readLocalOrders();
   return orders.filter((o) => {
-    if (!o || deletedSet.has(o.id) || (o.order_number && deletedSet.has(o.order_number))) {
+    if (!o || !o.id || deletedSet.has(o.id)) {
       return false;
     }
     const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
@@ -327,11 +333,7 @@ export async function getAllOrders(): Promise<Order[]> {
 
       if (!error && Array.isArray(data)) {
         return (data as Order[]).filter(
-          (o) =>
-            o &&
-            o.id &&
-            !deletedSet.has(o.id) &&
-            (!o.order_number || !deletedSet.has(o.order_number))
+          (o) => o && o.id && !deletedSet.has(o.id)
         );
       }
     } catch (err) {
@@ -340,13 +342,7 @@ export async function getAllOrders(): Promise<Order[]> {
   }
 
   const local = readLocalOrders();
-  return local.filter(
-    (o) =>
-      o &&
-      o.id &&
-      !deletedSet.has(o.id) &&
-      (!o.order_number || !deletedSet.has(o.order_number))
-  );
+  return local.filter((o) => o && o.id && !deletedSet.has(o.id));
 }
 
 /**
@@ -360,8 +356,9 @@ export async function createOrder(data: Partial<Order>): Promise<Order> {
   }
 
   const existing = readLocalOrders();
-  const nextSeq = existing.length + 101;
-  const orderNumber = data.order_number || `#ESP-${nextSeq}`;
+  // Safe random 5-digit sequence to prevent any collisions
+  const randNum = Math.floor(10000 + Math.random() * 90000);
+  const orderNumber = data.order_number || `#ESP-${randNum}`;
 
   const newOrder: Order = {
     id: newId,
@@ -437,22 +434,18 @@ export async function updateOrder(id: string, updates: Partial<Order>): Promise<
  * Delete an order permanently
  */
 export async function deleteOrder(id: string): Promise<boolean> {
-  recordDeletedId(id);
-
   const orders = readLocalOrders();
   const target = orders.find((o) => o.id === id || o.order_number === id);
-  if (target?.order_number) recordDeletedId(target.order_number);
-  if (target?.id) recordDeletedId(target.id);
+  const targetId = target?.id || id;
 
-  const filtered = orders.filter((o) => o.id !== id && o.order_number !== id);
+  recordDeletedId(targetId);
+
+  const filtered = orders.filter((o) => o.id !== targetId && o.order_number !== id);
   writeLocalOrders(filtered);
 
   if (supabase) {
     try {
-      await supabase.from("orders").delete().eq("id", id);
-      if (target?.order_number) {
-        await supabase.from("orders").delete().eq("order_number", target.order_number);
-      }
+      await supabase.from("orders").delete().eq("id", targetId);
     } catch (err) {
       console.warn("Supabase delete failed:", err);
     }
@@ -477,8 +470,7 @@ export async function deleteCustomerOrders(phoneNumber: string, customerName?: s
   });
 
   toDelete.forEach((o) => {
-    recordDeletedId(o.id);
-    if (o.order_number) recordDeletedId(o.order_number);
+    if (o.id) recordDeletedId(o.id);
   });
 
   const remaining = orders.filter((o) => !toDelete.some((d) => d.id === o.id));

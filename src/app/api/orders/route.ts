@@ -25,6 +25,9 @@ export async function GET(req: Request) {
       "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0",
       Pragma: "no-cache",
       Expires: "0",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "*",
     };
 
     const deletedIds = Array.from(getDeletedIds());
@@ -74,6 +77,7 @@ export async function POST(req: Request) {
 
     // Normalize field names
     const orderPayload: Partial<Order> = {
+      id: body.id || undefined,
       customer_name: body.customer_name || body.customerName || "عميل مميز",
       phone_number: body.phone_number || body.customerPhone || body.phone || "",
       plan_tier: body.plan_tier || body.planTitle || body.plan || "المتجر القياسي (1,500 MAD)",
@@ -206,4 +210,15 @@ export async function DELETE(req: Request) {
       { status: 500 }
     );
   }
+}
+
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, PATCH, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "*",
+    },
+  });
 }

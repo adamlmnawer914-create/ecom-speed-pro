@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Search, ChevronDown, Menu, X, ArrowLeft, Sparkles, Layers, Phone } from "lucide-react";
+import { Search, ChevronDown, Menu, X, ArrowLeft, Sparkles, Layers, Phone, ShoppingCart, Heart, User } from "lucide-react";
 import Logo from "@/components/Logo";
 
 interface NavbarProps {
@@ -179,6 +179,42 @@ export default function Navbar({
 
 
 
+            {/* Desktop Action Icons: Cart, Wishlist, Account */}
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              {/* 1. Cart Button */}
+              <button
+                type="button"
+                onClick={onOpenCart}
+                className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                title="سلة المشتريات"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-[10px] font-black flex items-center justify-center shadow-xs">
+                  1
+                </span>
+              </button>
+
+              {/* 2. Wishlist Button */}
+              <button
+                type="button"
+                onClick={onOpenWishlist}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                title="المفضلة"
+              >
+                <Heart className="w-4 h-4 fill-current" />
+              </button>
+
+              {/* 3. Account Button */}
+              <button
+                type="button"
+                onClick={onOpenAccount}
+                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                title="بوابة العملاء والمستثمرين"
+              >
+                <User className="w-4 h-4 fill-current" />
+              </button>
+            </div>
+
             {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -224,7 +260,30 @@ export default function Navbar({
             >
               الخدمات ∨
             </button>
-
+            <button
+              type="button"
+              onClick={onOpenCart}
+              className="px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shrink-0 cursor-pointer flex items-center gap-1"
+            >
+              <ShoppingCart className="w-3 h-3" />
+              <span>السلة (1)</span>
+            </button>
+            <button
+              type="button"
+              onClick={onOpenWishlist}
+              className="px-3 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shrink-0 cursor-pointer flex items-center gap-1"
+            >
+              <Heart className="w-3 h-3" />
+              <span>المفضلة</span>
+            </button>
+            <button
+              type="button"
+              onClick={onOpenAccount}
+              className="px-3 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0 cursor-pointer flex items-center gap-1"
+            >
+              <User className="w-3 h-3" />
+              <span>حسابي</span>
+            </button>
             <button
               onClick={() => navigateToSection("about")}
               className="px-3 py-1 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 shrink-0 cursor-pointer"
@@ -299,8 +358,6 @@ export default function Navbar({
                 )}
               </div>
 
-
-
               <button
                 onClick={() => navigateToSection("about")}
                 className="w-full text-right px-4 py-2.5 rounded-2xl hover:bg-blue-50 hover:text-blue-600 transition-colors"
@@ -323,6 +380,43 @@ export default function Navbar({
                 <span>تتبع طلبك واستلام المتجر (OTP)</span>
                 <span>🔍</span>
               </Link>
+            </div>
+
+            {/* Quick 3 Actions in Mobile Drawer */}
+            <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-100 text-xs font-black">
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenCart?.();
+                }}
+                className="p-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 flex flex-col items-center gap-1 border border-blue-200 cursor-pointer transition-colors"
+              >
+                <ShoppingCart className="w-4 h-4" />
+                <span>السلة (1)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenWishlist?.();
+                }}
+                className="p-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 flex flex-col items-center gap-1 border border-rose-200 cursor-pointer transition-colors"
+              >
+                <Heart className="w-4 h-4 fill-current" />
+                <span>المفضلة</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  onOpenAccount?.();
+                }}
+                className="p-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 flex flex-col items-center gap-1 border border-indigo-200 cursor-pointer transition-colors"
+              >
+                <User className="w-4 h-4 fill-current" />
+                <span>حسابي</span>
+              </button>
             </div>
 
 
