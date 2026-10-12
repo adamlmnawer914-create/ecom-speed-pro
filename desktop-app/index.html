@@ -1733,7 +1733,7 @@
             : `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-black">قيد التجهيز 🟡</span>`;
 
           return `
-            <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/50 transition-colors">
+            <div onclick="viewOrder('${o.id}')" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/70 transition-colors cursor-pointer" title="انقر لعرض تفاصيل الطلب">
               <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-black text-xs">
                   ${name.charAt(0) || "ع"}
