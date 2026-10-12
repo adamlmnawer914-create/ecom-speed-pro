@@ -10,22 +10,48 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
   
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Node.js Electron Bridge: prevent module/exports from hijacking browser globals like lucide & tailwind -->
+  <script>
+    if (typeof module === 'object') {
+      window.__node_module = module;
+      if (typeof exports === 'object') window.__node_exports = exports;
+      try { delete window.module; } catch(e) { window.module = undefined; }
+      try { delete window.exports; } catch(e) { window.exports = undefined; }
+    }
+  </script>
+
+  <!-- Local Offline Scripts for 100% Guaranteed Native Loading -->
+  <script src="./tailwind.js"></script>
+  <script src="./lucide.js"></script>
+
+  <!-- Online CDN Fallbacks (in case launched where relative path differs) -->
+  <script>
+    if (typeof tailwind === 'undefined') {
+      document.write('<script src="https://cdn.tailwindcss.com"><\/script>');
+    }
+    if (typeof lucide === 'undefined') {
+      document.write('<script src="https://unpkg.com/lucide@latest"><\/script>');
+    }
+  </script>
 
   <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Cairo', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
+    // Restore Node module/exports for filesystem and Electron native features
+    if (window.__node_module) {
+      module = window.__node_module;
+      exports = window.__node_exports;
+    }
+
+    if (typeof tailwind !== 'undefined') {
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Cairo', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            }
           }
         }
-      }
+      };
     }
   </script>
 

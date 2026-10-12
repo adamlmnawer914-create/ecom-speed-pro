@@ -28,15 +28,13 @@ function createWindow() {
   // Remove top menu bar for clean native app appearance
   Menu.setApplicationMenu(null);
 
-  // Set custom user agent with secret desktop app signature
-  mainWindow.webContents.setUserAgent(
-    "EcomSpeedPro-Desktop-Application/3.0 (Windows NT 10.0; Win64; x64) SecureAdminClient/9f8d1c7a4b"
-  );
-
-  // Automatically attach desktop authorization headers to all HTTP/HTTPS requests
+  // Automatically attach desktop authorization headers to our backend API endpoints
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    details.requestHeaders["X-Desktop-Auth-Token"] = DESKTOP_AUTH_SECRET;
-    details.requestHeaders["X-Client-Type"] = "desktop-app";
+    const url = details.url || "";
+    if (url.includes("localhost:3000") || url.includes("ecom-speed-pro.vercel.app")) {
+      details.requestHeaders["X-Desktop-Auth-Token"] = DESKTOP_AUTH_SECRET;
+      details.requestHeaders["X-Client-Type"] = "desktop-app";
+    }
     callback({ requestHeaders: details.requestHeaders });
   });
 
