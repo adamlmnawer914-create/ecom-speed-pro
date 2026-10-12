@@ -7,7 +7,12 @@ export interface Order {
   id: string; // UUID primary key & unguessable tracking link
   order_number: string; // Serial display format e.g. #ESP-101
   customer_name: string;
+  customer_city?: string; // مدينة التاجر (الدار البيضاء، فاس، الرباط، طنجة، مراكش...)
   phone_number: string;
+  customer_email?: string;
+  store_name?: string; // اسم متجر التاجر أو صفحة هبوطه
+  product_price?: string | number; // ثمن بيع منتجه في المتجر
+  order_phone?: string; // الرقم الذي يريد أن تصل فيه الطلبات
   plan_tier: string; // e.g. "500 MAD" | "1500 MAD" | "5000 MAD"
   status: "pending" | "in_progress" | "completed";
   delivered_url: string | null;

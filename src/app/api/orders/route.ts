@@ -79,7 +79,12 @@ export async function POST(req: Request) {
     const orderPayload: Partial<Order> = {
       id: body.id || undefined,
       customer_name: body.customer_name || body.customerName || "عميل مميز",
+      customer_city: body.customer_city || body.customerCity || body.city || "الدار البيضاء",
       phone_number: body.phone_number || body.customerPhone || body.phone || "",
+      customer_email: body.customer_email || body.customerEmail || "",
+      store_name: body.store_name || body.storeName || "",
+      product_price: body.product_price || body.productPrice || "",
+      order_phone: body.order_phone || body.orderPhone || body.receiving_phone || body.phone_number || "",
       plan_tier: body.plan_tier || body.planTitle || body.plan || "المتجر القياسي (1,500 MAD)",
       status: body.status || "pending",
       delivered_url: body.delivered_url || null,
@@ -112,7 +117,7 @@ export async function POST(req: Request) {
   }
 }
 
-// PATCH /api/orders (Update status / delivered_url)
+// PATCH /api/orders (Update status / delivered_url / store & merchant details)
 export async function PATCH(req: Request) {
   try {
     if (!isAuthorizedDesktopRequest(req)) {
@@ -123,7 +128,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { id, status, delivered_url } = body;
+    const { id, status, delivered_url, customer_name, customer_city, phone_number, store_name, product_price, order_phone, product_notes, product_images } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -135,6 +140,14 @@ export async function PATCH(req: Request) {
     const updates: Partial<Order> = {};
     if (status) updates.status = status;
     if (delivered_url !== undefined) updates.delivered_url = delivered_url;
+    if (customer_name !== undefined) updates.customer_name = customer_name;
+    if (customer_city !== undefined) updates.customer_city = customer_city;
+    if (phone_number !== undefined) updates.phone_number = phone_number;
+    if (store_name !== undefined) updates.store_name = store_name;
+    if (product_price !== undefined) updates.product_price = product_price;
+    if (order_phone !== undefined) updates.order_phone = order_phone;
+    if (product_notes !== undefined) updates.product_notes = product_notes;
+    if (product_images !== undefined) updates.product_images = product_images;
 
     const updated = await updateOrder(id, updates);
     if (!updated) {

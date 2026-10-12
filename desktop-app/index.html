@@ -345,11 +345,11 @@
               <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                 <tr>
                   <th class="p-3.5">الطلب</th>
-                  <th class="p-3.5">العميل</th>
-                  <th class="p-3.5">الهاتف</th>
+                  <th class="p-3.5">التاجر والمدينة</th>
+                  <th class="p-3.5">المتجر والمنتج</th>
                   <th class="p-3.5">الباقة</th>
                   <th class="p-3.5">المبلغ</th>
-                  <th class="p-3.5">الدفع</th>
+                  <th class="p-3.5">هاتف استقبال الطلبات</th>
                   <th class="p-3.5">الحالة</th>
                   <th class="p-3.5">رابط المتجر</th>
                   <th class="p-3.5 text-center">إجراءات</th>
@@ -532,13 +532,13 @@
             <table class="w-full text-right text-xs">
               <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                 <tr>
-                  <th class="p-3.5">العميل</th>
-                  <th class="p-3.5">رقم الهاتف</th>
-                  <th class="p-3.5">عدد الطلبات</th>
-                  <th class="p-3.5">إجمالي المشتريات</th>
-                  <th class="p-3.5">آخر باقة</th>
-                  <th class="p-3.5">آخر طلب</th>
-                  <th class="p-3.5 text-center">إجراءات التواصل</th>
+                  <th class="p-3.5">التاجر والمدينة</th>
+                  <th class="p-3.5">رقم الهاتف الشخصي</th>
+                  <th class="p-3.5">المتاجر والطلبات</th>
+                  <th class="p-3.5">إجمالي التعاملات</th>
+                  <th class="p-3.5">آخر متجر / باقة</th>
+                  <th class="p-3.5">تاريخ التعامل</th>
+                  <th class="p-3.5 text-center">إجراءات التاجر</th>
                 </tr>
               </thead>
               <tbody id="customersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
@@ -969,7 +969,7 @@
 
   <!-- ========================================== -->
   <!-- ========================================== -->
-  <!-- MODAL: LUXURY CUSTOMER & ORDER DOSSIER -->
+  <!-- MODAL 1: ORDER & STORE PROJECT DOSSIER (طلب التاجر ومشروعه) -->
   <!-- ========================================== -->
   <div id="orderDetailModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5 overflow-y-auto">
     <div class="bg-white rounded-[32px] max-w-2xl w-full max-h-[92vh] overflow-y-auto p-5 sm:p-7 shadow-[0_25px_80px_rgba(0,10,40,0.5)] border border-slate-100 text-right animate-in zoom-in-95 duration-200 relative">
@@ -980,57 +980,154 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODAL: NEW ORDER (طلب جديد) -->
+  <!-- MODAL 2: MERCHANT PERSONAL PROFILE (الملف الشخصي للتاجر) -->
   <!-- ========================================== -->
-  <div id="newOrderModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 text-right animate-in zoom-in-95 duration-200">
+  <div id="merchantProfileModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    <div class="bg-white rounded-[32px] max-w-xl w-full max-h-[92vh] overflow-y-auto p-5 sm:p-7 shadow-[0_25px_80px_rgba(0,10,40,0.5)] border border-slate-100 text-right animate-in zoom-in-95 duration-200 relative">
+      <div id="merchantProfileContent" class="space-y-5">
+        <!-- Content inserted dynamically by viewMerchantProfile() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: PRODUCT IMAGE LIGHTBOX (معاينة صور المنتج) -->
+  <!-- ========================================== -->
+  <div id="imagePreviewModal" class="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md hidden items-center justify-center p-4" onclick="closeImagePreviewModal()">
+    <div class="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center justify-center" onclick="event.stopPropagation();">
+      <button onclick="closeImagePreviewModal()" class="absolute -top-12 left-0 p-2 text-white/80 hover:text-white bg-white/10 hover:bg-white/20 rounded-full transition-all cursor-pointer">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+      <img id="imagePreviewSrc" src="" alt="معاينة صورة المنتج" class="max-h-[80vh] w-auto max-w-full rounded-2xl shadow-2xl object-contain border border-white/20">
+      <div class="mt-3 flex items-center gap-3">
+        <a id="imagePreviewDownload" href="" target="_blank" class="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center gap-1.5 transition-all">
+          <i data-lucide="external-link" class="w-4 h-4"></i>
+          <span>فتح الصورة بالحجم الكامل</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: NEW ORDER (تسجيل تاجر وطلب جديد) -->
+  <!-- ========================================== -->
+  <div id="newOrderModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto p-6 shadow-2xl border border-slate-100 text-right animate-in zoom-in-95 duration-200">
       <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black">
             <i data-lucide="plus-circle" class="w-5 h-5"></i>
           </div>
-          <h3 class="text-lg font-black text-slate-900">تسجيل طلب جديد يدوياً</h3>
+          <div>
+            <h3 class="text-base font-black text-slate-900">تسجيل تاجر وطلب متجر جديد</h3>
+            <p class="text-[11px] text-slate-400 font-bold">إدخال بيانات التاجر، مدينته، تفاصيل منتجه، ورقم الطلبات</p>
+          </div>
         </div>
         <button onclick="closeNewOrderModal()" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
-      <form id="newOrderForm" onsubmit="handleCreateNewOrder(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">اسم العميل *</label>
-          <input id="inputNewOrderName" type="text" required placeholder="مثال: كريم المنصوري" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+      <form id="newOrderForm" onsubmit="handleCreateNewOrder(event)" class="space-y-3.5 text-xs">
+        <!-- 1. Merchant Identity -->
+        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>معلومات التاجر الشخصية:</span>
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">اسم التاجر الكامل *</label>
+              <input id="inputNewOrderName" type="text" required placeholder="مثال: ياسين الفاسي" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">مدينة التاجر بالمغرب *</label>
+              <input id="inputNewOrderCity" list="moroccanCities" required placeholder="مثال: الدار البيضاء / طنجة / فاس" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+              <datalist id="moroccanCities">
+                <option value="الدار البيضاء (Casablanca)"></option>
+                <option value="الرباط (Rabat)"></option>
+                <option value="طنجة (Tanger)"></option>
+                <option value="مراكش (Marrakech)"></option>
+                <option value="فاس (Fès)"></option>
+                <option value="أكادير (Agadir)"></option>
+                <option value="مكناس (Meknès)"></option>
+                <option value="وجدة (Oujda)"></option>
+                <option value="القنيطرة (Kénitra)"></option>
+                <option value="تطوان (Tétouan)"></option>
+                <option value="الجديدة (El Jadida)"></option>
+                <option value="تمارة (Témara)"></option>
+                <option value="الناظور (Nador)"></option>
+              </datalist>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">رقم الهاتف الشخصي للتاجر *</label>
+              <input id="inputNewOrderPhone" type="tel" required placeholder="مثال: 0677889900" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">البريد الإلكتروني (اختياري)</label>
+              <input id="inputNewOrderEmail" type="email" placeholder="merchant@gmail.com" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-mono text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">رقم الهاتف *</label>
-          <input id="inputNewOrderPhone" type="tel" required placeholder="مثال: 0612345678" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
+        <!-- 2. Store & Product Project Details -->
+        <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 space-y-2.5">
+          <h4 class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+            <i data-lucide="store" class="w-3.5 h-3.5 text-blue-600"></i>
+            <span>تفاصيل مشروع المتجر والمنتج:</span>
+          </h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">اسم المتجر أو صفحة الهبوط *</label>
+              <input id="inputNewOrderStoreName" type="text" required placeholder="مثال: متجر القفطان الملكي / Argan Bio" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">ثمن بيع منتجه في المتجر (درهم) *</label>
+              <input id="inputNewOrderProductPrice" type="text" required placeholder="مثال: 299 د.م" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-mono font-bold text-emerald-600 focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block font-bold text-slate-700 mb-1">الرقم المخصص لتلقي طلبات الزبائن (WhatsApp / Phone) *</label>
+              <input id="inputNewOrderOrderPhone" type="tel" required placeholder="مثال: 0677889900 (الرقم الذي ستصل إليه طلبيات المتجر)" class="w-full py-2 px-3 rounded-xl bg-white border border-slate-200 font-mono font-bold text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">الباقة المختارة *</label>
-          <select id="inputNewOrderPlan" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
-            <option value="المتجر القياسي (1,500 MAD)">المتجر الإلكتروني القياسي (1,500 MAD)</option>
-            <option value="صفحة هبوط احترافية (500 MAD)">صفحة هبوط احترافية (500 MAD)</option>
-            <option value="النظام المتكامل VIP (5,000 MAD)">النظام السحابي المتكامل VIP (5,000 MAD)</option>
-          </select>
+        <!-- 3. Plan & Payment -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">الباقة المختارة *</label>
+            <select id="inputNewOrderPlan" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+              <option value="المتجر القياسي (1,500 MAD)">المتجر القياسي (1,500 MAD)</option>
+              <option value="صفحة هبوط احترافية (500 MAD)">صفحة هبوط احترافية (500 MAD)</option>
+              <option value="النظام المتكامل VIP (5,000 MAD)">النظام السحابي المتكامل VIP (5,000 MAD)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">طريقة الدفع</label>
+            <select id="inputNewOrderPayment" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+              <option value="بطاقة بنكية (Carte Bancaire)">الأداء بالبطاقة البنكية (Carte Bancaire)</option>
+              <option value="الدفع عند الاستلام (COD)">الدفع عند الاستلام (COD)</option>
+              <option value="تحويل بنكي (Virement)">تحويل بنكي (Virement)</option>
+            </select>
+          </div>
         </div>
 
+        <!-- 4. Product Images URLs -->
         <div>
-          <label class="block font-bold text-slate-700 mb-1">طريقة الدفع</label>
-          <select id="inputNewOrderPayment" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
-            <option value="بطاقة بنكية (Carte Bancaire)">الأداء بالبطاقة البنكية (Carte Bancaire)</option>
-            <option value="الدفع عند الاستلام (COD)">الدفع عند الاستلام (COD)</option>
-            <option value="تحويل بنكي (Virement)">تحويل بنكي (Virement)</option>
-          </select>
+          <label class="block font-bold text-slate-700 mb-1">روابط صور المنتج (مفصولة بفواصل أو أسطر)</label>
+          <input id="inputNewOrderImages" type="text" placeholder="https://example.com/product1.jpg, https://example.com/product2.jpg" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-mono text-[11px] text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
         </div>
 
+        <!-- 5. Notes -->
         <div>
-          <label class="block font-bold text-slate-700 mb-1">ملاحظات أو رابط المتجر (اختياري)</label>
-          <input id="inputNewOrderNotes" type="text" placeholder="ملاحظات أو رابط تسليم المتجر..." class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+          <label class="block font-bold text-slate-700 mb-1">متطلبات وملاحظات التجهيز (اختياري)</label>
+          <textarea id="inputNewOrderNotes" rows="2" placeholder="ملاحظات وتفاصيل الألوان والمنتجات..." class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500"></textarea>
         </div>
 
-        <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
           <button type="button" onclick="closeNewOrderModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">إلغاء</button>
-          <button type="submit" id="btnSubmitNewOrder" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-black shadow-md cursor-pointer">حفظ وإنشاء الطلب الآن</button>
+          <button type="submit" id="btnSubmitNewOrder" class="px-5 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 text-white font-black shadow-md cursor-pointer flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>حفظ وإنشاء الطلب الآن</span>
+          </button>
         </div>
       </form>
     </div>
@@ -1369,15 +1466,22 @@
       tbody.innerHTML = filtered.map(o => {
         const id = o.id;
         const num = o.order_number || o.orderNumber || `#ESP-${id.slice(0, 6)}`;
-        const name = o.customer_name || o.customerName || "عميل مميز";
+        const name = o.customer_name || o.customerName || "تاجر مميز";
+        const city = o.customer_city || o.customerCity || "الدار البيضاء";
         const phone = o.phone_number || o.customerPhone || "—";
+        const storeName = o.store_name || o.storeName || "";
+        const productPrice = o.product_price || o.productPrice || "";
+        const orderPhone = o.order_phone || o.orderPhone || phone;
+        const productImages = Array.isArray(o.product_images) ? o.product_images : [];
         const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
         const price = getOrderPrice(o);
         const status = o.status || "pending";
         const deliveredUrl = o.delivered_url || o.deliveredUrl || "";
         const cleanPhone = phone.replace(/[^0-9]/g, "");
+        const cleanOrderPhone = orderPhone.replace(/[^0-9]/g, "");
+        const date = o.created_at ? new Date(o.created_at).toLocaleDateString("ar-MA", { month: "short", day: "numeric" }) : "اليوم";
 
-        // 1. Quick Inline Status Selector (No modal popup needed!)
+        // 1. Quick Inline Status Selector (Direct from table, zero modal)
         const statusSelector = `
           <div class="relative inline-block" onclick="event.stopPropagation();">
             <select onchange="updateOrderStatusQuick('${id}', this.value)" class="py-1 px-2.5 rounded-full text-[10px] font-black cursor-pointer focus:outline-none transition-all shadow-sm ${
@@ -1394,7 +1498,7 @@
           </div>
         `;
 
-        // 2. Dedicated Store URL Cell (Visits store directly OR opens focused mini-modal)
+        // 2. Dedicated Store URL Cell
         const storeCell = deliveredUrl 
           ? `
             <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
@@ -1411,58 +1515,128 @@
             <div onclick="event.stopPropagation();">
               <button onclick="openQuickStoreUrlModal('${id}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 text-slate-600 hover:text-cyan-700 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer" title="إدخال رابط المتجر للعميل">
                 <i data-lucide="plus" class="w-3 h-3 text-cyan-600"></i>
-                <span>+ إضافة رابط المتجر</span>
+                <span>+ إضافة رابط</span>
               </button>
             </div>
           `;
 
+        // Images preview badges in table
+        const imagesSnippet = productImages.length > 0 ? `
+          <div class="flex items-center gap-1 mt-1">
+            ${productImages.slice(0, 2).map((img) => `
+              <img src="${img}" onclick="event.stopPropagation(); openImagePreviewModal('${img}')" class="w-6 h-6 rounded-md object-cover border border-slate-200 hover:scale-125 transition-transform cursor-pointer shadow-xs" title="انقر لتكبير صورة المنتج">
+            `).join('')}
+            ${productImages.length > 2 ? `<span class="text-[9px] font-black text-slate-500 bg-slate-100 px-1 py-0.5 rounded cursor-pointer" onclick="event.stopPropagation(); viewOrder('${id}')">+${productImages.length - 2}</span>` : ''}
+          </div>
+        ` : '';
+
         return `
-          <tr class="hover:bg-blue-50/40 transition-all">
-            <td class="p-3.5 font-mono font-black text-blue-700">${num}</td>
+          <tr class="hover:bg-blue-50/40 transition-all border-b border-slate-100/80">
+            <!-- Col 1: Order ID & Date -->
             <td class="p-3.5">
-              <div onclick="viewOrder('${id}')" class="flex items-center gap-2 cursor-pointer group/user" title="انقر لفتح ملف العميل الكامل">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 text-blue-700 font-black text-xs flex items-center justify-center border border-blue-200 shrink-0 group-hover/user:scale-110 transition-transform">
-                  ${name.charAt(0) || "ع"}
+              <span class="font-mono font-black text-blue-700 block">${num}</span>
+              <span class="text-[10px] text-slate-400 font-bold">${date}</span>
+            </td>
+
+            <!-- Col 2: Merchant & City -->
+            <td class="p-3.5">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 text-blue-700 font-black text-xs flex items-center justify-center border border-blue-200 shrink-0">
+                  ${name.charAt(0) || "ت"}
                 </div>
                 <div>
-                  <span class="font-black text-slate-900 group-hover/user:text-blue-600 transition-colors block">${name}</span>
-                  <span class="text-[10px] text-slate-400 font-mono font-bold" dir="ltr">${phone}</span>
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-black text-slate-900 block">${name}</span>
+                    <span class="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
+                      <i data-lucide="map-pin" class="w-2.5 h-2.5 text-blue-500"></i>
+                      <span>${city}</span>
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[10px] text-slate-400 font-mono font-bold" dir="ltr">${phone}</span>
+                    <button onclick="event.stopPropagation(); viewMerchantProfile('${phone || name}')" class="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-0.5 cursor-pointer" title="فتح الملف الشخصي للتاجر">
+                      <i data-lucide="user" class="w-2.5 h-2.5"></i>
+                      <span>بروفايل التاجر</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </td>
-            <td class="p-3.5 font-mono text-slate-600" dir="ltr">
-              <button onclick="navigator.clipboard.writeText('${phone}'); triggerToast('تم نسخ رقم الهاتف');" class="hover:text-blue-600 flex items-center gap-1 cursor-pointer" title="نسخ رقم الهاتف">
-                <span>${phone}</span>
-                <i data-lucide="copy" class="w-3 h-3 text-slate-400"></i>
-              </button>
+
+            <!-- Col 3: Store & Product Project -->
+            <td class="p-3.5">
+              <div onclick="viewOrder('${id}')" class="cursor-pointer group/proj">
+                <span class="font-black text-slate-900 group-hover/proj:text-blue-600 transition-colors block text-xs">
+                  ${storeName || "متجر قيد التسمية"}
+                </span>
+                <div class="flex items-center gap-2 mt-0.5">
+                  ${productPrice ? `
+                    <span class="inline-flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                      <span>ثمن البيع:</span>
+                      <strong class="font-mono">${productPrice}</strong>
+                    </span>
+                  ` : `<span class="text-[10px] text-slate-400">ثمن البيع: غير محدد</span>`}
+                </div>
+                ${imagesSnippet}
+              </div>
             </td>
-            <td class="p-3.5 font-bold">${plan}</td>
-            <td class="p-3.5 font-mono font-black text-emerald-600">${price.toLocaleString()} د.م</td>
-            <td class="p-3.5">${o.payment_method || "بطاقة بنكية"}</td>
+
+            <!-- Col 4: Plan -->
+            <td class="p-3.5 font-bold text-xs text-slate-700">${plan}</td>
+
+            <!-- Col 5: Price -->
+            <td class="p-3.5 font-mono font-black text-emerald-600 text-xs">${price.toLocaleString()} د.م</td>
+
+            <!-- Col 6: Order Receiving Phone (For Store Orders) -->
+            <td class="p-3.5">
+              <div class="flex items-center gap-1.5">
+                <span class="font-mono font-bold text-xs text-slate-800" dir="ltr">${orderPhone}</span>
+                ${cleanOrderPhone ? `
+                  <a href="https://wa.me/${cleanOrderPhone.startsWith('212') ? cleanOrderPhone : '212' + cleanOrderPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم، نتواصل معك من إدارة Ecom Speed Pro لتأكيد رقم استقبال طلبات متجرك (' + (storeName || plan) + ').')}" target="_blank" class="p-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-600 transition-colors" title="اختبار ومراسلة رقم استقبال الطلبات">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  </a>
+                ` : ''}
+              </div>
+            </td>
+
+            <!-- Col 7: Status -->
             <td class="p-3.5">
               ${statusSelector}
             </td>
+
+            <!-- Col 8: Delivered Store URL -->
             <td class="p-3.5">
               ${storeCell}
             </td>
-            <td class="p-3.5 text-center flex items-center justify-center gap-1.5" onclick="event.stopPropagation();">
-              <!-- DISTINCT ACTION 1: Secret Private Tracking Page (Directly in Browser) -->
-              <button onclick="openCustomerPrivateLink('${id}')" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-black text-[11px] flex items-center gap-1 shadow-sm transition-all hover:scale-105 active:scale-95 cursor-pointer" title="فتح صفحة تتبع الطلب الخاصة بالعميل مباشرة في المتصفح">
-                <i data-lucide="external-link" class="w-3 h-3"></i>
-                <span>رابط التتبع</span>
+
+            <!-- Col 9: Distinct Actions -->
+            <td class="p-3.5 text-center flex items-center justify-center gap-1" onclick="event.stopPropagation();">
+              <!-- Action 1: Merchant Profile -->
+              <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="الملف الشخصي للتاجر (اسمه، مدينته، هاتف، معلوماته)">
+                <i data-lucide="user" class="w-3 h-3 text-blue-600"></i>
+                <span>ملف التاجر</span>
               </button>
 
-              <!-- DISTINCT ACTION 2: Full Detailed Dossier Modal -->
-              <button onclick="viewOrder('${id}')" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="فتح الملف الشامل للعميل والطلب">
-                <i data-lucide="file-text" class="w-3.5 h-3.5 text-blue-600"></i>
-                <span>الملف الشامل</span>
+              <!-- Action 2: Store & Order Dossier -->
+              <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="تفاصيل طلب المتجر ومشروعه (صور المنتج، ثمنه، ورابط التتبع)">
+                <i data-lucide="store" class="w-3 h-3 text-slate-700"></i>
+                <span>طلب المتجر</span>
               </button>
 
-              <!-- DISTINCT ACTION 3: Direct WhatsApp -->
-              ${cleanPhone ? `<a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك.')}" target="_blank" class="p-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer" title="مراسلة عبر واتساب"><i data-lucide="message-circle" class="w-3.5 h-3.5"></i></a>` : ''}
+              <!-- Action 3: Secret Tracking Link (Opens in browser) -->
+              <button onclick="openCustomerPrivateLink('${id}')" class="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center transition-all hover:scale-105 active:scale-95 cursor-pointer" title="فتح رابط التتبع السري للتاجر في المتصفح">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+              </button>
 
-              <!-- DISTINCT ACTION 4: Delete -->
-              <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف هذا الطلب"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              <!-- Action 4: WhatsApp Merchant -->
+              ${cleanPhone ? `
+                <a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص متجرك (' + (storeName || plan) + ').')}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer" title="مراسلة التاجر عبر واتساب">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                </a>
+              ` : ''}
+
+              <!-- Action 5: Delete -->
+              <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف هذا الطلب"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </td>
           </tr>
         `;
@@ -1581,7 +1755,7 @@
       lucide.createIcons();
     }
 
-    // 3. RENDER CUSTOMERS TAB
+    // 3. RENDER CUSTOMERS TAB (سجل التجار والعملاء CRM)
     function renderCustomersTab() {
       const searchVal = (document.getElementById("customerSearchInput")?.value || "").trim().toLowerCase();
       const tbody = document.getElementById("customersTableBody");
@@ -1590,14 +1764,17 @@
       const customerMap = new Map();
       orders.forEach(o => {
         const phone = (o.phone_number || o.customerPhone || "").trim();
-        const name = (o.customer_name || o.customerName || "عميل").trim();
+        const name = (o.customer_name || o.customerName || "تاجر").trim();
         const key = phone || name;
         if (!customerMap.has(key)) {
           customerMap.set(key, {
             name,
             phone,
+            city: o.customer_city || o.city || "المغرب",
+            email: o.customer_email || o.email || "",
             ordersCount: 0,
             totalSpend: 0,
+            lastStore: o.store_name || o.plan_tier || o.planTitle || "المتجر القياسي",
             lastPlan: o.plan_tier || o.planTitle || "المتجر القياسي",
             lastOrderDate: o.created_at || "—",
             orderIds: []
@@ -1607,8 +1784,12 @@
         c.ordersCount++;
         c.totalSpend += getOrderPrice(o);
         c.orderIds.push(o.id);
+        if (o.customer_city && (!c.city || c.city === "المغرب")) {
+          c.city = o.customer_city;
+        }
         if (o.created_at && (!c.lastOrderDate || new Date(o.created_at) > new Date(c.lastOrderDate))) {
           c.lastOrderDate = o.created_at;
+          c.lastStore = o.store_name || o.plan_tier || c.lastStore;
           c.lastPlan = o.plan_tier || o.planTitle || c.lastPlan;
         }
       });
@@ -1624,63 +1805,89 @@
       document.getElementById("crmAvgCustomerSpend").innerText = avgSpend.toLocaleString() + " درهم";
 
       const filtered = customerList.filter(c => {
-        return !searchVal || c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal);
+        return !searchVal || c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal) || c.city.toLowerCase().includes(searchVal);
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">لا يوجد عملاء يطابقون البحث</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">لا يوجد تجار يطابقون معايير البحث</td></tr>`;
         return;
       }
 
       tbody.innerHTML = filtered.map(c => {
         const cleanPhone = c.phone.replace(/[^0-9]/g, "");
         const formattedDate = c.lastOrderDate && c.lastOrderDate !== "—" ? new Date(c.lastOrderDate).toLocaleDateString("ar-MA") : "مؤخراً";
-        const waLink = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم ' + c.name + '، نتواصل معك من إدارة Ecom Speed Pro.')}` : null;
+        const waLink = cleanPhone ? `https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + c.name + '، نتواصل معك من إدارة Ecom Speed Pro.')}` : null;
+        const isVip = c.totalSpend >= 3000 || c.ordersCount > 1;
 
         return `
-          <tr class="hover:bg-blue-50/40 transition-all">
+          <tr class="hover:bg-blue-50/40 transition-all border-b border-slate-100">
+            <!-- Col 1: Merchant & City -->
             <td class="p-3.5 flex items-center gap-2">
-              <div onclick="viewCustomerDossier('${c.phone || c.name}')" class="flex items-center gap-2 cursor-pointer group/cust" title="فتح ملف العميل الكامل">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm group-hover/cust:scale-110 transition-transform">
-                  ${c.name.charAt(0) || "ع"}
+              <div onclick="viewMerchantProfile('${c.phone || c.name}')" class="flex items-center gap-2.5 cursor-pointer group/cust" title="فتح الملف الشخصي للتاجر">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-sm group-hover/cust:scale-110 transition-transform">
+                  ${c.name.charAt(0) || "ت"}
                 </div>
                 <div>
-                  <span class="font-black text-slate-900 group-hover/cust:text-blue-600 transition-colors block">${c.name}</span>
-                  ${c.ordersCount > 1 ? `<span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 text-[9px] font-black">عميل متكرر ⭐</span>` : ''}
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-black text-slate-900 group-hover/cust:text-blue-600 transition-colors block text-xs">${c.name}</span>
+                    ${isVip ? `<span class="px-1.5 py-0.2 rounded bg-amber-100 text-amber-700 text-[9px] font-black">⭐ VIP</span>` : ''}
+                  </div>
+                  <span class="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded mt-0.5">
+                    <i data-lucide="map-pin" class="w-2.5 h-2.5 text-rose-500"></i>
+                    <span>${c.city}</span>
+                  </span>
                 </div>
               </div>
             </td>
-            <td class="p-3.5 font-mono text-slate-600" dir="ltr">
-              <button onclick="navigator.clipboard.writeText('${c.phone}'); triggerToast('تم نسخ رقم الهاتف');" class="hover:text-blue-600 flex items-center gap-1 cursor-pointer" title="نسخ رقم الهاتف">
+
+            <!-- Col 2: Personal Phone -->
+            <td class="p-3.5 font-mono text-slate-700" dir="ltr">
+              <button onclick="navigator.clipboard.writeText('${c.phone}'); triggerToast('تم نسخ رقم الهاتف الشخصي');" class="hover:text-blue-600 flex items-center gap-1 cursor-pointer font-bold text-xs" title="نسخ رقم الهاتف">
                 <span>${c.phone || "—"}</span>
                 ${c.phone ? `<i data-lucide="copy" class="w-3 h-3 text-slate-400"></i>` : ''}
               </button>
             </td>
+
+            <!-- Col 3: Stores & Orders Count -->
             <td class="p-3.5 font-mono font-black">
-              <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-black text-xs flex items-center gap-1 transition-all cursor-pointer" title="تصفية وعرض طلباته في جدول الطلبات">
-                <i data-lucide="shopping-bag" class="w-3 h-3"></i>
-                <span>${c.ordersCount} طلبات 🔍</span>
+              <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-black text-xs flex items-center gap-1 transition-all cursor-pointer" title="تصفية وعرض طلباته في جدول الطلبات">
+                <i data-lucide="store" class="w-3 h-3"></i>
+                <span>${c.ordersCount} مشاريع 🔍</span>
               </button>
             </td>
-            <td class="p-3.5 font-mono font-black text-emerald-600">${c.totalSpend.toLocaleString()} د.م</td>
-            <td class="p-3.5 text-slate-700">${c.lastPlan}</td>
-            <td class="p-3.5 text-slate-500 font-mono text-[11px]">${formattedDate}</td>
-            <td class="p-3.5 text-center flex items-center justify-center gap-1.5" onclick="event.stopPropagation();">
-              <button onclick="viewCustomerDossier('${c.phone || c.name}')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="عرض ملف العميل الشامل">
-                <i data-lucide="user-check" class="w-3.5 h-3.5 text-blue-600"></i>
-                <span>الملف الشامل</span>
+
+            <!-- Col 4: Total Spend -->
+            <td class="p-3.5 font-mono font-black text-emerald-600 text-xs">${c.totalSpend.toLocaleString()} د.م</td>
+
+            <!-- Col 5: Last Store / Plan -->
+            <td class="p-3.5 text-xs text-slate-700 font-bold">${c.lastStore || c.lastPlan}</td>
+
+            <!-- Col 6: Last Date -->
+            <td class="p-3.5 text-slate-500 font-mono text-[11px] font-bold">${formattedDate}</td>
+
+            <!-- Col 7: Distinct Actions -->
+            <td class="p-3.5 text-center flex items-center justify-center gap-1" onclick="event.stopPropagation();">
+              <!-- Merchant Personal Profile Button -->
+              <button onclick="viewMerchantProfile('${c.phone || c.name}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="عرض الملف الشخصي للتاجر (اسمه، مدينته، هاتفه، تفاصيله)">
+                <i data-lucide="user" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span>ملف التاجر</span>
               </button>
-              <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="px-2.5 py-1.5 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="عرض جميع طلبات هذا العميل في جدول الطلبات">
-                <i data-lucide="list-filter" class="w-3.5 h-3.5"></i>
+
+              <!-- Filter Customer Orders -->
+              <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="عرض جميع طلبات هذا التاجر في جدول الطلبات">
+                <i data-lucide="list-filter" class="w-3 h-3 text-slate-600"></i>
                 <span>سجل طلباته</span>
               </button>
+
+              <!-- Direct WhatsApp -->
               ${waLink ? `
-                <a href="${waLink}" target="_blank" class="px-2 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm transition-all hover:scale-105 active:scale-95" title="مراسلة عبر واتساب">
+                <a href="${waLink}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer" title="مراسلة التاجر عبر واتساب">
                   <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                  <span>واتساب</span>
                 </a>
               ` : ''}
-              <button onclick="deleteCustomerData('${c.phone}', '${c.name}')" class="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف العميل"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+
+              <!-- Delete Customer Data -->
+              <button onclick="deleteCustomerData('${c.phone}', '${c.name}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف التاجر وسجلاته"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </td>
           </tr>
         `;
@@ -2019,18 +2226,287 @@
       triggerToast("تم حذف سجل العميل وطلباته بنجاح");
     }
 
-    // View Customer Dossier from CRM or search
-    function viewCustomerDossier(identifier) {
-      const o = orders.find(x => {
-        const p = (x.phone_number || x.customerPhone || "").trim();
-        const n = (x.customer_name || x.customerName || "").trim();
-        return p === identifier || n === identifier;
-      });
-      if (o) {
-        viewOrder(o.id);
-      } else {
-        filterOrdersByCustomer(identifier);
+    // ========================================================
+    // PRODUCT IMAGE LIGHTBOX (معاينة وتكبير صور المنتج)
+    // ========================================================
+    function openImagePreviewModal(url) {
+      if (!url) return;
+      const modal = document.getElementById("imagePreviewModal");
+      const img = document.getElementById("imagePreviewSrc");
+      const link = document.getElementById("imagePreviewDownload");
+      if (modal && img) {
+        img.src = url;
+        if (link) link.href = url;
+        modal.classList.remove("hidden");
+        modal.classList.add("flex");
+        lucide.createIcons();
       }
+    }
+
+    function closeImagePreviewModal() {
+      const modal = document.getElementById("imagePreviewModal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+    }
+
+    // Add new product image directly to an order
+    async function addOrderProductImage(orderId) {
+      const imgUrl = prompt("أدخل رابط صورة المنتج الجديدة (URL):");
+      if (!imgUrl || !imgUrl.trim()) return;
+      const url = imgUrl.trim();
+
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+
+      if (!Array.isArray(o.product_images)) {
+        o.product_images = [];
+      }
+      o.product_images.push(url);
+
+      // Save locally in Electron
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(p)) {
+            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }
+
+      // API update
+      try {
+        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
+          body: JSON.stringify({ id: orderId, product_images: o.product_images })
+        });
+      } catch (e) {}
+
+      triggerToast("تمت إضافة صورة المنتج بنجاح 🖼️");
+      renderActiveTab();
+      viewOrder(orderId);
+    }
+
+    // ========================================================
+    // 👤 MODAL 1: MERCHANT PERSONAL PROFILE (الملف الشخصي للتاجر)
+    // ========================================================
+    function closeMerchantProfileModal() {
+      const modal = document.getElementById("merchantProfileModal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.classList.remove("flex");
+      }
+    }
+
+    function viewCustomerDossier(identifier) {
+      viewMerchantProfile(identifier);
+    }
+
+    function viewMerchantProfile(identifier) {
+      if (!identifier) return;
+      const cleanId = identifier.trim().toLowerCase();
+
+      // Find all orders for this merchant by phone or customer name
+      const merchantOrders = orders.filter(x => {
+        const p = (x.phone_number || x.customerPhone || "").trim().toLowerCase();
+        const n = (x.customer_name || x.customerName || "").trim().toLowerCase();
+        return p === cleanId || n === cleanId || p.replace(/[^0-9]/g, '') === cleanId.replace(/[^0-9]/g, '');
+      });
+
+      const latestOrder = merchantOrders[0] || {};
+      const merchantName = latestOrder.customer_name || latestOrder.customerName || identifier;
+      const merchantCity = latestOrder.customer_city || latestOrder.city || "المملكة المغربية 🇲🇦";
+      const merchantPhone = latestOrder.phone_number || latestOrder.customerPhone || identifier;
+      const merchantEmail = latestOrder.customer_email || latestOrder.email || "";
+
+      const totalSpend = merchantOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const totalOrders = merchantOrders.length;
+      const isVip = totalSpend >= 3000 || totalOrders > 1;
+
+      const cleanPhone = merchantPhone.replace(/[^0-9]/g, "");
+      const waPhone = cleanPhone.startsWith("212") ? cleanPhone : "212" + cleanPhone.replace(/^0/, "");
+      const waLink = cleanPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + merchantName + '، نتواصل معك من إدارة Ecom Speed Pro.')}` : null;
+
+      const content = `
+        <!-- 1. LUXURY MERCHANT PROFILE HEADER -->
+        <div class="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
+          <div class="flex items-center gap-3.5">
+            <div class="relative w-16 h-16 rounded-3xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-700 text-white font-black text-2xl flex items-center justify-center shadow-[0_12px_30px_rgba(79,70,229,0.4)] shrink-0 border-2 border-white">
+              ${merchantName.charAt(0) || "ت"}
+              <span class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full ${isVip ? 'bg-amber-400' : 'bg-emerald-500'} border-2 border-white shadow-sm flex items-center justify-center text-[10px]">
+                ${isVip ? '⭐' : '✓'}
+              </span>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <h3 class="text-xl sm:text-2xl font-black text-slate-900">${merchantName}</h3>
+                ${isVip ? `
+                  <span class="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-[11px] shadow-sm flex items-center gap-1">
+                    <i data-lucide="crown" class="w-3.5 h-3.5 text-slate-950"></i>
+                    <span>تاجر معتمد VIP</span>
+                  </span>
+                ` : `
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-black text-[11px]">تاجر نشط 🟢</span>
+                `}
+              </div>
+              <div class="flex items-center gap-2 mt-1 flex-wrap">
+                <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-0.5 rounded-lg border border-slate-200">
+                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500"></i>
+                  <span>${merchantCity}</span>
+                </span>
+                <span class="text-xs text-slate-400 font-bold">•</span>
+                <span class="text-xs font-mono font-bold text-slate-500" dir="ltr">${merchantPhone}</span>
+              </div>
+            </div>
+          </div>
+
+          <button onclick="closeMerchantProfileModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+
+        <!-- 2. QUICK PERSONAL CONTACT BAR -->
+        <div class="p-3.5 rounded-2xl bg-gradient-to-r from-blue-50/70 via-indigo-50/70 to-slate-50 border border-blue-100 flex flex-wrap items-center justify-between gap-2.5">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+              <i data-lucide="phone-call" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-500 font-bold block">رقم الهاتف الشخصي المباشر</span>
+              <span class="font-mono font-black text-xs text-slate-900" dir="ltr">${merchantPhone}</span>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 flex-wrap">
+            ${waLink ? `
+              <a href="${waLink}" target="_blank" class="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs flex items-center gap-1.5 shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                <span>واتساب التاجر</span>
+              </a>
+            ` : ''}
+            ${cleanPhone ? `
+              <a href="tel:${cleanPhone}" class="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all">
+                <i data-lucide="phone" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span>اتصال هاتفي</span>
+              </a>
+            ` : ''}
+            <button onclick="navigator.clipboard.writeText('${merchantPhone}'); triggerToast('تم نسخ رقم هاتف التاجر');" class="p-2 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 transition-all cursor-pointer" title="نسخ رقم الهاتف">
+              <i data-lucide="copy" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. MERCHANT FINANCIAL & STATS CARDS -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+          <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <span class="text-[10.5px] font-bold text-slate-400 block mb-1">إجمالي التعاملات</span>
+            <strong class="font-mono font-black text-base text-emerald-600">${totalSpend.toLocaleString()} <span class="text-[10px] font-sans text-slate-500">د.م</span></strong>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs">
+            <span class="text-[10.5px] font-bold text-slate-400 block mb-1">المتاجر والمشاريع</span>
+            <strong class="font-mono font-black text-base text-blue-700">${totalOrders} <span class="text-[10px] font-sans text-slate-500">مشروع</span></strong>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-white border border-slate-200 shadow-xs col-span-2 sm:col-span-1">
+            <span class="text-[10.5px] font-bold text-slate-400 block mb-1">مدينة الإقامة بالمغرب</span>
+            <strong class="font-black text-xs text-slate-800 flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3.5 h-3.5 text-rose-500"></i>
+              <span>${merchantCity}</span>
+            </strong>
+          </div>
+        </div>
+
+        ${merchantEmail ? `
+          <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <i data-lucide="mail" class="w-4 h-4 text-blue-600"></i>
+              <span class="font-bold text-slate-600">البريد الإلكتروني:</span>
+              <span class="font-mono font-bold text-slate-900" dir="ltr">${merchantEmail}</span>
+            </div>
+            <a href="mailto:${merchantEmail}" class="text-blue-600 hover:underline font-bold text-[11px]">إرسال بريد</a>
+          </div>
+        ` : ''}
+
+        <!-- 4. MERCHANT STORES & PROJECTS LIST -->
+        <div class="space-y-2.5">
+          <div class="flex items-center justify-between">
+            <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+              <i data-lucide="store" class="w-4 h-4 text-blue-600"></i>
+              <span>قائمة مشاريع ومتاجر التاجر (${merchantOrders.length}):</span>
+            </h4>
+            <button onclick="filterOrdersByCustomer('${merchantPhone || merchantName}'); closeMerchantProfileModal();" class="text-[11px] font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer">
+              <i data-lucide="list-filter" class="w-3 h-3"></i>
+              <span>عرض الكل بجدول الطلبات</span>
+            </button>
+          </div>
+
+          <div class="space-y-2 max-h-60 overflow-y-auto pr-1">
+            ${merchantOrders.length === 0 ? `
+              <p class="text-center text-slate-400 py-4 font-bold text-xs">لا توجد مشاريع مسجلة لهذا التاجر</p>
+            ` : merchantOrders.map(o => {
+              const sName = o.store_name || "متجر قيد التسمية";
+              const sPlan = o.plan_tier || "المتجر القياسي";
+              const sPrice = o.product_price || "";
+              const sOrderPhone = o.order_phone || o.phone_number || "—";
+              const sDelivered = o.delivered_url || "";
+              const sStatus = o.status || "pending";
+              const sStatusBadge = sStatus === "completed" 
+                ? `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 text-[10px] font-black">مكتمل ومسلّم 🟢</span>`
+                : sStatus === "in_progress"
+                ? `<span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-black">جاري التجهيز 🔵</span>`
+                : `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-[10px] font-black">قيد المراجعة 🟡</span>`;
+
+              return `
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-300 hover:bg-blue-50/30 transition-all flex items-center justify-between gap-3">
+                  <div class="space-y-1">
+                    <div class="flex items-center gap-2">
+                      <h5 class="font-black text-xs text-slate-900">${sName}</h5>
+                      ${sStatusBadge}
+                    </div>
+                    <div class="flex items-center gap-2 text-[10.5px] text-slate-500 font-bold flex-wrap">
+                      <span>${sPlan}</span>
+                      ${sPrice ? `<span>• ثمن بيع المنتج: <strong class="text-emerald-700 font-mono">${sPrice}</strong></span>` : ''}
+                      <span>• هاتف استقبال الطلبات: <strong class="font-mono text-slate-700" dir="ltr">${sOrderPhone}</strong></span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <button onclick="closeMerchantProfileModal(); viewOrder('${o.id}');" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1 transition-all cursor-pointer shadow-xs" title="فتح تفاصيل طلب هذا المتجر">
+                      <i data-lucide="store" class="w-3.5 h-3.5"></i>
+                      <span>طلب المتجر</span>
+                    </button>
+                    ${sDelivered ? `
+                      <button onclick="openCustomerStoreLink('${sDelivered}')" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 transition-all cursor-pointer" title="زيارة المتجر المباشر">
+                        <i data-lucide="globe" class="w-4 h-4"></i>
+                      </button>
+                    ` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+
+        <!-- 5. FOOTER BUTTONS -->
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+          <button onclick="filterOrdersByCustomer('${merchantPhone || merchantName}'); closeMerchantProfileModal();" class="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="shopping-cart" class="w-3.5 h-3.5"></i>
+            <span>تصفية طلبات هذا التاجر</span>
+          </button>
+
+          <button onclick="closeMerchantProfileModal()" class="px-5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs cursor-pointer">
+            إغلاق الملف
+          </button>
+        </div>
+      `;
+
+      document.getElementById("merchantProfileContent").innerHTML = content;
+      document.getElementById("merchantProfileModal").classList.remove("hidden");
+      document.getElementById("merchantProfileModal").classList.add("flex");
+      lucide.createIcons();
     }
 
     // Open Customer's Private Link (Only his link!)
@@ -2185,24 +2661,33 @@
       viewOrder(orderId);
     }
 
-    // View Order Details Modal (Luxury Customer & Order Dossier)
+    // ========================================================
+    // 🏪 MODAL 2: ORDER & STORE PROJECT DOSSIER (طلب المتجر ومشروعه)
+    // ========================================================
     function viewOrder(id) {
       const o = orders.find(x => x.id === id);
       if (!o) return;
       const num = o.order_number || o.orderNumber || `#ESP-${id.slice(0, 6)}`;
-      const name = o.customer_name || o.customerName || "عميل مميز";
+      const name = o.customer_name || o.customerName || "تاجر مميز";
+      const city = o.customer_city || o.city || "المغرب";
       const phone = o.phone_number || o.customerPhone || "—";
+      const email = o.customer_email || o.email || "";
+      const storeName = o.store_name || "متجر قيد التسمية";
+      const productPrice = o.product_price || "";
+      const orderPhone = o.order_phone || phone;
+      const productImages = Array.isArray(o.product_images) ? o.product_images : [];
       const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
       const price = getOrderPrice(o);
       const method = o.payment_method || "بطاقة بنكية (Carte Bancaire)";
       const status = o.status || "pending";
       const deliveredUrl = o.delivered_url || o.deliveredUrl || "";
       const date = o.created_at ? new Date(o.created_at).toLocaleString("ar-MA", { dateStyle: "full", timeStyle: "medium" }) : "مسجل في النظام";
-      const cleanPhone = phone.replace(/[^0-9]/g, "");
-      const waPhone = cleanPhone.startsWith("212") ? cleanPhone : "212" + cleanPhone.replace(/^0/, "");
-      const waLink = cleanPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك (' + plan + ').')}` : null;
-      const privateTrackingUrl = `${apiBase}/order/${id}`;
       const notes = o.product_notes || o.productNotes || o.notes || "";
+      const privateTrackingUrl = `${apiBase}/order/${id}`;
+
+      const cleanOrderPhone = (orderPhone || "").replace(/[^0-9]/g, "");
+      const waOrderPhone = cleanOrderPhone.startsWith("212") ? cleanOrderPhone : "212" + cleanOrderPhone.replace(/^0/, "");
+      const waOrderLink = cleanOrderPhone ? `https://wa.me/${waOrderPhone}?text=${encodeURIComponent('السلام عليكم، هذا اختبار رقم استقبال طلبات متجر (' + storeName + ').')}` : null;
 
       const isPending = status === "pending" || !status;
       const isInProgress = status === "in_progress";
@@ -2213,12 +2698,12 @@
         <div class="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
           <div class="flex items-center gap-3.5">
             <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700 text-white font-black text-2xl flex items-center justify-center shadow-[0_10px_25px_rgba(6,182,212,0.4)] shrink-0">
-              ${name.charAt(0) || "ع"}
+              <i data-lucide="store" class="w-7 h-7"></i>
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-blue-500' : 'bg-amber-500'} border-2 border-white shadow-sm"></span>
             </div>
             <div>
               <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-xl sm:text-2xl font-black text-slate-900">${name}</h3>
+                <h3 class="text-xl sm:text-2xl font-black text-slate-900">${storeName}</h3>
                 <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono font-black text-xs">
                   ${num}
                 </span>
@@ -2230,7 +2715,14 @@
                   <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-black text-[11px]">قيد المراجعة 🟡</span>
                 `}
               </div>
-              <p class="text-xs text-slate-400 font-bold mt-1">${date}</p>
+              <div class="flex items-center gap-2 mt-1">
+                <span class="text-xs text-slate-500 font-bold">${plan}</span>
+                <span class="text-xs text-slate-300">•</span>
+                <button onclick="closeModal(); viewMerchantProfile('${phone || name}')" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer">
+                  <i data-lucide="user" class="w-3 h-3"></i>
+                  <span>التاجر: ${name} (${city})</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2239,51 +2731,80 @@
           </button>
         </div>
 
-        <!-- CONTACT & DIRECT CONNECT BAR -->
-        <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-wrap items-center justify-between gap-3">
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-500">رقم هاتف العميل:</span>
-            <span class="font-mono font-black text-sm text-slate-900" dir="ltr">${phone}</span>
+        <!-- STORE & PRODUCT SPECIFICATIONS GRID -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+          <!-- Item 1: Store Name -->
+          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+            <span class="text-[10px] font-bold text-slate-400 block mb-1">اسم المتجر أو صفحة الهبوط:</span>
+            <strong class="font-black text-xs text-slate-900 block truncate">${storeName}</strong>
+            <span class="text-[10px] text-blue-600 font-bold mt-0.5 block">${plan}</span>
           </div>
 
-          <div class="flex items-center gap-2 flex-wrap">
-            ${waLink ? `
-              <a href="${waLink}" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs flex items-center gap-1.5 shadow-[0_4px_15px_rgba(16,185,129,0.35)] hover:scale-105 active:scale-95 transition-all">
-                <i data-lucide="message-circle" class="w-4 h-4"></i>
-                <span>مراسلة واتساب فورية</span>
-              </a>
+          <!-- Item 2: Product Selling Price -->
+          <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200">
+            <span class="text-[10px] font-bold text-emerald-700 block mb-1">ثمن بيع منتجه في المتجر:</span>
+            <strong class="font-mono font-black text-sm text-emerald-800 block">${productPrice || "غير محدد"}</strong>
+            <span class="text-[10px] text-emerald-600 font-bold mt-0.5 block">سعر البيع للزبائن بالمغرب</span>
+          </div>
+
+          <!-- Item 3: Order Receiving Phone -->
+          <div class="p-3.5 rounded-2xl bg-cyan-50/70 border border-cyan-200 flex flex-col justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-cyan-800 block mb-1">رقم هاتف استقبال الطلبيات:</span>
+              <strong class="font-mono font-black text-xs text-slate-900 block" dir="ltr">${orderPhone}</strong>
+            </div>
+            ${waOrderLink ? `
+              <div class="mt-2">
+                <a href="${waOrderLink}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-xs transition-all" title="مراسلة واختبار وصول الطلبات إلى هذا الرقم">
+                  <i data-lucide="message-circle" class="w-3 h-3"></i>
+                  <span>اختبار رقم الطلبات</span>
+                </a>
+              </div>
             ` : ''}
-            ${cleanPhone ? `
-              <a href="tel:${cleanPhone}" class="px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all">
-                <i data-lucide="phone" class="w-3.5 h-3.5 text-blue-600"></i>
-                <span>اتصال هاتف</span>
-              </a>
-            ` : ''}
-            <button onclick="navigator.clipboard.writeText('${phone}'); triggerToast('تم نسخ رقم الهاتف');" class="p-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-600 border border-slate-200 transition-all cursor-pointer" title="نسخ الرقم">
-              <i data-lucide="copy" class="w-4 h-4"></i>
-            </button>
           </div>
         </div>
 
-        <!-- PLAN & PRICING SUMMARY -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="p-4 rounded-2xl bg-gradient-to-br from-blue-50/80 to-indigo-50/80 border border-blue-100 flex items-center justify-between">
-            <div>
-              <span class="text-[11px] font-bold text-blue-600 block mb-0.5">الباقة المختارة:</span>
-              <strong class="text-sm font-black text-slate-900">${plan}</strong>
-              <span class="block text-[11px] text-slate-500 mt-1">${method}</span>
+        <!-- PRODUCT IMAGES GALLERY (معرض صور منتج التاجر) -->
+        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
+              <h4 class="text-xs font-black text-slate-900">معرض صور منتج التاجر (${productImages.length} صور)</h4>
             </div>
-            <div class="text-left font-mono font-black text-2xl text-emerald-600">
-              ${price.toLocaleString()} <span class="text-xs font-sans text-slate-500 font-bold">د.م</span>
-            </div>
+            <button onclick="addOrderProductImage('${id}')" class="px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer shadow-xs">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+              <span>إضافة صورة للمنتج</span>
+            </button>
           </div>
 
-          <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
-            <span class="text-[11px] font-bold text-slate-400 block mb-0.5">متطلبات وملاحظات العميل:</span>
-            <p class="text-xs font-bold text-slate-700 leading-relaxed">
-              ${notes || "لا توجد متطلبات أو ملاحظات إضافية مسجلة"}
-            </p>
-          </div>
+          ${productImages.length === 0 ? `
+            <div class="p-5 text-center bg-white rounded-xl border border-dashed border-slate-200">
+              <p class="text-xs text-slate-400 font-bold mb-2">لم يتم إرفاق صور للمنتج بعد</p>
+              <button onclick="addOrderProductImage('${id}')" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1 cursor-pointer">
+                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                <span>انقر هنا لإضافة أول صورة لمنتج التاجر</span>
+              </button>
+            </div>
+          ` : `
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+              ${productImages.map(img => `
+                <div onclick="openImagePreviewModal('${img}')" class="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 cursor-pointer shadow-xs hover:shadow-md transition-all">
+                  <img src="${img}" alt="صورة المنتج" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <i data-lucide="zoom-in" class="w-6 h-6"></i>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+
+        <!-- NOTES & SPECS -->
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200">
+          <span class="text-[11px] font-bold text-slate-400 block mb-1">ملاحظات ومتطلبات التجهيز:</span>
+          <p class="text-xs font-bold text-slate-700 leading-relaxed">
+            ${notes || "لا توجد ملاحظات أو متطلبات خاصة مسجلة"}
+          </p>
         </div>
 
         <!-- 🌟 THE LUXURY INTERACTIVE STATUS CARDS SELECTOR -->
@@ -2369,7 +2890,7 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <h4 class="text-xs sm:text-sm font-black text-cyan-200">رابط تتبع الطلب السري الخاص بهذا العميل فقط</h4>
+              <h4 class="text-xs sm:text-sm font-black text-cyan-200">رابط تتبع الطلب السري الخاص بهذا المتجر فقط</h4>
             </div>
             <span class="px-2 py-0.5 rounded-md bg-white/10 text-cyan-300 font-mono text-[10px] font-bold">خاص ومحمي 🔒</span>
           </div>
@@ -2566,10 +3087,18 @@
       renderOrdersTab();
     }
 
-    // New Order Modal
+    // ========================================================
+    // 📝 MODAL 4: NEW ORDER (تسجيل تاجر وطلب جديد)
+    // ========================================================
     function openNewOrderModal() {
       document.getElementById("inputNewOrderName").value = "";
+      document.getElementById("inputNewOrderCity").value = "";
       document.getElementById("inputNewOrderPhone").value = "";
+      document.getElementById("inputNewOrderEmail").value = "";
+      document.getElementById("inputNewOrderStoreName").value = "";
+      document.getElementById("inputNewOrderProductPrice").value = "";
+      document.getElementById("inputNewOrderOrderPhone").value = "";
+      document.getElementById("inputNewOrderImages").value = "";
       document.getElementById("inputNewOrderNotes").value = "";
       document.getElementById("newOrderModal").classList.remove("hidden");
       document.getElementById("newOrderModal").classList.add("flex");
@@ -2587,26 +3116,66 @@
 
     async function handleCreateNewOrder(e) {
       e.preventDefault();
-      const name = document.getElementById("inputNewOrderName").value.trim();
-      const phone = document.getElementById("inputNewOrderPhone").value.trim();
-      const plan = document.getElementById("inputNewOrderPlan").value;
-      const payment = document.getElementById("inputNewOrderPayment").value;
-      const notes = document.getElementById("inputNewOrderNotes").value.trim();
+      const name = (document.getElementById("inputNewOrderName")?.value || "").trim();
+      const city = (document.getElementById("inputNewOrderCity")?.value || "").trim();
+      const phone = (document.getElementById("inputNewOrderPhone")?.value || "").trim();
+      const email = (document.getElementById("inputNewOrderEmail")?.value || "").trim();
+      const storeName = (document.getElementById("inputNewOrderStoreName")?.value || "").trim();
+      const productPrice = (document.getElementById("inputNewOrderProductPrice")?.value || "").trim();
+      const orderPhone = (document.getElementById("inputNewOrderOrderPhone")?.value || "").trim();
+      const plan = document.getElementById("inputNewOrderPlan")?.value || "المتجر القياسي (1,500 MAD)";
+      const payment = document.getElementById("inputNewOrderPayment")?.value || "بطاقة بنكية";
+      const imagesRaw = (document.getElementById("inputNewOrderImages")?.value || "").trim();
+      const notes = (document.getElementById("inputNewOrderNotes")?.value || "").trim();
+
+      const productImages = imagesRaw ? imagesRaw.split(/[\n,]+/).map(s => s.trim()).filter(Boolean) : [];
 
       const payload = {
         customer_name: name,
+        customer_city: city,
         phone_number: phone,
+        customer_email: email,
+        store_name: storeName,
+        product_price: productPrice,
+        order_phone: orderPhone,
         plan_tier: plan,
         payment_method: payment,
+        product_images: productImages,
         product_notes: notes,
         status: "pending"
       };
 
       closeNewOrderModal();
-      triggerToast("جاري إنشاء الطلب وإرساله للسيرفر...");
+      triggerToast("جاري حفظ بيانات التاجر وإنشاء طلب المتجر...");
 
+      // Local write in Electron
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(p)) {
+            const fileData = JSON.parse(fs.readFileSync(p, "utf-8"));
+            const newLocalOrder = {
+              id: "esp_" + Date.now().toString(36) + Math.random().toString(36).substr(2, 5),
+              order_number: "#ESP-" + Math.floor(1000 + Math.random() * 9000),
+              ...payload,
+              created_at: new Date().toISOString(),
+              delivered_url: null
+            };
+            fileData.unshift(newLocalOrder);
+            fs.writeFileSync(p, JSON.stringify(fileData, null, 2), "utf-8");
+            orders.unshift(newLocalOrder);
+            playOrderChime();
+            showLiveBanner(newLocalOrder);
+            renderActiveTab();
+          }
+        } catch (e) {}
+      }
+
+      // API Call Local Next.js
       try {
-        const res = await fetch(`${apiBase}/api/orders`, {
+        const res = await fetch(`http://localhost:3000/api/orders`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
@@ -2614,11 +3183,13 @@
         if (res.ok) {
           const data = await res.json();
           if (data && data.order) {
-            orders.unshift(data.order);
+            if (!orders.some(x => x.id === data.order.id)) {
+              orders.unshift(data.order);
+            }
             playOrderChime();
             showLiveBanner(data.order);
             renderActiveTab();
-            triggerToast("تم إنشاء الطلب بنجاح! ⚡");
+            triggerToast("تم إنشاء طلب المتجر بنجاح! ⚡");
           }
         }
       } catch (err) {

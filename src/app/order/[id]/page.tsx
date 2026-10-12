@@ -28,7 +28,12 @@ interface OrderData {
   id: string;
   order_number: string;
   customer_name: string;
+  customer_city?: string;
   phone_number: string;
+  store_name?: string;
+  product_price?: string;
+  order_phone?: string;
+  product_images?: string[];
   plan_tier: string;
   status: "pending" | "in_progress" | "completed";
   delivered_url: string | null;
@@ -133,8 +138,13 @@ function OrderTrackingContent() {
                 foundOrder = {
                   id: localMatch.id,
                   order_number: localMatch.order_number || localMatch.orderNumber || `#ESP-101`,
-                  customer_name: localMatch.customer_name || localMatch.customerName || "عميل مميز",
+                  customer_name: localMatch.customer_name || localMatch.customerName || "تاجر مميز",
+                  customer_city: localMatch.customer_city || localMatch.city || "المغرب",
                   phone_number: localMatch.phone_number || localMatch.customerPhone || localMatch.phone || "",
+                  store_name: localMatch.store_name || localMatch.storeName || "",
+                  product_price: localMatch.product_price || localMatch.productPrice || "",
+                  order_phone: localMatch.order_phone || localMatch.orderPhone || localMatch.phone_number || "",
+                  product_images: Array.isArray(localMatch.product_images) ? localMatch.product_images : [],
                   plan_tier: localMatch.plan_tier || localMatch.planTitle || "المتجر القياسي (1,500 MAD)",
                   status: (localMatch.status === "completed" || localMatch.status === "paid") ? "completed" : (localMatch.status === "in_progress" ? "in_progress" : "pending"),
                   delivered_url: localMatch.delivered_url || localMatch.deliveredUrl || null,
@@ -347,19 +357,24 @@ function OrderTrackingContent() {
           {/* --- 1. HERO ORDER STATUS CARD --- */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-blue-100 pb-5">
             <div>
-              <div className="flex items-center gap-2.5 mb-1.5">
+              <div className="flex items-center gap-2.5 mb-1.5 flex-wrap">
                 <span className="px-3 py-1 rounded-full text-xs font-black bg-blue-100 text-blue-800 font-mono">
                   {order.order_number}
                 </span>
                 <span className="px-3 py-1 rounded-full text-xs font-black bg-cyan-100 text-cyan-800">
                   {order.plan_tier}
                 </span>
+                {order.customer_city && (
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700">
+                    📍 {order.customer_city}
+                  </span>
+                )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-[#0b1739] tracking-tight">
-                مرحباً بك {order.customer_name} 👋
+                {order.store_name ? `مشروع: ${order.store_name}` : `مرحباً بك ${order.customer_name} 👋`}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 font-bold mt-1">
-                نتابع إنجاز وتطوير متجرك الإلكتروني لحظياً عبر هذا الرابط السري المخصص لك.
+                التاجر: <strong className="text-slate-800">{order.customer_name}</strong> • نتابع إنجاز وتطوير متجرك الإلكتروني لحظياً عبر هذا الرابط السري.
               </p>
             </div>
 
@@ -549,7 +564,76 @@ function OrderTrackingContent() {
             </div>
           )}
 
-          {/* --- 4. ORDER SUMMARY & DETAILS GRID --- */}
+          {/* --- 4. STORE & PRODUCT PROJECT DOSSIER (تفاصيل متجر ومنتج التاجر) --- */}
+          {(order.store_name || order.product_price || (order.product_images && order.product_images.length > 0)) && (
+            <div className="rounded-3xl bg-white border border-[#d2e4f8] p-5 sm:p-6 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                    <Rocket className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-black text-[#0b1739]">تفاصيل مشروع المتجر والمنتج</h3>
+                    <p className="text-[11px] text-slate-400 font-bold">المعلومات المعتمدة لبرمجة وتجهيز المتجر</p>
+                  </div>
+                </div>
+                {order.store_name && (
+                  <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-black text-xs">
+                    {order.store_name}
+                  </span>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {order.store_name && (
+                  <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10.5px] font-bold text-slate-400 block mb-1">اسم المتجر / صفحة الهبوط:</span>
+                    <strong className="text-xs font-black text-slate-900 block">{order.store_name}</strong>
+                  </div>
+                )}
+
+                {order.product_price && (
+                  <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
+                    <span className="text-[10.5px] font-bold text-emerald-700 block mb-1">ثمن بيع منتجه في المتجر:</span>
+                    <strong className="text-sm font-black font-mono text-emerald-800 block">{order.product_price}</strong>
+                  </div>
+                )}
+
+                {order.order_phone && (
+                  <div className="p-3.5 rounded-2xl bg-cyan-50/80 border border-cyan-200">
+                    <span className="text-[10.5px] font-bold text-cyan-800 block mb-1">هاتف استقبال الطلبيات (WhatsApp):</span>
+                    <strong className="text-xs font-mono font-black text-slate-900 block" dir="ltr">{order.order_phone}</strong>
+                  </div>
+                )}
+              </div>
+
+              {/* Product Images Preview */}
+              {order.product_images && order.product_images.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-slate-100">
+                  <span className="text-[11px] font-bold text-slate-500 block">صور منتج المتجر المرفقة:</span>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {order.product_images.map((imgUrl, idx) => (
+                      <a
+                        key={idx}
+                        href={imgUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 block shadow-xs hover:shadow-md transition-all"
+                      >
+                        <img
+                          src={imgUrl}
+                          alt={`صورة المنتج ${idx + 1}`}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* --- 5. ORDER SUMMARY & DETAILS GRID --- */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             
             {/* Box 1: معلومات الطلب */}
