@@ -1531,7 +1531,7 @@
         ` : '';
 
         return `
-          <tr class="hover:bg-blue-50/40 transition-all border-b border-slate-100/80">
+          <tr onclick="viewOrder('${id}')" class="hover:bg-blue-50/70 transition-all border-b border-slate-100/80 cursor-pointer group/row" title="انقر لعرض تفاصيل الطلب ومعلومات التاجر والمنتج">
             <!-- Col 1: Order ID & Date -->
             <td class="p-3.5">
               <span class="font-mono font-black text-blue-700 block">${num}</span>
@@ -2671,34 +2671,38 @@
       const name = o.customer_name || o.customerName || "تاجر مميز";
       const city = o.customer_city || o.city || "المغرب";
       const phone = o.phone_number || o.customerPhone || "—";
-      const email = o.customer_email || o.email || "";
-      const storeName = o.store_name || "متجر قيد التسمية";
-      const productPrice = o.product_price || "";
-      const orderPhone = o.order_phone || phone;
+      const email = o.customer_email || o.email || "غير محدد";
+      const storeName = o.store_name || o.storeName || "متجر قيد التسمية";
+      const productPrice = o.product_price || o.productPrice || "";
+      const orderPhone = o.order_phone || o.orderPhone || phone;
       const productImages = Array.isArray(o.product_images) ? o.product_images : [];
       const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
       const price = getOrderPrice(o);
-      const method = o.payment_method || "بطاقة بنكية (Carte Bancaire)";
+      const method = o.payment_method || "YouCan Pay 🇲🇦 (بطاقة بنكية)";
       const status = o.status || "pending";
       const deliveredUrl = o.delivered_url || o.deliveredUrl || "";
       const date = o.created_at ? new Date(o.created_at).toLocaleString("ar-MA", { dateStyle: "full", timeStyle: "medium" }) : "مسجل في النظام";
       const notes = o.product_notes || o.productNotes || o.notes || "";
       const privateTrackingUrl = `${apiBase}/order/${id}`;
 
+      const cleanPhone = (phone || "").replace(/[^0-9]/g, "");
+      const waPhone = cleanPhone.startsWith("212") ? cleanPhone : "212" + cleanPhone.replace(/^0/, "");
+      const waLink = cleanPhone ? `https://wa.me/${waPhone}?text=${encodeURIComponent('السلام عليكم أخي ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك (' + num + ').')}` : null;
+
       const cleanOrderPhone = (orderPhone || "").replace(/[^0-9]/g, "");
       const waOrderPhone = cleanOrderPhone.startsWith("212") ? cleanOrderPhone : "212" + cleanOrderPhone.replace(/^0/, "");
-      const waOrderLink = cleanOrderPhone ? `https://wa.me/${waOrderPhone}?text=${encodeURIComponent('السلام عليكم، هذا اختبار رقم استقبال طلبات متجر (' + storeName + ').')}` : null;
+      const waOrderLink = cleanOrderPhone ? `https://wa.me/${waOrderPhone}?text=${encodeURIComponent('السلام عليكم، هذا اختبار رقم استقبال طلبات ومبيعات متجر (' + storeName + ').')}` : null;
 
       const isPending = status === "pending" || !status;
       const isInProgress = status === "in_progress";
       const isCompleted = status === "completed" || status === "paid";
 
       const content = `
-        <!-- TOP DOSSIER HEADER -->
+        <!-- TOP MODAL HEADER -->
         <div class="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
           <div class="flex items-center gap-3.5">
             <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700 text-white font-black text-2xl flex items-center justify-center shadow-[0_10px_25px_rgba(6,182,212,0.4)] shrink-0">
-              <i data-lucide="store" class="w-7 h-7"></i>
+              <i data-lucide="layers" class="w-7 h-7"></i>
               <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-blue-500' : 'bg-amber-500'} border-2 border-white shadow-sm"></span>
             </div>
             <div>
@@ -2708,20 +2712,28 @@
                   ${num}
                 </span>
                 ${isCompleted ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black text-[11px]">مكتمل ومسلّم 🟢</span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black text-[11px] flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>مكتمل ومسلّم 🟢</span>
+                  </span>
                 ` : isInProgress ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-black text-[11px]">جاري التجهيز 🔵</span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-black text-[11px] flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                    <span>جاري التجهيز 🔵</span>
+                  </span>
                 ` : `
-                  <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-black text-[11px]">قيد المراجعة 🟡</span>
+                  <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-black text-[11px] flex items-center gap-1">
+                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                    <span>قيد المراجعة 🟡</span>
+                  </span>
                 `}
               </div>
               <div class="flex items-center gap-2 mt-1">
                 <span class="text-xs text-slate-500 font-bold">${plan}</span>
                 <span class="text-xs text-slate-300">•</span>
-                <button onclick="closeModal(); viewMerchantProfile('${phone || name}')" class="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1 cursor-pointer">
-                  <i data-lucide="user" class="w-3 h-3"></i>
-                  <span>التاجر: ${name} (${city})</span>
-                </button>
+                <span class="text-xs font-mono font-black text-emerald-600">${price.toLocaleString()} د.م</span>
+                <span class="text-xs text-slate-300">•</span>
+                <span class="text-xs text-slate-400 font-medium">${date}</span>
               </div>
             </div>
           </div>
@@ -2731,213 +2743,270 @@
           </button>
         </div>
 
-        <!-- STORE & PRODUCT SPECIFICATIONS GRID -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-          <!-- Item 1: Store Name -->
-          <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
-            <span class="text-[10px] font-bold text-slate-400 block mb-1">اسم المتجر أو صفحة الهبوط:</span>
-            <strong class="font-black text-xs text-slate-900 block truncate">${storeName}</strong>
-            <span class="text-[10px] text-blue-600 font-bold mt-0.5 block">${plan}</span>
-          </div>
-
-          <!-- Item 2: Product Selling Price -->
-          <div class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200">
-            <span class="text-[10px] font-bold text-emerald-700 block mb-1">ثمن بيع منتجه في المتجر:</span>
-            <strong class="font-mono font-black text-sm text-emerald-800 block">${productPrice || "غير محدد"}</strong>
-            <span class="text-[10px] text-emerald-600 font-bold mt-0.5 block">سعر البيع للزبائن بالمغرب</span>
-          </div>
-
-          <!-- Item 3: Order Receiving Phone -->
-          <div class="p-3.5 rounded-2xl bg-cyan-50/70 border border-cyan-200 flex flex-col justify-between">
-            <div>
-              <span class="text-[10px] font-bold text-cyan-800 block mb-1">رقم هاتف استقبال الطلبيات:</span>
-              <strong class="font-mono font-black text-xs text-slate-900 block" dir="ltr">${orderPhone}</strong>
-            </div>
-            ${waOrderLink ? `
-              <div class="mt-2">
-                <a href="${waOrderLink}" target="_blank" class="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-xs transition-all" title="مراسلة واختبار وصول الطلبات إلى هذا الرقم">
-                  <i data-lucide="message-circle" class="w-3 h-3"></i>
-                  <span>اختبار رقم الطلبات</span>
-                </a>
+        <!-- ======================================================== -->
+        <!-- 👤 القسم 1: قسم معلومات التاجر (Merchant Information)      -->
+        <!-- ======================================================== -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-white border-2 border-blue-200/90 shadow-sm space-y-3.5">
+          <div class="flex items-center justify-between border-b border-blue-100 pb-2.5">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-xs">
+                <i data-lucide="user" class="w-4 h-4"></i>
               </div>
-            ` : ''}
+              <div>
+                <h4 class="text-xs sm:text-sm font-black text-slate-900">القسم الأول: معلومات وبيانات التاجر (Merchant Info)</h4>
+                <span class="text-[10px] text-blue-700 font-bold block">الاسم، البريد الإلكتروني، الواتساب، والمدينة بالمغرب</span>
+              </div>
+            </div>
+
+            <button onclick="closeModal(); viewMerchantProfile('${phone || name}')" class="px-3 py-1 rounded-xl bg-white hover:bg-blue-100 text-blue-700 text-[11px] font-bold border border-blue-200 transition-colors flex items-center gap-1 cursor-pointer shadow-2xs">
+              <i data-lucide="id-card" class="w-3 h-3"></i>
+              <span>بروفايل التاجر</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <!-- 1. Name -->
+            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs">
+              <span class="text-[10px] font-bold text-slate-400 block mb-1">الاسم الكامل للتاجر:</span>
+              <strong class="font-black text-xs text-slate-900 block">${name}</strong>
+              <span class="text-[9.5px] text-blue-600 font-bold block mt-0.5">صاحب المشروع</span>
+            </div>
+
+            <!-- 2. Email -->
+            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs">
+              <span class="text-[10px] font-bold text-slate-400 block mb-1">البريد الإلكتروني:</span>
+              <strong class="font-mono font-bold text-xs text-slate-900 block truncate" dir="ltr">${email}</strong>
+              <span class="text-[9.5px] text-purple-600 font-bold block mt-0.5">لإرسال التقارير والفاتورة</span>
+            </div>
+
+            <!-- 3. WhatsApp / Phone -->
+            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs flex flex-col justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 block mb-1">الواتساب / هاتف التاجر:</span>
+                <strong class="font-mono font-black text-xs text-slate-900 block" dir="ltr">${phone}</strong>
+              </div>
+              ${waLink ? `
+                <a href="${waLink}" target="_blank" class="mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[10px] flex items-center justify-center gap-1 transition-colors">
+                  <i data-lucide="message-circle" class="w-3 h-3 text-emerald-600"></i>
+                  <span>مراسلة عبر واتساب</span>
+                </a>
+              ` : ''}
+            </div>
+
+            <!-- 4. City -->
+            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs">
+              <span class="text-[10px] font-bold text-slate-400 block mb-1">المدينة بالمغرب:</span>
+              <strong class="font-black text-xs text-slate-900 block flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3 h-3 text-blue-500"></i>
+                <span>${city}</span>
+              </strong>
+              <span class="text-[9.5px] text-slate-500 font-bold block mt-0.5">المملكة المغربية 🇲🇦</span>
+            </div>
           </div>
         </div>
 
-        <!-- PRODUCT IMAGES GALLERY (معرض صور منتج التاجر) -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
-              <h4 class="text-xs font-black text-slate-900">معرض صور منتج التاجر (${productImages.length} صور)</h4>
+        <!-- ======================================================== -->
+        <!-- 🛍️ القسم 2: قسم معلومات المنتج (الصور، السعر، رقم مبيعاته) -->
+        <!-- ======================================================== -->
+        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-white border-2 border-emerald-200/90 shadow-sm space-y-3.5">
+          <div class="flex items-center justify-between border-b border-emerald-100 pb-2.5">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-xs">
+                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+              </div>
+              <div>
+                <h4 class="text-xs sm:text-sm font-black text-slate-900">القسم الثاني: معلومات ومواصفات المنتج (Product & Store Info)</h4>
+                <span class="text-[10px] text-emerald-700 font-bold block">صور المنتج، ثمن البيع، ورقم الهاتف لاستقبال المبيعات</span>
+              </div>
             </div>
-            <button onclick="addOrderProductImage('${id}')" class="px-3 py-1 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer shadow-xs">
-              <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+
+            <button onclick="addOrderProductImage('${id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 shadow-xs">
+              <i data-lucide="plus" class="w-3 h-3"></i>
               <span>إضافة صورة للمنتج</span>
             </button>
           </div>
 
-          ${productImages.length === 0 ? `
-            <div class="p-5 text-center bg-white rounded-xl border border-dashed border-slate-200">
-              <p class="text-xs text-slate-400 font-bold mb-2">لم يتم إرفاق صور للمنتج بعد</p>
-              <button onclick="addOrderProductImage('${id}')" class="text-xs font-bold text-blue-600 hover:underline inline-flex items-center gap-1 cursor-pointer">
-                <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-                <span>انقر هنا لإضافة أول صورة لمنتج التاجر</span>
-              </button>
-            </div>
-          ` : `
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-              ${productImages.map(img => `
-                <div onclick="openImagePreviewModal('${img}')" class="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 cursor-pointer shadow-xs hover:shadow-md transition-all">
-                  <img src="${img}" alt="صورة المنتج" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
-                  <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                    <i data-lucide="zoom-in" class="w-6 h-6"></i>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          `}
-        </div>
-
-        <!-- NOTES & SPECS -->
-        <div class="p-3.5 rounded-2xl bg-white border border-slate-200">
-          <span class="text-[11px] font-bold text-slate-400 block mb-1">ملاحظات ومتطلبات التجهيز:</span>
-          <p class="text-xs font-bold text-slate-700 leading-relaxed">
-            ${notes || "لا توجد ملاحظات أو متطلبات خاصة مسجلة"}
-          </p>
-        </div>
-
-        <!-- 🌟 THE LUXURY INTERACTIVE STATUS CARDS SELECTOR -->
-        <div class="space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="block text-xs font-black text-slate-900">
-              حالة الطلب (اضغط على أي بطاقة لتغيير وتأكيد الحالة فورياً):
-            </label>
-            <span class="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              تحديث وحفظ فوري
-            </span>
-          </div>
-
+          <!-- Product Details Row: Store Name, Selling Price, Orders Phone -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <!-- 1. PENDING CARD -->
-            <div onclick="selectOrderStatus('${id}', 'pending')" class="group p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${isPending ? 'bg-amber-50/80 border-amber-500 shadow-[0_0_25px_rgba(245,158,11,0.3)] scale-[1.02]' : 'bg-white border-slate-200 hover:border-amber-300 hover:bg-amber-50/30'}">
-              <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 flex items-center justify-center font-bold">
-                  <i data-lucide="hourglass" class="w-5 h-5 ${isPending ? 'animate-pulse text-amber-600' : 'text-slate-400'}"></i>
-                </div>
-                ${isPending ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-black text-[10px] shadow-sm flex items-center gap-1">
-                    <i data-lucide="check" class="w-3 h-3 text-slate-950"></i>
-                    <span>الحالة الحالية</span>
-                  </span>
-                ` : `
-                  <span class="text-[10px] font-bold text-slate-400 group-hover:text-amber-600">اختر هذه الحالة</span>
-                `}
-              </div>
-              <div>
-                <h5 class="font-black text-xs text-slate-900">قيد المراجعة والتدقيق</h5>
-                <p class="text-[10.5px] text-slate-500 mt-1 font-bold leading-tight">تم استلام الطلب وبانتظار التواصل والبدء</p>
-              </div>
+            <!-- 1. Store / Product Name -->
+            <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 shadow-2xs">
+              <span class="text-[10px] font-bold text-slate-400 block mb-1">اسم المتجر أو المنتج:</span>
+              <strong class="font-black text-xs text-slate-900 block truncate">${storeName}</strong>
+              <span class="text-[10px] text-blue-600 font-bold mt-0.5 block">${plan}</span>
             </div>
 
-            <!-- 2. IN PROGRESS CARD -->
-            <div onclick="selectOrderStatus('${id}', 'in_progress')" class="group p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${isInProgress ? 'bg-blue-50/80 border-blue-500 shadow-[0_0_25px_rgba(59,130,246,0.3)] scale-[1.02]' : 'bg-white border-slate-200 hover:border-blue-300 hover:bg-blue-50/30'}">
-              <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-600 flex items-center justify-center font-bold">
-                  <i data-lucide="code-2" class="w-5 h-5 ${isInProgress ? 'animate-pulse text-blue-600' : 'text-slate-400'}"></i>
-                </div>
-                ${isInProgress ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-black text-[10px] shadow-sm flex items-center gap-1">
-                    <i data-lucide="check" class="w-3 h-3 text-white"></i>
-                    <span>الحالة الحالية</span>
-                  </span>
-                ` : `
-                  <span class="text-[10px] font-bold text-slate-400 group-hover:text-blue-600">اختر هذه الحالة</span>
-                `}
-              </div>
-              <div>
-                <h5 class="font-black text-xs text-slate-900">جاري البرمجة والتجهيز</h5>
-                <p class="text-[10.5px] text-slate-500 mt-1 font-bold leading-tight">المتجر قيد التصميم وربط المنتجات والدفع</p>
-              </div>
+            <!-- 2. Product Selling Price -->
+            <div class="p-3.5 rounded-2xl bg-white border border-emerald-200 shadow-2xs">
+              <span class="text-[10px] font-bold text-emerald-700 block mb-1">ثمن بيع المنتج للزبائن:</span>
+              <strong class="font-mono font-black text-sm text-emerald-800 block">${productPrice || "غير محدد"}</strong>
+              <span class="text-[10px] text-emerald-600 font-bold mt-0.5 block">سعر البيع المقترح في المتجر</span>
             </div>
 
-            <!-- 3. COMPLETED CARD -->
-            <div onclick="selectOrderStatus('${id}', 'completed')" class="group p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between gap-3 ${isCompleted ? 'bg-emerald-50/80 border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.35)] scale-[1.02]' : 'bg-white border-slate-200 hover:border-emerald-300 hover:bg-emerald-50/30'}">
-              <div class="flex items-center justify-between">
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 flex items-center justify-center font-bold">
-                  <i data-lucide="check-circle-2" class="w-5 h-5 ${isCompleted ? 'text-emerald-600' : 'text-slate-400'}"></i>
-                </div>
-                ${isCompleted ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-600 text-white font-black text-[10px] shadow-sm flex items-center gap-1">
-                    <i data-lucide="check" class="w-3 h-3 text-white"></i>
-                    <span>الحالة الحالية</span>
-                  </span>
-                ` : `
-                  <span class="text-[10px] font-bold text-slate-400 group-hover:text-emerald-600">اختر هذه الحالة</span>
-                `}
-              </div>
+            <!-- 3. Sales Phone -->
+            <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 shadow-2xs flex flex-col justify-between">
               <div>
-                <h5 class="font-black text-xs text-slate-900">مكتمل ومسلّم للعميل</h5>
-                <p class="text-[10.5px] text-slate-500 mt-1 font-bold leading-tight">تم إنهاء المتجر بالكامل وتسليمه للعميل</p>
+                <span class="text-[10px] font-bold text-slate-400 block mb-1">رقم هاتف استقبال المبيعات والطلبيات:</span>
+                <strong class="font-mono font-black text-xs text-slate-900 block" dir="ltr">${orderPhone}</strong>
               </div>
+              ${waOrderLink ? `
+                <a href="${waOrderLink}" target="_blank" class="mt-2 px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-xs transition-all">
+                  <i data-lucide="message-circle" class="w-3 h-3"></i>
+                  <span>اختبار رقم الطلبيات</span>
+                </a>
+              ` : ''}
             </div>
+          </div>
+
+          <!-- Product Images Gallery -->
+          <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>صور المنتج المرفقة (${productImages.length} صور):</span>
+              </span>
+              <span class="text-[10px] text-slate-400 font-bold">انقر لتكبير أي صورة</span>
+            </div>
+
+            ${productImages.length === 0 ? `
+              <div class="p-4 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
+                <p class="text-xs text-slate-400 font-bold mb-1.5">لم يقم التاجر برفع صور للمنتج بعد</p>
+                <button onclick="addOrderProductImage('${id}')" class="text-xs font-bold text-emerald-700 hover:underline inline-flex items-center gap-1 cursor-pointer">
+                  <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                  <span>انقر هنا لإضافة صورة للمنتج</span>
+                </button>
+              </div>
+            ` : `
+              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+                ${productImages.map(img => `
+                  <div onclick="openImagePreviewModal('${img}')" class="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 cursor-pointer shadow-xs hover:shadow-md transition-all">
+                    <img src="${img}" alt="صورة المنتج" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                      <i data-lucide="zoom-in" class="w-5 h-5"></i>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            `}
+          </div>
+
+          <!-- Product Notes -->
+          <div class="p-3 rounded-2xl bg-white border border-emerald-100">
+            <span class="text-[10px] font-bold text-slate-400 block mb-0.5">ملاحظات التاجر وتفاصيل إضافية:</span>
+            <p class="text-xs font-bold text-slate-700 leading-relaxed">
+              ${notes || "لا توجد ملاحظات إضافية مسجلة من التاجر"}
+            </p>
           </div>
         </div>
 
-        <!-- 🌐 THE CUSTOMER'S PRIVATE LINK SECTION -->
-        <div class="rounded-2xl bg-gradient-to-br from-[#071947] via-[#0b286d] to-[#041238] p-4 sm:p-5 text-white border border-cyan-400/40 shadow-xl space-y-3 relative overflow-hidden">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
-              <h4 class="text-xs sm:text-sm font-black text-cyan-200">رابط تتبع الطلب السري الخاص بهذا المتجر فقط</h4>
+        <!-- ======================================================== -->
+        <!-- 🚀 تسليم المتجر وتحديث الحالة فورياً (Delivered URL + Completed) -->
+        <!-- ======================================================== -->
+        <div class="space-y-3.5">
+          
+          <!-- 1. DELIVERED STORE FINAL URL INPUT FIELD -->
+          <div class="p-4 rounded-3xl bg-slate-50 border-2 border-slate-200/90 space-y-2.5 shadow-2xs">
+            <div class="flex items-center justify-between">
+              <label class="block text-xs font-black text-slate-900 flex items-center gap-1.5">
+                <i data-lucide="globe" class="w-4 h-4 text-cyan-600"></i>
+                <span>خانة رابط المتجر النهائي (Final Store Website URL):</span>
+              </label>
+              <span class="text-[10.5px] text-cyan-700 font-bold bg-cyan-50 px-2 py-0.5 rounded-md">
+                يظهر مباشرة في صفحة تتبع التاجر
+              </span>
             </div>
-            <span class="px-2 py-0.5 rounded-md bg-white/10 text-cyan-300 font-mono text-[10px] font-bold">خاص ومحمي 🔒</span>
-          </div>
 
-          <p class="text-[11px] text-blue-200/80 font-bold">
-            هذا هو الرابط الفريد والمشفر الذي يفتحه العميل لمتابعة حالة متجره واستلامه:
-          </p>
-
-          <div class="flex items-center gap-2">
-            <input type="text" readonly value="${privateTrackingUrl}" class="flex-1 py-2 px-3 rounded-xl bg-black/40 border border-white/20 text-xs font-mono text-cyan-300 font-bold select-all focus:outline-none" dir="ltr">
-            <button onclick="copyCustomerPrivateLink('${id}')" class="px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
-              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-              <span>نسخ الرابط</span>
-            </button>
-          </div>
-
-          <!-- PROMINENT DIRECT ACCESS BUTTON -->
-          <button onclick="openCustomerPrivateLink('${id}')" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-300 hover:to-indigo-500 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_30px_rgba(6,182,212,0.5)] flex items-center justify-center gap-2 hover:scale-[1.01] active:scale-95 transition-all cursor-pointer">
-            <i data-lucide="external-link" class="w-4 h-4 text-slate-950"></i>
-            <span>🚀 الدخول إلى الرابط الخاص به الآن (فتح في المتصفح)</span>
-          </button>
-        </div>
-
-        <!-- DELIVERED STORE LINK SECTION -->
-        <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <label class="block text-xs font-black text-slate-900">
-              رابط المتجر المسلّم للعميل (Delivered Store Website):
-            </label>
-            <span class="text-[10px] text-slate-400 font-bold">رابط YouCan / Shopify / Domain النهائي</span>
-          </div>
-
-          <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-            <input id="dossierDeliveredUrl" type="url" placeholder="مثال: https://mon-magasin-maroc.com" value="${deliveredUrl}" class="flex-1 min-w-[200px] py-2.5 px-3 rounded-xl bg-white border border-slate-200 font-mono text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500" dir="ltr">
-            
-            <button onclick="saveDossierStoreUrl('${id}')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
-              <i data-lucide="save" class="w-3.5 h-3.5"></i>
-              <span>حفظ الرابط</span>
-            </button>
-
-            ${deliveredUrl ? `
-              <button onclick="openCustomerStoreLink('${deliveredUrl}')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
-                <i data-lucide="globe" class="w-3.5 h-3.5"></i>
-                <span>زيارة المتجر</span>
+            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+              <input id="dossierDeliveredUrl" type="url" placeholder="مثال: https://mon-magasin-maroc.com أو رابط YouCan" value="${deliveredUrl}" class="flex-1 min-w-[200px] py-2.5 px-3.5 rounded-xl bg-white border border-slate-300 font-mono text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" dir="ltr">
+              
+              <button onclick="saveDossierStoreUrl('${id}')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
+                <i data-lucide="save" class="w-3.5 h-3.5"></i>
+                <span>حفظ الرابط</span>
               </button>
-            ` : ''}
+
+              ${deliveredUrl ? `
+                <button onclick="openCustomerStoreLink('${deliveredUrl}')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                  <span>زيارة المتجر</span>
+                </button>
+              ` : ''}
+            </div>
           </div>
+
+          <!-- 2. PROMINENT BUTTON: CHANGE STATUS TO COMPLETED -->
+          <div class="p-4 rounded-3xl bg-gradient-to-r from-emerald-950/5 via-teal-950/10 to-emerald-950/5 border-2 border-emerald-400/60 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-2xl ${isCompleted ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]' : 'bg-emerald-500/20 text-emerald-700'} flex items-center justify-center font-bold shrink-0">
+                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
+              </div>
+              <div>
+                <h5 class="text-xs sm:text-sm font-black text-slate-900">
+                  ${isCompleted ? 'حالة الطلب: مكتمل ومسلّم للتاجر بنجاح 🟢' : 'زر تغيير الحالة إلى مكتمل ومسلّم للعميل'}
+                </h5>
+                <p class="text-[11px] text-slate-500 font-bold">
+                  ينعكس هذا الإجراء فورياً على صفحة التتبع السرية للتاجر ويتيح له استلام متجره مباشرة
+                </p>
+              </div>
+            </div>
+
+            <button onclick="selectOrderStatus('${id}', 'completed')" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl ${isCompleted ? 'bg-emerald-600 text-white ring-4 ring-emerald-200 shadow-lg cursor-pointer' : 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 text-slate-950 hover:text-white shadow-[0_0_25px_rgba(16,185,129,0.5)] cursor-pointer'} font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 shrink-0">
+              <i data-lucide="check-check" class="w-4 h-4"></i>
+              <span>${isCompleted ? '✅ الحالة مكتملة حالياً (تأكيد)' : 'تغيير الحالة إلى مكتمل 🟢 (تحديث فوري)'}</span>
+            </button>
+          </div>
+
+          <!-- 3. INTERACTIVE 3-STATUS CARDS (FOR FULL FLEXIBILITY) -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <!-- 1. PENDING -->
+            <div onclick="selectOrderStatus('${id}', 'pending')" class="p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${isPending ? 'bg-amber-50 border-amber-500 shadow-sm' : 'bg-white border-slate-200 hover:border-amber-300'}">
+              <div class="flex items-center gap-2">
+                <i data-lucide="hourglass" class="w-4 h-4 text-amber-600"></i>
+                <span class="text-xs font-black text-slate-900">قيد المراجعة 🟡</span>
+              </div>
+              ${isPending ? `<span class="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">نشطة</span>` : `<span class="text-[10px] font-bold text-slate-400">تغيير</span>`}
+            </div>
+
+            <!-- 2. IN PROGRESS -->
+            <div onclick="selectOrderStatus('${id}', 'in_progress')" class="p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${isInProgress ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-slate-200 hover:border-blue-300'}">
+              <div class="flex items-center gap-2">
+                <i data-lucide="code-2" class="w-4 h-4 text-blue-600"></i>
+                <span class="text-xs font-black text-slate-900">جاري التجهيز 🔵</span>
+              </div>
+              ${isInProgress ? `<span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">نشطة</span>` : `<span class="text-[10px] font-bold text-slate-400">تغيير</span>`}
+            </div>
+
+            <!-- 3. COMPLETED -->
+            <div onclick="selectOrderStatus('${id}', 'completed')" class="p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${isCompleted ? 'bg-emerald-50 border-emerald-500 shadow-sm' : 'bg-white border-slate-200 hover:border-emerald-300'}">
+              <div class="flex items-center gap-2">
+                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+                <span class="text-xs font-black text-slate-900">مكتمل ومسلّم 🟢</span>
+              </div>
+              ${isCompleted ? `<span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">نشطة</span>` : `<span class="text-[10px] font-bold text-slate-400">تغيير</span>`}
+            </div>
+          </div>
+
+          <!-- 4. MERCHANT PRIVATE TRACKING LINK CAPSULE -->
+          <div class="rounded-2xl bg-gradient-to-br from-[#071947] via-[#0b286d] to-[#041238] p-3.5 sm:p-4 text-white border border-cyan-400/40 shadow-md space-y-2.5">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="text-xs font-black text-cyan-200">رابط تتبع الطلب السري الخاص بالتاجر (UUID):</span>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-white/10 text-cyan-300 font-mono text-[10px] font-bold">محمي 🔒</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <input type="text" readonly value="${privateTrackingUrl}" class="flex-1 py-1.5 px-3 rounded-xl bg-black/40 border border-white/20 text-xs font-mono text-cyan-300 font-bold select-all focus:outline-none" dir="ltr">
+              <button onclick="copyCustomerPrivateLink('${id}')" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span>نسخ</span>
+              </button>
+              <button onclick="openCustomerPrivateLink('${id}')" class="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
+                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <span>فتح بالمتصفح</span>
+              </button>
+            </div>
+          </div>
+
         </div>
 
         <!-- BOTTOM ACTIONS -->

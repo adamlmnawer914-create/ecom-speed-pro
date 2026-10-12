@@ -3,84 +3,39 @@
     "id": "435b8315-43f3-48c4-bde7-ca5fc80ef2e5",
     "order_number": "#ESP-58802",
     "customer_name": "ياسين الفاسي",
-    "customer_city": "فاس (Fès)",
     "phone_number": "0677889900",
-    "customer_email": "yassine.fassi@gmail.com",
-    "store_name": "متجر القفطان الملكي الفاسي (Caftan Royal Fès)",
-    "product_price": "850 د.م",
-    "order_phone": "0677889900",
     "plan_tier": "المتجر القياسي (1,500 MAD)",
-    "status": "pending",
+    "status": "completed",
     "delivered_url": null,
     "payment_method": "الأداء بالبطاقة البنكية",
-    "product_notes": "نريد تصميماً فخماً يعكس أصالة القفطان المغربي، مع زر واتساب مباشر وسرعة فائقة في التحميل على الهاتف.",
-    "product_images": [
-      "https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=600&auto=format&fit=crop"
-    ],
-    "created_at": "2026-10-12T11:20:02.766Z"
+    "product_notes": "",
+    "product_images": [],
+    "created_at": "2026-10-11T14:12:02.766Z"
   },
   {
     "id": "6a0de3c5-d89a-4e19-a578-bff77eb9b2f5",
     "order_number": "#ESP-102",
-    "customer_name": "كريم الطنجاوي",
-    "customer_city": "طنجة (Tanger)",
-    "phone_number": "0661223344",
-    "customer_email": "karim.tanger@gmail.com",
-    "store_name": "ساعات وإكسسوارات الفخامة (Luxury Watches Tangier)",
-    "product_price": "349 د.م",
-    "order_phone": "0661223344",
-    "plan_tier": "صفحة هبوط احترافية (500 MAD)",
-    "status": "in_progress",
+    "customer_name": "Test Customer",
+    "phone_number": "0612345678",
+    "plan_tier": "Standard",
+    "status": "pending",
     "delivered_url": null,
-    "payment_method": "بطاقة بنكية (Carte Bancaire)",
-    "product_notes": "نريد صفحة هبوط سريعة جداً ومركزة مع مراجعات الزبائن بالفيديو ومؤقت تنازلي للعرض الخاص.",
-    "product_images": [
-      "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&auto=format&fit=crop"
-    ],
-    "created_at": "2026-10-12T09:40:00.319Z"
+    "payment_method": "بطاقة بنكية",
+    "product_notes": "",
+    "product_images": [],
+    "created_at": "2026-10-11T14:02:00.319Z"
   },
   {
     "id": "7ea18325-9a98-45e8-9261-6a0ff160c8af",
     "order_number": "#ESP-101",
-    "customer_name": "سارة المنصوري",
-    "customer_city": "مراكش (Marrakech)",
-    "phone_number": "0655443322",
-    "customer_email": "sara.marrakech@gmail.com",
-    "store_name": "مستحضرات أركان العضوية (Bio Argan Marrakech)",
-    "product_price": "189 د.م",
-    "order_phone": "0655443322",
-    "plan_tier": "المتجر القياسي (1,500 MAD)",
-    "status": "completed",
-    "delivered_url": "https://bioarganmarrakech.youcan.shop",
-    "payment_method": "الأداء بالبطاقة البنكية (Carte Bancaire)",
-    "product_notes": "المتجر القياسي، مع ربط بيكسل تيك توك وفيسبوك، وألوان طبيعية راقية ذهبي وأخضر زمردي.",
-    "product_images": [
-      "https://images.unsplash.com/photo-1608248597359-52d3a958a74e?w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&auto=format&fit=crop"
-    ],
-    "created_at": "2026-10-11T13:49:17.838Z"
-  },
-  {
-    "id": "9b12e456-789a-bcde-f012-3456789abcde",
-    "order_number": "#ESP-100",
-    "customer_name": "حمزة البيضاوي",
-    "customer_city": "الدار البيضاء (Casablanca)",
+    "customer_name": "Ahmad",
     "phone_number": "0612345678",
-    "customer_email": "hamza.casa@gmail.com",
-    "store_name": "إلكترونيات سمارت شوب (Smart Electronics Maroc)",
-    "product_price": "450 د.م",
-    "order_phone": "0612345678",
-    "plan_tier": "النظام المتكامل VIP (5,000 MAD)",
-    "status": "completed",
-    "delivered_url": "https://smartelectronics.ma",
-    "payment_method": "تحويل بنكي (Virement Bancaire)",
-    "product_notes": "نظام متكامل VIP، ربط بوابة الدفع CMI، وأداء سريع جداً، مع لوحة تتبع المخزون والطلبات.",
-    "product_images": [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=600&auto=format&fit=crop"
-    ],
-    "created_at": "2026-10-10T16:15:30.000Z"
+    "plan_tier": "المتجر القياسي (Standard Store)",
+    "status": "pending",
+    "delivered_url": null,
+    "payment_method": "الأداء بالبطاقة البنكية (Paiement sécurisé par Carte Bancaire)",
+    "product_notes": "",
+    "product_images": [],
+    "created_at": "2026-10-11T13:49:17.838Z"
   }
 ]
