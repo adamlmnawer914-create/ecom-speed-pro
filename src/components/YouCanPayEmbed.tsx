@@ -125,14 +125,24 @@ export default function YouCanPayEmbed({
     setError(null);
     try {
       await ycPayRef.current.pay(tokenId);
-      // On success YouCan Pay will redirect to success_url.
-      // But also call onSuccess so our modal can show tracking screen.
+
+      // Confirm order status in database & notify real-time admin broadcast
+      try {
+        await fetch("/api/payment/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: createdOrderId }),
+        });
+      } catch (confirmErr) {
+        console.warn("Payment confirm broadcast warning:", confirmErr);
+      }
+
+      // Fetch freshest order data
       const res = await fetch(`/api/orders?id=${createdOrderId}`);
       const data = await res.json();
       if (data.success && data.order) {
         onSuccess(data.order);
       } else {
-        // Fallback — construct a minimal order object so redirect still works
         onSuccess({ id: createdOrderId, order_number: "#ESP-" + createdOrderId.slice(0, 6).toUpperCase() });
       }
     } catch (err: any) {
@@ -182,26 +192,28 @@ export default function YouCanPayEmbed({
         </div>
       )}
 
-      {/* Loading skeleton */}
-      {isLoading && !error && (
-        <div className="flex flex-col items-center gap-2 py-6">
-          <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
-          <span className="text-xs text-cyan-200 font-bold">
-            جاري تهيئة بوابة الدفع الآمن...
-          </span>
-        </div>
-      )}
-
       {/* YouCan Pay error messages */}
       <div id="ycpay-error-container" className="text-xs text-rose-300 font-bold" />
 
-      {/* YouCan Pay credit card form — rendered by ycpay.js */}
-      <div
-        id="ycpay-form-container"
-        ref={containerRef}
-        className={isLoading ? "opacity-0 h-0 overflow-hidden" : "opacity-100 transition-opacity duration-300"}
-        style={{ direction: "ltr" }}
-      />
+      {/* Form Container with high-contrast background & loading overlay */}
+      <div className="relative w-full rounded-2xl bg-white p-3 sm:p-4 shadow-inner min-h-[160px]">
+        {isLoading && !error && (
+          <div className="absolute inset-0 bg-[#071a48]/95 rounded-2xl flex flex-col items-center justify-center gap-2 z-10 backdrop-blur-sm">
+            <Loader2 className="w-7 h-7 text-cyan-400 animate-spin" />
+            <span className="text-xs text-cyan-200 font-bold">
+              جاري تهيئة بوابة الدفع الآمن YouCan Pay...
+            </span>
+          </div>
+        )}
+
+        {/* YouCan Pay credit card form — rendered by ycpay.js */}
+        <div
+          id="ycpay-form-container"
+          ref={containerRef}
+          className="w-full min-h-[140px] text-slate-900"
+          style={{ direction: "ltr" }}
+        />
+      </div>
 
       {/* Pay Button */}
       {!isLoading && (

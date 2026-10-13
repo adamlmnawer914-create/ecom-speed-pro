@@ -3,7 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   ShieldCheck,
   Clock,
@@ -64,13 +64,26 @@ function OrderTrackingSkeleton() {
 
 function OrderTrackingContent() {
   const routerParams = useParams();
+  const searchParams = useSearchParams();
   const orderId = (routerParams?.id as string) || "";
+  const isPaymentSuccess = searchParams?.get("payment") === "success";
 
   const [order, setOrder] = useState<OrderData | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
   const [lastCheck, setLastCheck] = useState("");
+
+  // If redirected with ?payment=success, confirm payment in DB & trigger real-time broadcast
+  useEffect(() => {
+    if (isPaymentSuccess && orderId) {
+      fetch("/api/payment/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId }),
+      }).catch((e) => console.warn("Payment auto-confirm warning:", e));
+    }
+  }, [isPaymentSuccess, orderId]);
 
   const fetchOrder = async () => {
     try {
@@ -354,6 +367,28 @@ function OrderTrackingContent() {
         {/* ======================================================== */}
         <main className="rounded-[32px] bg-gradient-to-b from-[#f8fbff]/95 via-[#f1f6fd]/95 to-[#e8f1fc]/95 border-2 border-white/80 shadow-[0_25px_70px_rgba(0,25,80,0.3)] p-5 sm:p-7 lg:p-9 flex flex-col gap-7 backdrop-blur-2xl">
           
+          {/* --- PAYMENT SUCCESS CELEBRATION BANNER --- */}
+          {isPaymentSuccess && (
+            <div className="rounded-2xl bg-gradient-to-r from-emerald-500/15 via-teal-500/15 to-cyan-500/15 border-2 border-emerald-500/40 p-4 sm:p-5 flex items-center gap-4 animate-in zoom-in-95 duration-500 shadow-[0_10px_30px_rgba(16,185,129,0.15)]">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30">
+                <CheckCircle2 className="w-7 h-7" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-xs sm:text-sm font-black text-emerald-800">
+                    🎉 تم تأكيد الدفع بنجاح عبر YouCan Pay!
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
+                    معتمد 100%
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-600 font-bold leading-relaxed">
+                  تم استلام دفعتك بنجاح، وبدأ فريق المهندسين فوراً في تجهيز وبرمجة متجرك الإلكتروني. تابع مراحل الإنجاز أدناه.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* --- 1. HERO ORDER STATUS CARD --- */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-blue-100 pb-5">
             <div>
