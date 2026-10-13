@@ -1102,11 +1102,9 @@
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">طريقة الدفع</label>
+            <label class="block font-bold text-slate-700 mb-1">طريقة الدفع المعتمدة</label>
             <select id="inputNewOrderPayment" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
-              <option value="بطاقة بنكية (Carte Bancaire)">الأداء بالبطاقة البنكية (Carte Bancaire)</option>
-              <option value="الدفع عند الاستلام (COD)">الدفع عند الاستلام (COD)</option>
-              <option value="تحويل بنكي (Virement)">تحويل بنكي (Virement)</option>
+              <option value="YouCan Pay 🇲🇦 (Carte Bancaire)">YouCan Pay 🇲🇦 (بطاقة بنكية / CMI)</option>
             </select>
           </div>
         </div>
@@ -1135,38 +1133,58 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- MODAL: QUICK STORE URL MODAL (رابط المتجر المسلّم) -->
+  <!-- MODAL: QUICK STORE URL MODAL (تسليم الطلب الآن) -->
+  <!-- نافذة أكبر حجماً ومريحة للرؤية بطلب المستخدم               -->
   <!-- ========================================== -->
-  <div id="quickStoreUrlModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 text-right animate-in zoom-in-95 duration-200">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-xl bg-cyan-50 text-cyan-600 flex items-center justify-center">
-            <i data-lucide="globe" class="w-5 h-5"></i>
+  <div id="quickStoreUrlModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-md hidden items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-[32px] max-w-xl sm:max-w-2xl w-full p-7 sm:p-8 shadow-2xl border-2 border-slate-200 text-right animate-in zoom-in-95 duration-200 space-y-5 my-auto">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div class="flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/25 shrink-0">
+            <i data-lucide="rocket" class="w-6 h-6"></i>
           </div>
           <div>
-            <h3 class="text-base font-black text-slate-900">رابط متجر العميل المسلّم</h3>
-            <p class="text-[11px] text-slate-400 font-bold">تسليم رابط المتجر النهائي للعميل</p>
+            <h3 class="text-lg sm:text-xl font-black text-slate-900">تسليم الطلب الآن للعميل</h3>
+            <p class="text-xs text-slate-500 font-bold mt-0.5">إدخال رابط المتجر النهائي وتحديث حالة صفحة التتبع فوراً</p>
           </div>
         </div>
-        <button onclick="closeQuickStoreUrlModal()" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 cursor-pointer">
+        <button onclick="closeQuickStoreUrlModal()" class="w-10 h-10 rounded-2xl hover:bg-slate-100 text-slate-500 hover:text-slate-900 flex items-center justify-center cursor-pointer transition-colors">
           <i data-lucide="x" class="w-5 h-5"></i>
         </button>
       </div>
 
+      <div id="quickDeliveryOrderSummary" class="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs sm:text-sm">
+        <!-- Injected dynamically -->
+      </div>
+
       <input type="hidden" id="quickStoreOrderId">
-      <div class="space-y-3 text-xs">
+      <div class="space-y-4 text-xs sm:text-sm">
         <div>
-          <label class="block font-bold text-slate-700 mb-1.5">أدخل رابط المتجر الإلكتروني (YouCan / Shopify / Domain):</label>
-          <input id="quickStoreInputUrl" type="url" placeholder="مثال: https://mon-magasin-maroc.com" class="w-full py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 font-mono text-slate-800 text-xs focus:outline-none focus:border-cyan-500" dir="ltr">
-          <p class="text-[10.5px] text-slate-400 mt-1 font-bold">هذا الرابط سيظهر للعميل في صفحته الخاصة لمتابعة واستلام متجره.</p>
+          <label class="block font-black text-slate-900 mb-2 flex items-center gap-2">
+            <i data-lucide="globe" class="w-4 h-4 text-blue-600"></i>
+            <span>رابط المتجر النهائي (Final Store Website URL):</span>
+          </label>
+          <input id="quickStoreInputUrl" type="url" placeholder="مثال: https://mon-magasin-maroc.com أو رابط YouCan" class="w-full py-3.5 px-4 rounded-2xl bg-slate-50 border-2 border-slate-200 font-mono text-slate-900 text-sm font-bold focus:outline-none focus:border-blue-600 focus:bg-white shadow-inner transition-all" dir="ltr">
+          <p class="text-xs text-slate-500 mt-1.5 font-bold">⚡ هذا الرابط سيظهر للعميل فوراً في صفحته الخاصة لمتابعة واستلام متجره.</p>
         </div>
 
-        <div class="mt-5 pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-          <button type="button" onclick="closeQuickStoreUrlModal()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold cursor-pointer">إلغاء</button>
-          <button type="button" onclick="saveQuickStoreUrl()" class="px-5 py-2 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 text-white font-black shadow-md cursor-pointer flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all">
-            <i data-lucide="save" class="w-4 h-4"></i>
-            <span>حفظ الرابط الآن</span>
+        <div>
+          <label class="block font-black text-slate-900 mb-2 flex items-center gap-2">
+            <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+            <span>قائمة اختيار حالة التسليم:</span>
+          </label>
+          <select id="quickStoreDeliveryStatus" class="w-full py-3.5 px-4 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs sm:text-sm font-black text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white cursor-pointer shadow-inner transition-all">
+            <option value="completed">🟢 مكتمل ومسلّم (المتجر جاهز وتم التسليم النهائي للعميل)</option>
+            <option value="in_progress">🔵 جاهز / جاري التجهيز (المتجر قيد المعاينة والتسليم)</option>
+          </select>
+          <p class="text-xs text-slate-500 mt-1.5 font-bold">تحديث الحالة ينعكس فورياً في صفحة التتبع لدى العميل.</p>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+          <button type="button" onclick="closeQuickStoreUrlModal()" class="px-5 py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm cursor-pointer transition-colors">إلغاء</button>
+          <button type="button" onclick="saveQuickStoreUrl()" class="px-7 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white font-black text-xs sm:text-sm shadow-lg shadow-emerald-600/25 cursor-pointer flex items-center gap-2 hover:scale-105 active:scale-95 transition-all">
+            <i data-lucide="rocket" class="w-4 h-4"></i>
+            <span>تسليم الطلب الآن 🚀</span>
           </button>
         </div>
       </div>
@@ -1539,27 +1557,15 @@
               <span class="text-[10px] text-slate-400 font-bold">${date}</span>
             </td>
 
-            <!-- Col 2: Merchant & City -->
+            <!-- Col 2: Merchant -->
             <td class="p-3.5">
-              <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 text-blue-700 font-black text-xs flex items-center justify-center border border-blue-200 shrink-0">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
                   ${name.charAt(0) || "ت"}
                 </div>
                 <div>
-                  <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="font-black text-slate-900 block">${name}</span>
-                    <span class="inline-flex items-center gap-0.5 text-[9.5px] font-bold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded">
-                      <i data-lucide="map-pin" class="w-2.5 h-2.5 text-blue-500"></i>
-                      <span>${city}</span>
-                    </span>
-                  </div>
-                  <div class="flex items-center gap-2 mt-0.5">
-                    <span class="text-[10px] text-slate-400 font-mono font-bold" dir="ltr">${phone}</span>
-                    <button onclick="event.stopPropagation(); viewMerchantProfile('${phone || name}')" class="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-0.5 cursor-pointer" title="فتح الملف الشخصي للتاجر">
-                      <i data-lucide="user" class="w-2.5 h-2.5"></i>
-                      <span>بروفايل التاجر</span>
-                    </button>
-                  </div>
+                  <span class="font-black text-slate-900 block text-xs">${name}</span>
+                  <span class="text-[10.5px] text-slate-400 font-mono font-bold block mt-0.5" dir="ltr">${phone}</span>
                 </div>
               </div>
             </td>
@@ -1588,11 +1594,11 @@
             <!-- Col 5: Price -->
             <td class="p-3.5 font-mono font-black text-emerald-600 text-xs">${price.toLocaleString()} د.م</td>
 
-            <!-- Col 6: Payment Gateway -->
+            <!-- Col 6: Payment Gateway (YouCan Pay strictly) -->
             <td class="p-3.5">
-              <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-cyan-50 text-cyan-700 border border-cyan-200">
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-50 text-cyan-800 border border-cyan-200">
                 <i data-lucide="credit-card" class="w-3 h-3 text-cyan-600"></i>
-                <span>${o.payment_method || "YouCan Pay 🇲🇦"}</span>
+                <span>YouCan Pay 🇲🇦</span>
               </span>
             </td>
 
@@ -1608,26 +1614,32 @@
               </div>
             </td>
 
-            <!-- Col 7: Status -->
+            <!-- Col 8: Status -->
             <td class="p-3.5">
               ${statusSelector}
             </td>
 
-            <!-- Col 8: Delivered Store URL -->
+            <!-- Col 9: Delivered Store URL -->
             <td class="p-3.5">
               ${storeCell}
             </td>
 
-            <!-- Col 9: Distinct Actions -->
-            <td class="p-3.5 text-center flex items-center justify-center gap-1" onclick="event.stopPropagation();">
+            <!-- Col 10: Distinct Actions (with 'تسليم الطلب الآن' at the far left) -->
+            <td class="p-3.5 text-center flex items-center justify-center gap-1.5 flex-nowrap" onclick="event.stopPropagation();">
+              <!-- Required Feature: تسليم الطلب الآن -->
+              <button onclick="openQuickStoreUrlModal('${id}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1.5 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0" title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً">
+                <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+                <span>تسليم الطلب الآن</span>
+              </button>
+
               <!-- Action 1: Merchant Profile -->
-              <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="الملف الشخصي للتاجر (اسمه، مدينته، هاتف، معلوماته)">
+              <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="الملف الشخصي للتاجر (اسمه، مدينته، هاتف، معلوماته)">
                 <i data-lucide="user" class="w-3 h-3 text-blue-600"></i>
                 <span>ملف التاجر</span>
               </button>
 
               <!-- Action 2: Store & Order Dossier -->
-              <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="تفاصيل طلب المتجر ومشروعه (صور المنتج، ثمنه، ورابط التتبع)">
+              <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="تفاصيل طلب المتجر ومشروعه (صور المنتج، ثمنه، ورقم الطلبات)">
                 <i data-lucide="store" class="w-3 h-3 text-slate-700"></i>
                 <span>طلب المتجر</span>
               </button>
@@ -2707,190 +2719,100 @@
       const isCompleted = status === "completed" || status === "paid";
 
       const content = `
-        <!-- TOP MODAL HEADER -->
-        <div class="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
-          <div class="flex items-center gap-3.5">
-            <div class="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700 text-white font-black text-2xl flex items-center justify-center shadow-[0_10px_25px_rgba(6,182,212,0.4)] shrink-0">
-              <i data-lucide="layers" class="w-7 h-7"></i>
-              <span class="absolute -bottom-1 -right-1 w-4 h-4 rounded-full ${isCompleted ? 'bg-emerald-500' : isInProgress ? 'bg-blue-500' : 'bg-amber-500'} border-2 border-white shadow-sm"></span>
-            </div>
-            <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-xl sm:text-2xl font-black text-slate-900">${storeName}</h3>
-                <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono font-black text-xs">
-                  ${num}
-                </span>
-                ${isCompleted ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-black text-[11px] flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>مكتمل ومسلّم 🟢</span>
-                  </span>
-                ` : isInProgress ? `
-                  <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 font-black text-[11px] flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                    <span>جاري التجهيز 🔵</span>
-                  </span>
-                ` : `
-                  <span class="px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-black text-[11px] flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                    <span>قيد المراجعة 🟡</span>
-                  </span>
-                `}
-              </div>
-              <div class="flex items-center gap-2 mt-1">
-                <span class="text-xs text-slate-500 font-bold">${plan}</span>
-                <span class="text-xs text-slate-300">•</span>
-                <span class="text-xs font-mono font-black text-emerald-600">${price.toLocaleString()} د.م</span>
-                <span class="text-xs text-slate-300">•</span>
-                <span class="text-xs text-slate-400 font-medium">${date}</span>
-              </div>
-            </div>
-          </div>
-
-          <button onclick="closeModal()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-all cursor-pointer">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-
         <!-- ======================================================== -->
-        <!-- 👤 القسم 1: قسم معلومات التاجر (Merchant Information)      -->
+        <!-- 🏪 متطلبات وتفاصيل طلب المتجر (Store Requirements Only)     -->
+        <!-- خلفية بيضاء فخمة وواضحة جداً تحتوي فقط على متطلبات المتجر   -->
         <!-- ======================================================== -->
-        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-blue-50/70 via-indigo-50/40 to-white border-2 border-blue-200/90 shadow-sm space-y-3.5">
-          <div class="flex items-center justify-between border-b border-blue-100 pb-2.5">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold shadow-xs">
-                <i data-lucide="user" class="w-4 h-4"></i>
+        <div class="space-y-5 text-right">
+          
+          <!-- TOP MODAL HEADER -->
+          <div class="flex items-start justify-between gap-3 pb-4 border-b border-slate-100">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white font-black text-2xl flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+                <i data-lucide="store" class="w-6 h-6"></i>
               </div>
               <div>
-                <h4 class="text-xs sm:text-sm font-black text-slate-900">القسم الأول: معلومات وبيانات التاجر (Merchant Info)</h4>
-                <span class="text-[10px] text-blue-700 font-bold block">الاسم، البريد الإلكتروني، الواتساب، والمدينة بالمغرب</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="text-lg sm:text-xl font-black text-slate-900">متطلبات وتفاصيل المتجر: ${storeName}</h3>
+                  <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono font-black text-xs">
+                    ${num}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-500 font-bold mt-0.5">
+                  باقة: ${plan} • التاجر: ${name}
+                </p>
               </div>
             </div>
 
-            <button onclick="closeModal(); viewMerchantProfile('${phone || name}')" class="px-3 py-1 rounded-xl bg-white hover:bg-blue-100 text-blue-700 text-[11px] font-bold border border-blue-200 transition-colors flex items-center gap-1 cursor-pointer shadow-2xs">
-              <i data-lucide="id-card" class="w-3 h-3"></i>
-              <span>بروفايل التاجر</span>
+            <button onclick="closeModal()" class="w-10 h-10 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 flex items-center justify-center cursor-pointer transition-colors" title="إغلاق النافذة">
+              <i data-lucide="x" class="w-5 h-5"></i>
             </button>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <!-- 1. Name -->
-            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs">
-              <span class="text-[10px] font-bold text-slate-400 block mb-1">الاسم الكامل للتاجر:</span>
-              <strong class="font-black text-xs text-slate-900 block">${name}</strong>
-              <span class="text-[9.5px] text-blue-600 font-bold block mt-0.5">صاحب المشروع</span>
-            </div>
-
-            <!-- 2. Email -->
-            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs">
-              <span class="text-[10px] font-bold text-slate-400 block mb-1">البريد الإلكتروني:</span>
-              <strong class="font-mono font-bold text-xs text-slate-900 block truncate" dir="ltr">${email}</strong>
-              <span class="text-[9.5px] text-purple-600 font-bold block mt-0.5">لإرسال التقارير والفاتورة</span>
-            </div>
-
-            <!-- 3. WhatsApp / Phone -->
-            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs flex flex-col justify-between">
-              <div>
-                <span class="text-[10px] font-bold text-slate-400 block mb-1">الواتساب / هاتف التاجر:</span>
-                <strong class="font-mono font-black text-xs text-slate-900 block" dir="ltr">${phone}</strong>
-              </div>
-              ${waLink ? `
-                <a href="${waLink}" target="_blank" class="mt-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[10px] flex items-center justify-center gap-1 transition-colors">
-                  <i data-lucide="message-circle" class="w-3 h-3 text-emerald-600"></i>
-                  <span>مراسلة عبر واتساب</span>
-                </a>
-              ` : ''}
-            </div>
-
-            <!-- 4. City -->
-            <div class="p-3 rounded-2xl bg-white border border-blue-100 shadow-2xs">
-              <span class="text-[10px] font-bold text-slate-400 block mb-1">المدينة بالمغرب:</span>
-              <strong class="font-black text-xs text-slate-900 block flex items-center gap-1">
-                <i data-lucide="map-pin" class="w-3 h-3 text-blue-500"></i>
-                <span>${city}</span>
-              </strong>
-              <span class="text-[9.5px] text-slate-500 font-bold block mt-0.5">المملكة المغربية 🇲🇦</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- 🛍️ القسم 2: قسم معلومات المنتج (الصور، السعر، رقم مبيعاته) -->
-        <!-- ======================================================== -->
-        <div class="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-emerald-50/70 via-teal-50/40 to-white border-2 border-emerald-200/90 shadow-sm space-y-3.5">
-          <div class="flex items-center justify-between border-b border-emerald-100 pb-2.5">
-            <div class="flex items-center gap-2.5">
-              <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold shadow-xs">
-                <i data-lucide="shopping-bag" class="w-4 h-4"></i>
-              </div>
-              <div>
-                <h4 class="text-xs sm:text-sm font-black text-slate-900">القسم الثاني: معلومات ومواصفات المنتج (Product & Store Info)</h4>
-                <span class="text-[10px] text-emerald-700 font-bold block">صور المنتج، ثمن البيع، ورقم الهاتف لاستقبال المبيعات</span>
-              </div>
-            </div>
-
-            <button onclick="addOrderProductImage('${id}')" class="px-3 py-1 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition-all cursor-pointer flex items-center gap-1 shadow-xs">
-              <i data-lucide="plus" class="w-3 h-3"></i>
-              <span>إضافة صورة للمنتج</span>
-            </button>
-          </div>
-
-          <!-- Product Details Row: Store Name, Selling Price, Orders Phone -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <!-- 1. Store Name, Selling Price & Orders WhatsApp Grid -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
             <!-- 1. Store / Product Name -->
-            <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 shadow-2xs">
-              <span class="text-[10px] font-bold text-slate-400 block mb-1">اسم المتجر أو المنتج:</span>
-              <strong class="font-black text-xs text-slate-900 block truncate">${storeName}</strong>
-              <span class="text-[10px] text-blue-600 font-bold mt-0.5 block">${plan}</span>
+            <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200/80 shadow-xs space-y-1">
+              <span class="text-[11px] font-black text-slate-500 block flex items-center gap-1.5">
+                <i data-lucide="store" class="w-3.5 h-3.5 text-blue-600"></i>
+                <span>اسم متجر التاجر / المنتج:</span>
+              </span>
+              <strong class="font-black text-xs sm:text-sm text-slate-900 block truncate pt-0.5">${storeName}</strong>
+              <span class="text-[10px] text-blue-600 font-bold block">${plan}</span>
             </div>
 
             <!-- 2. Product Selling Price -->
-            <div class="p-3.5 rounded-2xl bg-white border border-emerald-200 shadow-2xs">
-              <span class="text-[10px] font-bold text-emerald-700 block mb-1">ثمن بيع المنتج للزبائن:</span>
-              <strong class="font-mono font-black text-sm text-emerald-800 block">${productPrice || "غير محدد"}</strong>
-              <span class="text-[10px] text-emerald-600 font-bold mt-0.5 block">سعر البيع المقترح في المتجر</span>
+            <div class="p-4 rounded-2xl bg-emerald-50/60 border-2 border-emerald-200 shadow-xs space-y-1">
+              <span class="text-[11px] font-black text-emerald-800 block flex items-center gap-1.5">
+                <i data-lucide="tag" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span>ثمن بيع المنتج للزبائن:</span>
+              </span>
+              <strong class="font-mono font-black text-sm sm:text-base text-emerald-700 block pt-0.5">${productPrice || "غير محدد"}</strong>
+              <span class="text-[10px] text-emerald-600 font-bold block">سعر البيع المعروض في المتجر</span>
             </div>
 
             <!-- 3. Sales Phone -->
-            <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 shadow-2xs flex flex-col justify-between">
+            <div class="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200/80 shadow-xs flex flex-col justify-between">
               <div>
-                <span class="text-[10px] font-bold text-slate-400 block mb-1">رقم هاتف استقبال المبيعات والطلبيات:</span>
+                <span class="text-[11px] font-black text-slate-500 block flex items-center gap-1.5 mb-1">
+                  <i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <span>رقم استقبال الطلبيات:</span>
+                </span>
                 <strong class="font-mono font-black text-xs text-slate-900 block" dir="ltr">${orderPhone}</strong>
               </div>
               ${waOrderLink ? `
-                <a href="${waOrderLink}" target="_blank" class="mt-2 px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] flex items-center justify-center gap-1 shadow-xs transition-all">
-                  <i data-lucide="message-circle" class="w-3 h-3"></i>
-                  <span>اختبار رقم الطلبيات</span>
+                <a href="${waOrderLink}" target="_blank" class="mt-2.5 py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10.5px] flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer">
+                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  <span>اختبار ومراسلة واتساب</span>
                 </a>
               ` : ''}
             </div>
           </div>
 
-          <!-- Product Images Gallery -->
-          <div class="p-3.5 rounded-2xl bg-white border border-emerald-100 space-y-2">
+          <!-- 2. Product Images Gallery -->
+          <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 border-2 border-slate-200/80 space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-xs font-black text-slate-900 flex items-center gap-1.5">
-                <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-600"></i>
-                <span>صور المنتج المرفقة (${productImages.length} صور):</span>
+              <span class="text-xs sm:text-sm font-black text-slate-900 flex items-center gap-2">
+                <i data-lucide="image" class="w-4 h-4 text-blue-600"></i>
+                <span>صور المنتج المرفوعة من التاجر:</span>
               </span>
-              <span class="text-[10px] text-slate-400 font-bold">انقر لتكبير أي صورة</span>
+              <span class="text-[11px] font-bold text-slate-500">
+                ${productImages.length > 0 ? `${productImages.length} صور مرفوعة • اضغط لتكبير أي صورة` : "لا توجد صور مرفوعة"}
+              </span>
             </div>
 
             ${productImages.length === 0 ? `
-              <div class="p-4 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200">
-                <p class="text-xs text-slate-400 font-bold mb-1.5">لم يقم التاجر برفع صور للمنتج بعد</p>
-                <button onclick="addOrderProductImage('${id}')" class="text-xs font-bold text-emerald-700 hover:underline inline-flex items-center gap-1 cursor-pointer">
-                  <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
-                  <span>انقر هنا لإضافة صورة للمنتج</span>
-                </button>
+              <div class="p-6 text-center bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                <i data-lucide="image" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
+                <p class="text-xs text-slate-400 font-bold">لم يقم التاجر برفع صور للمنتج بعد (يمكنه إرسالها لك عبر واتساب)</p>
               </div>
             ` : `
-              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-2.5">
+              <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-3 pt-1">
                 ${productImages.map(img => `
-                  <div onclick="openImagePreviewModal('${img}')" class="group relative rounded-xl overflow-hidden border border-slate-200 aspect-square bg-slate-100 cursor-pointer shadow-xs hover:shadow-md transition-all">
+                  <div onclick="openImagePreviewModal('${img}')" class="group relative rounded-2xl overflow-hidden border-2 border-slate-200 aspect-square bg-white cursor-pointer shadow-xs hover:shadow-lg transition-all hover:scale-105" title="اضغط لتكبير صورة المنتج">
                     <img src="${img}" alt="صورة المنتج" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                     <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                      <i data-lucide="zoom-in" class="w-5 h-5"></i>
+                      <i data-lucide="zoom-in" class="w-6 h-6"></i>
                     </div>
                   </div>
                 `).join('')}
@@ -2898,136 +2820,21 @@
             `}
           </div>
 
-          <!-- Product Notes -->
-          <div class="p-3 rounded-2xl bg-white border border-emerald-100">
-            <span class="text-[10px] font-bold text-slate-400 block mb-0.5">ملاحظات التاجر وتفاصيل إضافية:</span>
-            <p class="text-xs font-bold text-slate-700 leading-relaxed">
-              ${notes || "لا توجد ملاحظات إضافية مسجلة من التاجر"}
-            </p>
-          </div>
-        </div>
-
-        <!-- ======================================================== -->
-        <!-- 🚀 تسليم المتجر وتحديث الحالة فورياً (Delivered URL + Completed) -->
-        <!-- ======================================================== -->
-        <div class="space-y-3.5">
-          
-          <!-- 1. DELIVERED STORE FINAL URL INPUT FIELD -->
-          <div class="p-4 rounded-3xl bg-slate-50 border-2 border-slate-200/90 space-y-2.5 shadow-2xs">
-            <div class="flex items-center justify-between">
-              <label class="block text-xs font-black text-slate-900 flex items-center gap-1.5">
-                <i data-lucide="globe" class="w-4 h-4 text-cyan-600"></i>
-                <span>خانة رابط المتجر النهائي (Final Store Website URL):</span>
-              </label>
-              <span class="text-[10.5px] text-cyan-700 font-bold bg-cyan-50 px-2 py-0.5 rounded-md">
-                يظهر مباشرة في صفحة تتبع التاجر
-              </span>
+          <!-- 3. Optional Product Notes -->
+          ${notes ? `
+            <div class="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-200/80 text-xs">
+              <span class="text-[10.5px] text-blue-800 font-black block mb-1">ملاحظات إضافية وتفاصيل خاصة من التاجر:</span>
+              <p class="text-slate-700 font-bold leading-relaxed">${notes}</p>
             </div>
+          ` : ''}
 
-            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              <input id="dossierDeliveredUrl" type="url" placeholder="مثال: https://mon-magasin-maroc.com أو رابط YouCan" value="${deliveredUrl}" class="flex-1 min-w-[200px] py-2.5 px-3.5 rounded-xl bg-white border border-slate-300 font-mono text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100" dir="ltr">
-              
-              <button onclick="saveDossierStoreUrl('${id}')" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
-                <i data-lucide="save" class="w-3.5 h-3.5"></i>
-                <span>حفظ الرابط</span>
-              </button>
-
-              ${deliveredUrl ? `
-                <button onclick="openCustomerStoreLink('${deliveredUrl}')" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer shrink-0 hover:scale-105 active:scale-95">
-                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                  <span>زيارة المتجر</span>
-                </button>
-              ` : ''}
-            </div>
-          </div>
-
-          <!-- 2. PROMINENT BUTTON: CHANGE STATUS TO COMPLETED -->
-          <div class="p-4 rounded-3xl bg-gradient-to-r from-emerald-950/5 via-teal-950/10 to-emerald-950/5 border-2 border-emerald-400/60 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-md">
-            <div class="flex items-center gap-3">
-              <div class="w-11 h-11 rounded-2xl ${isCompleted ? 'bg-emerald-600 text-white shadow-[0_0_20px_rgba(16,185,129,0.5)]' : 'bg-emerald-500/20 text-emerald-700'} flex items-center justify-center font-bold shrink-0">
-                <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-              </div>
-              <div>
-                <h5 class="text-xs sm:text-sm font-black text-slate-900">
-                  ${isCompleted ? 'حالة الطلب: مكتمل ومسلّم للتاجر بنجاح 🟢' : 'زر تغيير الحالة إلى مكتمل ومسلّم للعميل'}
-                </h5>
-                <p class="text-[11px] text-slate-500 font-bold">
-                  ينعكس هذا الإجراء فورياً على صفحة التتبع السرية للتاجر ويتيح له استلام متجره مباشرة
-                </p>
-              </div>
-            </div>
-
-            <button onclick="selectOrderStatus('${id}', 'completed')" class="w-full sm:w-auto px-6 py-3.5 rounded-2xl ${isCompleted ? 'bg-emerald-600 text-white ring-4 ring-emerald-200 shadow-lg cursor-pointer' : 'bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 text-slate-950 hover:text-white shadow-[0_0_25px_rgba(16,185,129,0.5)] cursor-pointer'} font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:scale-105 active:scale-95 shrink-0">
-              <i data-lucide="check-check" class="w-4 h-4"></i>
-              <span>${isCompleted ? '✅ الحالة مكتملة حالياً (تأكيد)' : 'تغيير الحالة إلى مكتمل 🟢 (تحديث فوري)'}</span>
+          <!-- BOTTOM ACTIONS -->
+          <div class="pt-3 border-t border-slate-100 flex items-center justify-end">
+            <button onclick="closeModal()" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all cursor-pointer shadow-sm">
+              إغلاق النافذة
             </button>
           </div>
 
-          <!-- 3. INTERACTIVE 3-STATUS CARDS (FOR FULL FLEXIBILITY) -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            <!-- 1. PENDING -->
-            <div onclick="selectOrderStatus('${id}', 'pending')" class="p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${isPending ? 'bg-amber-50 border-amber-500 shadow-sm' : 'bg-white border-slate-200 hover:border-amber-300'}">
-              <div class="flex items-center gap-2">
-                <i data-lucide="hourglass" class="w-4 h-4 text-amber-600"></i>
-                <span class="text-xs font-black text-slate-900">قيد المراجعة 🟡</span>
-              </div>
-              ${isPending ? `<span class="text-[10px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">نشطة</span>` : `<span class="text-[10px] font-bold text-slate-400">تغيير</span>`}
-            </div>
-
-            <!-- 2. IN PROGRESS -->
-            <div onclick="selectOrderStatus('${id}', 'in_progress')" class="p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${isInProgress ? 'bg-blue-50 border-blue-500 shadow-sm' : 'bg-white border-slate-200 hover:border-blue-300'}">
-              <div class="flex items-center gap-2">
-                <i data-lucide="code-2" class="w-4 h-4 text-blue-600"></i>
-                <span class="text-xs font-black text-slate-900">جاري التجهيز 🔵</span>
-              </div>
-              ${isInProgress ? `<span class="text-[10px] font-black text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">نشطة</span>` : `<span class="text-[10px] font-bold text-slate-400">تغيير</span>`}
-            </div>
-
-            <!-- 3. COMPLETED -->
-            <div onclick="selectOrderStatus('${id}', 'completed')" class="p-3 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${isCompleted ? 'bg-emerald-50 border-emerald-500 shadow-sm' : 'bg-white border-slate-200 hover:border-emerald-300'}">
-              <div class="flex items-center gap-2">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
-                <span class="text-xs font-black text-slate-900">مكتمل ومسلّم 🟢</span>
-              </div>
-              ${isCompleted ? `<span class="text-[10px] font-black text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">نشطة</span>` : `<span class="text-[10px] font-bold text-slate-400">تغيير</span>`}
-            </div>
-          </div>
-
-          <!-- 4. MERCHANT PRIVATE TRACKING LINK CAPSULE -->
-          <div class="rounded-2xl bg-gradient-to-br from-[#071947] via-[#0b286d] to-[#041238] p-3.5 sm:p-4 text-white border border-cyan-400/40 shadow-md space-y-2.5">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                <span class="text-xs font-black text-cyan-200">رابط تتبع الطلب السري الخاص بالتاجر (UUID):</span>
-              </div>
-              <span class="px-2 py-0.5 rounded bg-white/10 text-cyan-300 font-mono text-[10px] font-bold">محمي 🔒</span>
-            </div>
-
-            <div class="flex items-center gap-2">
-              <input type="text" readonly value="${privateTrackingUrl}" class="flex-1 py-1.5 px-3 rounded-xl bg-black/40 border border-white/20 text-xs font-mono text-cyan-300 font-bold select-all focus:outline-none" dir="ltr">
-              <button onclick="copyCustomerPrivateLink('${id}')" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
-                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                <span>نسخ</span>
-              </button>
-              <button onclick="openCustomerPrivateLink('${id}')" class="px-3 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs flex items-center gap-1.5 transition-all cursor-pointer shrink-0">
-                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                <span>فتح بالمتصفح</span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-
-        <!-- BOTTOM ACTIONS -->
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-          <button onclick="deleteOrder('${id}'); closeModal();" class="px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
-            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            <span>حذف هذا الطلب نهائياً</span>
-          </button>
-
-          <button onclick="closeModal()" class="px-6 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs transition-all cursor-pointer">
-            إغلاق الملف
-          </button>
         </div>
       `;
 
@@ -3042,12 +2849,39 @@
       document.getElementById("orderDetailModal").classList.remove("flex");
     }
 
-    // Quick Store URL Modal Handlers
+    // Quick Store URL & Delivery Modal Handlers
+    function openQuickDeliveryModal(orderId) {
+      openQuickStoreUrlModal(orderId);
+    }
+
     function openQuickStoreUrlModal(orderId) {
       const o = orders.find(x => x.id === orderId);
       if (!o) return;
+      const num = o.order_number || o.orderNumber || `#ESP-${orderId.slice(0, 6)}`;
+      const name = o.customer_name || o.customerName || "تاجر مميز";
+      const city = o.customer_city || o.city || "المغرب";
+      const storeName = o.store_name || o.storeName || "متجر التاجر";
+      const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
+
       document.getElementById("quickStoreOrderId").value = orderId;
       document.getElementById("quickStoreInputUrl").value = o.delivered_url || o.deliveredUrl || "";
+      
+      const statusSelect = document.getElementById("quickStoreDeliveryStatus");
+      if (statusSelect) {
+        statusSelect.value = o.status === "in_progress" ? "in_progress" : "completed";
+      }
+
+      const summaryEl = document.getElementById("quickDeliveryOrderSummary");
+      if (summaryEl) {
+        summaryEl.innerHTML = `
+          <div>
+            <span class="font-black text-slate-900 block text-sm">التاجر: ${name} (${city})</span>
+            <span class="text-xs text-blue-600 font-bold block mt-1">المتجر: ${storeName} • ${plan}</span>
+          </div>
+          <span class="font-mono font-black text-blue-700 bg-blue-100 px-3 py-1.5 rounded-xl text-xs sm:text-sm">${num}</span>
+        `;
+      }
+
       document.getElementById("quickStoreUrlModal").classList.remove("hidden");
       document.getElementById("quickStoreUrlModal").classList.add("flex");
       lucide.createIcons();
@@ -3061,16 +2895,19 @@
     async function saveQuickStoreUrl() {
       const orderId = document.getElementById("quickStoreOrderId").value;
       const urlInput = document.getElementById("quickStoreInputUrl");
+      const statusSelect = document.getElementById("quickStoreDeliveryStatus");
       if (!orderId || !urlInput) return;
       const delivered_url = urlInput.value.trim();
+      const status = statusSelect ? statusSelect.value : "completed";
 
       const o = orders.find(x => x.id === orderId);
       if (o) {
         o.delivered_url = delivered_url;
+        o.status = status;
       }
 
       closeQuickStoreUrlModal();
-      triggerToast("جاري حفظ وتحديث رابط المتجر...");
+      triggerToast("جاري تسليم الطلب وتحديث صفحة التتبع فوراً 🚀...");
 
       // Local disk update for Electron
       if (typeof window !== "undefined" && window.require) {
@@ -3092,7 +2929,7 @@
             "Content-Type": "application/json",
             "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
           },
-          body: JSON.stringify({ id: orderId, delivered_url })
+          body: JSON.stringify({ id: orderId, delivered_url, status })
         });
       } catch (e) {}
 
@@ -3104,11 +2941,11 @@
             "Content-Type": "application/json",
             "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
           },
-          body: JSON.stringify({ id: orderId, delivered_url })
+          body: JSON.stringify({ id: orderId, delivered_url, status })
         });
       } catch (e) {}
 
-      triggerToast("تم حفظ وتحديث رابط المتجر المسلّم بنجاح 🌐");
+      triggerToast("تم تسليم الطلب وتحديث صفحة التتبع بنجاح 🚀");
       renderActiveTab();
     }
 
