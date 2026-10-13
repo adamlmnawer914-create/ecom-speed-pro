@@ -7,8 +7,6 @@ import {
   X,
   ShieldCheck,
   Lock,
-  CreditCard,
-  Calendar,
   User,
   CheckCircle2,
   Sparkles,
@@ -25,7 +23,6 @@ import {
   ImageIcon,
   Trash2,
   Copy,
-  ExternalLink,
   Rocket,
   MapPin,
   Store,
@@ -35,6 +32,7 @@ import {
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import YouCanPayEmbed from "@/components/YouCanPayEmbed";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -95,13 +93,10 @@ export default function OrderModal({
   const [productImages, setProductImages] = useState<string[]>([]);
   const [productNotes, setProductNotes] = useState("");
 
-  // Card Inputs (Simulated YouCan Pay Gateway)
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [cardHolder, setCardHolder] = useState("");
-
   const router = useRouter();
+
+  // Display-only placeholder for animated card preview
+  const cardNumber = "";
 
   // Submission state
   const [isProcessing, setIsProcessing] = useState(false);
@@ -109,7 +104,7 @@ export default function OrderModal({
   const [orderId, setOrderId] = useState("");
   const [createdOrder, setCreatedOrder] = useState<any>(null);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [redirectTimer, setRedirectTimer] = useState(4);
+  const [redirectTimer, setRedirectTimer] = useState(3);
 
   useEffect(() => {
     if (isOpen) {
@@ -118,7 +113,7 @@ export default function OrderModal({
       setIsProcessing(false);
       setCreatedOrder(null);
       setCopiedLink(false);
-      setRedirectTimer(4);
+      setRedirectTimer(3);
       setOrderId("ESP-" + Math.floor(100000 + Math.random() * 900000));
       document.body.style.overflow = "hidden";
     } else {
@@ -230,30 +225,7 @@ export default function OrderModal({
     setProductImages((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  // Format Card Number
-  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, "").slice(0, 16);
-    const formatted = val.replace(/(\d{4})(?=\d)/g, "$1 ");
-    setCardNumber(formatted);
-  };
-
-  // Format Expiry Date
-  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, "").slice(0, 4);
-    if (val.length >= 3) {
-      setExpiryDate(`${val.slice(0, 2)}/${val.slice(2)}`);
-    } else {
-      setExpiryDate(val);
-    }
-  };
-
-  // Format CVV
-  const handleCvvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/\D/g, "").slice(0, 4);
-    setCvv(val);
-  };
-
-  // Submit Order (Stage 2 Payment Confirmation)
+  // Submit Order Stage 2 — saves order to DB, then YouCanPayEmbed handles payment
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -264,13 +236,7 @@ export default function OrderModal({
 
     setIsProcessing(true);
 
-    const clientUuid =
-      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-        ? crypto.randomUUID()
-        : "esp-" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-
     const orderPayload = {
-      id: clientUuid,
       customer_name: customerName.trim(),
       customer_city: customerCity.trim(),
       phone_number: customerPhone.trim(),
@@ -279,7 +245,8 @@ export default function OrderModal({
       product_price: productPrice.trim() || "غير محدد",
       order_phone: orderPhone.trim() || customerPhone.trim(),
       plan_tier: planTitle,
-      price: rawNumericPrice,
+      amount: rawNumericPrice,
+      currency: "MAD",
       payment_method: "YouCan Pay",
       product_images: productImages,
       product_notes: productNotes.trim(),
@@ -288,9 +255,9 @@ export default function OrderModal({
 
     let savedOrder: any = null;
 
-    // 1. Save to backend API (Supabase & local store sync)
+    // ─── 1. Call YouCan Pay route (creates order in DB) ──────────────────────
     try {
-      const res = await fetch("/api/orders", {
+      const res = await fetch("/api/payment/youcan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderPayload),
@@ -300,13 +267,35 @@ export default function OrderModal({
         savedOrder = data.order;
       }
     } catch (err) {
-      console.warn("API sync error:", err);
+      console.warn("YouCan Pay API error, using fallback:", err);
     }
 
+    // ─── 2. Fallback: save via /api/orders ───────────────────────────────────
     if (!savedOrder) {
+      try {
+        const res = await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...orderPayload, payment_method: "YouCan Pay" }),
+        });
+        const data = await res.json();
+        if (data && data.success && data.order) {
+          savedOrder = data.order;
+        }
+      } catch (err) {
+        console.warn("Fallback API sync error:", err);
+      }
+    }
+
+    // ─── 3. Client-side fallback ─────────────────────────────────────────────
+    if (!savedOrder) {
+      const clientUuid =
+        typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+          ? crypto.randomUUID()
+          : "esp-" + Math.random().toString(36).substring(2, 15);
       savedOrder = {
         id: clientUuid,
-        order_number: "#ESP-" + Math.floor(100 + Math.random() * 900),
+        order_number: "#ESP-" + Math.floor(10000 + Math.random() * 90000),
         customer_name: customerName.trim(),
         customer_city: customerCity.trim(),
         phone_number: customerPhone.trim(),
@@ -315,7 +304,6 @@ export default function OrderModal({
         product_price: productPrice.trim(),
         order_phone: orderPhone.trim() || customerPhone.trim(),
         plan_tier: planTitle,
-        price: rawNumericPrice,
         status: "pending",
         payment_method: "YouCan Pay",
         product_images: productImages,
@@ -326,8 +314,9 @@ export default function OrderModal({
 
     setCreatedOrder(savedOrder);
     setOrderId(savedOrder.order_number || savedOrder.id);
+    setIsProcessing(false); // Let YouCanPayEmbed handle processing state
 
-    // 2. Save to local storage for instant sync across tabs & desktop app
+    // ─── 4. Save to localStorage ─────────────────────────────────────────────
     try {
       const stored = localStorage.getItem("ecom_speed_pro_orders");
       const list = stored ? JSON.parse(stored) : [];
@@ -354,12 +343,9 @@ export default function OrderModal({
     } catch (err) {
       console.warn("Storage warning:", err);
     }
-
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsSuccess(true);
-    }, 1200);
+    // YouCanPayEmbed will now handle the actual payment flow
   };
+
 
   // Copy secret tracking link
   const handleCopySecretLink = () => {
@@ -551,29 +537,21 @@ export default function OrderModal({
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center gap-3 w-full justify-center">
+              {/* Action Buttons — Tracking Only */}
+              <div className="flex flex-col items-center gap-3 w-full">
                 {createdOrder?.id && (
                   <button
                     onClick={() => router.push(`/order/${createdOrder.id}`)}
-                    className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs sm:text-sm shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full px-7 py-4 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-sm sm:text-base shadow-[0_0_30px_rgba(6,182,212,0.7)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer animate-pulse"
                   >
-                    <Rocket className="w-4 h-4" />
+                    <Rocket className="w-5 h-5" />
                     <span>متابعة وتتبع حالة متجرك الآن 🚀</span>
                   </button>
                 )}
 
                 <button
-                  onClick={handleProceedWhatsApp}
-                  className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(16,185,129,0.5)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                >
-                  <WhatsAppIcon size={18} />
-                  <span>تأكيد وانطلاق المشروع على واتساب</span>
-                </button>
-
-                <button
                   onClick={onClose}
-                  className="w-full sm:w-auto px-5 py-3.5 rounded-full bg-white/10 hover:bg-white/15 border border-white/15 text-white font-bold text-xs transition-colors cursor-pointer"
+                  className="text-blue-300/70 hover:text-blue-200 text-xs font-semibold transition-colors cursor-pointer underline underline-offset-2"
                 >
                   العودة للمتجر
                 </button>
@@ -874,8 +852,9 @@ export default function OrderModal({
                   </form>
                 ) : (
                   /* ==================================================== */
-                  /* STAGE 2: معلومات المنتج (الصور، الثمن، رقم المبيعات) + YouCan Pay */
+                  /* STAGE 2a — معلومات المنتج                             */
                   /* ==================================================== */
+                  !createdOrder ? (
                   <form onSubmit={handleSubmitOrder} className="space-y-3.5 animate-in fade-in duration-300">
                     
                     {/* Stage 2 Header with Back Button */}
@@ -884,7 +863,7 @@ export default function OrderModal({
                         <ShoppingBag className="w-4 h-4 text-cyan-300" />
                         <div>
                           <h4 className="text-xs sm:text-sm font-black text-white">
-                            المرحلة الثانية: مواصفات المنتج والدفع عبر YouCan Pay
+                            المرحلة الثانية: مواصفات المنتج والمتجر
                           </h4>
                           <span className="text-[10px] text-blue-200/80 font-bold block">
                             التاجر: {customerName} ({customerCity})
@@ -938,7 +917,7 @@ export default function OrderModal({
                       </div>
                     </div>
 
-                    {/* 2. Order Reception Phone (رقم استقبال مبيعات وطلبيات المتجر) */}
+                    {/* 2. Order Reception Phone */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
                         <label className="text-xs font-black text-cyan-200 flex items-center gap-1.5">
@@ -992,7 +971,6 @@ export default function OrderModal({
                         />
                       </label>
 
-                      {/* Thumbnails preview */}
                       {productImages.length > 0 && (
                         <div className="flex items-center gap-2 overflow-x-auto py-1">
                           {productImages.map((img, idx) => (
@@ -1014,7 +992,6 @@ export default function OrderModal({
                         </div>
                       )}
 
-                      {/* Optional Notes */}
                       <input
                         type="text"
                         placeholder="ملاحظات إضافية حول المنتج أو تصميمه (اختياري)"
@@ -1024,119 +1001,8 @@ export default function OrderModal({
                       />
                     </div>
 
-                    {/* 4. YouCan Pay Gateway Official Badges & Card Inputs */}
-                    <div className="rounded-2xl bg-[#071a48]/90 border border-cyan-400/40 p-3.5 space-y-3 shadow-lg">
-                      
-                      {/* YouCan Pay Banner */}
-                      <div className="flex items-center justify-between pb-2 border-b border-blue-900/50">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-black text-xs">
-                            YP
-                          </div>
-                          <div>
-                            <span className="text-xs font-black text-white block">
-                              بوابة الدفع الإلكتروني YouCan Pay 🇲🇦
-                            </span>
-                            <span className="text-[10px] text-cyan-300 font-bold block">
-                              معتمدة من المركز النقدي المغربي CMI وتشفير 3D-Secure
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Payment Cards Logos */}
-                        <div className="flex items-center gap-1.5">
-                          <span className="px-2 py-0.5 rounded bg-blue-900/80 text-[10px] font-mono font-black text-yellow-300 border border-yellow-400/30">
-                            CMI
-                          </span>
-                          <span className="px-2 py-0.5 rounded bg-white text-[10px] font-serif font-black text-[#00579F]">
-                            VISA
-                          </span>
-                          <span className="px-2 py-0.5 rounded bg-[#111] text-[10px] font-black text-white border border-white/20">
-                            MC
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Card Number */}
-                      <div>
-                        <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                          رقم البطاقة البنكية
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            required
-                            dir="ltr"
-                            placeholder="1234 5678 9012 3456"
-                            value={cardNumber}
-                            onChange={handleCardNumberChange}
-                            className="w-full px-3.5 py-2 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-10 tracking-widest shadow-inner"
-                          />
-                          <CreditCard className="w-4 h-4 text-cyan-400 absolute left-3 top-2.5" />
-                        </div>
-                      </div>
-
-                      {/* Expiry & CVV */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div>
-                          <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                            تاريخ الانتهاء
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="text"
-                              required
-                              dir="ltr"
-                              placeholder="MM/YY"
-                              value={expiryDate}
-                              onChange={handleExpiryChange}
-                              className="w-full px-3.5 py-2 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 shadow-inner"
-                            />
-                            <Calendar className="w-4 h-4 text-cyan-400 absolute left-3 top-2.5" />
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                            رمز الأمان (CVV)
-                          </label>
-                          <div className="relative">
-                            <input
-                              type="password"
-                              required
-                              dir="ltr"
-                              placeholder="123"
-                              value={cvv}
-                              onChange={handleCvvChange}
-                              className="w-full px-3.5 py-2 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 tracking-widest shadow-inner"
-                            />
-                            <Lock className="w-4 h-4 text-cyan-400 absolute left-3 top-2.5" />
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Cardholder Name */}
-                      <div>
-                        <label className="text-[11px] font-bold text-cyan-200 block mb-1">
-                          اسم صاحب البطاقة (كما هو مدون عليها)
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            required
-                            placeholder={customerName ? customerName.toUpperCase() : "MOHAMED EL ALAOUI"}
-                            value={cardHolder}
-                            onChange={(e) => setCardHolder(e.target.value)}
-                            className="w-full px-3.5 py-2 rounded-xl bg-[#05143a] border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 pl-9 uppercase shadow-inner"
-                          />
-                          <User className="w-4 h-4 text-cyan-400 absolute left-3 top-2.5" />
-                        </div>
-                      </div>
-
-                    </div>
-
-                    {/* 5. YouCan Pay Grand CTA Button */}
-                    <div className="pt-2">
+                    {/* CTA — Save order & go to payment */}
+                    <div className="pt-1">
                       <button
                         type="submit"
                         disabled={isProcessing}
@@ -1145,19 +1011,64 @@ export default function OrderModal({
                         {isProcessing ? (
                           <>
                             <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>جاري معالجة الدفع الآمن عبر YouCan Pay...</span>
+                            <span>جاري تسجيل طلبك...</span>
                           </>
                         ) : (
                           <>
-                            <Lock className="w-5 h-5 text-cyan-200 group-hover:scale-110 transition-transform" />
-                            <span>
-                              تأكيد الطلب والدفع عبر YouCan Pay ({formattedPrice})
-                            </span>
-                            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                            <Lock className="w-5 h-5 text-cyan-200" />
+                            <span>متابعة إلى بوابة الدفع الآمن YouCan Pay ←</span>
                           </>
                         )}
                       </button>
                     </div>
+
+                  </form>
+                  ) : (
+                  /* ==================================================== */
+                  /* STAGE 2b — بوابة الدفع YouCan Pay (ycpay.js)         */
+                  /* ==================================================== */
+                  <div className="space-y-3.5 animate-in fade-in duration-300">
+                    {/* Header */}
+                    <div className="p-3 rounded-2xl bg-[#061848]/80 border border-cyan-400/30 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-4 h-4 text-cyan-300" />
+                        <div>
+                          <h4 className="text-xs sm:text-sm font-black text-white">
+                            المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦
+                          </h4>
+                          <span className="text-[10px] text-cyan-300 font-bold block">
+                            طلب رقم {createdOrder?.order_number} • {formattedPrice}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setCreatedOrder(null)}
+                        className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-cyan-200 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                      >
+                        <ArrowRight className="w-3.5 h-3.5" />
+                        <span>تعديل</span>
+                      </button>
+                    </div>
+
+                    <YouCanPayEmbed
+                      createdOrderId={createdOrder?.id || ""}
+                      amount={rawNumericPrice}
+                      currency="MAD"
+                      customerName={customerName}
+                      customerEmail={customerEmail}
+                      customerPhone={customerPhone}
+                      customerCity={customerCity}
+                      planTitle={planTitle}
+                      formattedPrice={formattedPrice}
+                      isProcessing={isProcessing}
+                      onProcessingChange={setIsProcessing}
+                      onSuccess={(order: any) => {
+                        setCreatedOrder(order);
+                        setOrderId(order.order_number || order.id);
+                        setIsSuccess(true);
+                      }}
+                    />
 
                     {/* Safety WhatsApp link */}
                     <div className="text-center pt-1">
@@ -1176,8 +1087,8 @@ export default function OrderModal({
                         </a>
                       </p>
                     </div>
-
-                  </form>
+                  </div>
+                  )
                 )}
 
               </div>

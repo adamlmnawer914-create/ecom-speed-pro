@@ -1,0 +1,19 @@
+{
+  "env": {
+    "YOUCAN_PRIVATE_KEY": "pri_sandbox_e62e8f46-d58b-411e-bd4f-5235c",
+    "YOUCAN_PUBLIC_KEY": "pub_sandbox_58ce8ec9-8ab0-44d2-a2e1-96cd8",
+    "NEXT_PUBLIC_YOUCAN_PUBLIC_KEY": "pub_sandbox_58ce8ec9-8ab0-44d2-a2e1-96cd8",
+    "NEXT_PUBLIC_APP_URL": "https://ecom-speed-pro.vercel.app",
+    "ADMIN_DESKTOP_TOKEN": "ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b"
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PATCH,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "*" }
+      ]
+    }
+  ]
+}
