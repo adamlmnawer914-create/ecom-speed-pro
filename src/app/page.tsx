@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import FeaturesRibbon from "@/components/FeaturesRibbon";
@@ -8,7 +9,6 @@ import PricingSection from "@/components/PricingSection";
 import SocialSection from "@/components/SocialSection";
 import AboutSection from "@/components/AboutSection";
 import Footer from "@/components/Footer";
-import OrderModal from "@/components/OrderModal";
 import PolicyModal from "@/components/PolicyModal";
 import CartModal from "@/components/CartModal";
 import WishlistModal from "@/components/WishlistModal";
@@ -18,10 +18,8 @@ import PackageSelectModal from "@/components/PackageSelectModal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 
 export default function Home() {
-  const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
   const [packageSelectOpen, setPackageSelectOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("منصة التجارة المتقدمة (Advanced SaaS)");
-  const [selectedPrice, setSelectedPrice] = useState("5000 درهم");
 
   const [policyModalOpen, setPolicyModalOpen] = useState(false);
   const [policyType, setPolicyType] = useState<"privacy" | "terms" | "guarantee">("privacy");
@@ -40,9 +38,7 @@ export default function Home() {
   }, []);
 
   const handleOpenOrder = (plan = "منصة التجارة المتقدمة (Advanced SaaS)", price = "5000 درهم") => {
-    setSelectedPlan(plan);
-    setSelectedPrice(price);
-    setModalOpen(true);
+    router.push(`/checkout?plan=${encodeURIComponent(plan)}&price=${encodeURIComponent(price)}`);
   };
 
   const handleOpenPolicy = (type: "privacy" | "terms" | "guarantee") => {
@@ -131,14 +127,6 @@ export default function Home() {
         onSelectPlan={handleOpenOrder}
       />
 
-      {/* Interactive Order Modal */}
-      <OrderModal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        selectedPlan={selectedPlan}
-        selectedPrice={selectedPrice}
-        onOpenPolicyModal={handleOpenPolicy}
-      />
 
       {/* Interactive Policy & Guarantees Modal */}
       <PolicyModal

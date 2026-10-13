@@ -156,15 +156,6 @@ export default function Navbar({
               <span className="text-xs">🔍</span>
             </Link>
 
-            {/* 8. Admin Dashboard Link */}
-            <Link
-              href="/admin"
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#0a1538] to-[#12285a] hover:from-blue-900 text-cyan-300 border border-cyan-400/40 transition-all font-black text-xs hover:scale-105 active:scale-95 shadow-xs"
-              title="لوحة التحكم الإدارية"
-            >
-              <span>لوحة التحكم</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-200 border border-cyan-500/30 font-mono">⚡</span>
-            </Link>
           </div>
 
           {/* Left in RTL: Search & Action Buttons Capsule */}
@@ -312,12 +303,6 @@ export default function Navbar({
             >
               تتبع طلبك 🔍
             </Link>
-            <Link
-              href="/admin"
-              className="px-3 py-1 rounded-full bg-[#0a1538] text-cyan-300 border border-cyan-400/40 shrink-0 cursor-pointer font-black"
-            >
-              لوحة التحكم ⚡
-            </Link>
           </div>
         </div>
 
@@ -397,14 +382,6 @@ export default function Navbar({
                 <span>🔍</span>
               </Link>
 
-              <Link
-                href="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full text-right px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#0a1538] to-[#12285a] text-cyan-300 font-black border border-cyan-400/40 flex items-center justify-between"
-              >
-                <span>لوحة التحكم الإدارية (Admin Panel)</span>
-                <span>⚡</span>
-              </Link>
             </div>
 
             {/* Quick 3 Actions in Mobile Drawer */}

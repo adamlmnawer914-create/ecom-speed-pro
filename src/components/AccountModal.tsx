@@ -176,12 +176,12 @@ export default function AccountModal({ isOpen, onClose, onOpenOrderModal }: Acco
             <button
               onClick={() => {
                 onClose();
-                window.location.href = "/admin";
+                window.location.href = "/track";
               }}
               className="w-full py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 text-white font-black text-xs shadow-md hover:opacity-95 transition-all cursor-pointer flex items-center justify-center gap-1.5"
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>تسجيل الدخول إلى لوحة التحكم (Admin Panel)</span>
+              <span>تسجيل الدخول ومتابعة طلباتك عبر رمز OTP</span>
             </button>
 
             <p className="text-[11px] text-center text-slate-500 font-bold">
