@@ -379,13 +379,12 @@ export default function OrderModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-[#020718]/90 backdrop-blur-2xl flex items-center justify-center p-3 sm:p-5 md:p-6 animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/60 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 md:p-6 animate-in fade-in duration-300">
       
-      {/* Background Cosmic Glows */}
+      {/* Background Soft Glows */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] animate-pulse" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-blue-600/15 rounded-full blur-[120px]" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px]" />
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px]" />
       </div>
 
       <div
@@ -399,35 +398,35 @@ export default function OrderModal({
           
           {/* Logo & Badge */}
           <div className="flex items-center gap-3">
-            <div className="p-1.5 rounded-2xl bg-white shadow-[0_0_20px_rgba(6,182,212,0.5)]">
+            <div className="p-1.5 rounded-2xl bg-white shadow-md border border-slate-200">
               <Logo size="sm" showSlogan={false} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm sm:text-base font-black text-white tracking-wide">
+                <span className="text-sm sm:text-base font-black text-white tracking-wide drop-shadow-sm">
                   ECOM SPEED PRO
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 border border-cyan-400/40 text-[10px] font-black text-cyan-300">
+                <span className="px-2.5 py-0.5 rounded-full bg-blue-500/30 border border-blue-400/50 text-[10px] font-black text-white">
                   بوابة الدفع الآمن YouCan Pay 🇲🇦
                 </span>
               </div>
-              <span className="text-[11px] text-blue-200/80 font-bold hidden sm:block">
+              <span className="text-[11px] text-blue-100 font-bold hidden sm:block">
                 منصة رسمية معتمدة • تسليم قياسي خلال 48 ساعة ⚡
               </span>
             </div>
           </div>
 
           {/* SSL & YouCan Pay Badge */}
-          <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#051842]/80 border border-cyan-400/40 text-cyan-300 text-xs font-black shadow-[0_0_15px_rgba(6,182,212,0.25)]">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <Lock className="w-3.5 h-3.5 text-emerald-300" />
+          <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200 text-slate-800 text-xs font-black shadow-md backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <Lock className="w-3.5 h-3.5 text-emerald-600" />
             <span>بوابة معتمدة YouCan Pay • تشفير 256-Bit SSL آمن 100%</span>
           </div>
 
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/10 hover:bg-rose-500/20 border border-white/20 hover:border-rose-400/50 text-white hover:text-rose-300 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-lg group"
+            className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-white/90 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 text-slate-700 hover:text-rose-600 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-md group"
             title="إغلاق والعودة للمتجر"
           >
             <X className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
@@ -435,58 +434,58 @@ export default function OrderModal({
         </div>
 
         {/* ======================================================== */}
-        {/* MAIN LUXURY CHECKOUT CARD                                */}
+        {/* MAIN LUXURY CHECKOUT CARD — PURE CRISP WHITE THEME       */}
         {/* ======================================================== */}
-        <div className="relative w-full rounded-[30px] sm:rounded-[36px] bg-gradient-to-br from-[#040e2b]/95 via-[#06184a]/95 to-[#03091e]/95 border-2 border-cyan-400/35 shadow-[0_30px_90px_rgba(2,10,35,0.85),inset_0_1px_1px_rgba(255,255,255,0.15)] text-white p-5 sm:p-7 md:p-8 overflow-hidden">
+        <div className="relative w-full rounded-[30px] sm:rounded-[36px] bg-white border-2 border-slate-200 shadow-[0_30px_90px_rgba(0,20,60,0.22)] text-slate-900 p-5 sm:p-7 md:p-8 overflow-hidden">
           
-          {/* Laser Accent Line on Top */}
-          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-400 via-blue-500 via-emerald-400 to-transparent pointer-events-none" />
+          {/* Accent Line on Top */}
+          <div className="absolute top-0 inset-x-0 h-[3px] bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 pointer-events-none" />
 
           {isSuccess ? (
             /* ======================================================== */
-            /* SUCCESS CONFIRMATION SCREEN (شاشة نجاح أسطورية مع التتبع)  */
+            /* SUCCESS CONFIRMATION SCREEN (شاشة نجاح بيضاء أنيقة)       */
             /* ======================================================== */
             <div className="py-6 sm:py-10 px-4 flex flex-col items-center text-center max-w-xl mx-auto animate-in zoom-in-95 duration-300">
               
               {/* Pulsing 3D Check Jewel */}
-              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-400 p-[3px] shadow-[0_0_40px_rgba(16,185,129,0.6)] mb-5 animate-bounce">
-                <div className="w-full h-full bg-[#051c2e] rounded-[22px] flex items-center justify-center">
-                  <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-400 drop-shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
+              <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-emerald-400 via-teal-500 to-cyan-400 p-[3px] shadow-[0_0_40px_rgba(16,185,129,0.35)] mb-5 animate-bounce">
+                <div className="w-full h-full bg-emerald-50 rounded-[22px] flex items-center justify-center">
+                  <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-600 drop-shadow-sm" />
                 </div>
               </div>
 
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/50 text-emerald-300 text-xs font-black mb-3 shadow-[0_0_15px_rgba(16,185,129,0.3)]">
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-black mb-3 shadow-xs">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>تم تأكيد الدفع عبر YouCan Pay وإنشاء رابط المتابعة السري!</span>
               </span>
 
-              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-white mb-2 tracking-tight">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 mb-2 tracking-tight">
                 رقم طلبك الرسمي:{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-300 font-mono">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 font-mono">
                   {createdOrder?.order_number || orderId}
                 </span>
               </h3>
 
-              <p className="text-blue-200/90 text-xs sm:text-sm font-semibold mb-4 leading-relaxed max-w-md">
-                تم تسجيل طلبك لباقة <strong className="text-white">{planTitle}</strong> بنجاح.
+              <p className="text-slate-600 text-xs sm:text-sm font-semibold mb-4 leading-relaxed max-w-md">
+                تم تسجيل طلبك لباقة <strong className="text-slate-900">{planTitle}</strong> بنجاح.
                 تم تخصيص رابط تتبع سري ومحمي برمز مشفر لتتبع حالة متجرك واستلامه فور جهوزه.
               </p>
 
               {/* Secret Tracking Link Capsule & Auto Redirect Pill */}
               {createdOrder?.id && (
-                <div className="w-full bg-[#071d4a]/90 border border-cyan-400/40 rounded-2xl p-3.5 sm:p-4 mb-4 flex flex-col gap-2.5 text-right">
+                <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 sm:p-4 mb-4 flex flex-col gap-2.5 text-right shadow-inner">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-black text-cyan-300 flex items-center gap-1.5">
-                      <Lock className="w-3.5 h-3.5 text-cyan-400" />
+                    <span className="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                      <Lock className="w-3.5 h-3.5 text-blue-600" />
                       <span>رابطك السري المخصص لمتابعة واستلام المتجر (UUID):</span>
                     </span>
-                    <span className="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/30">
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-200">
                       محمي وسري 100%
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-2 bg-[#030e26] border border-blue-900/80 rounded-xl p-2">
-                    <span className="flex-1 font-mono text-[11px] text-blue-200 truncate text-left" dir="ltr">
+                  <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl p-2 shadow-xs">
+                    <span className="flex-1 font-mono text-[11px] text-slate-800 truncate text-left font-bold" dir="ltr">
                       {typeof window !== "undefined" ? window.location.origin : ""}/order/{createdOrder.id}
                     </span>
                     <button
@@ -496,8 +495,8 @@ export default function OrderModal({
                     >
                       {copiedLink ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-emerald-300" />
-                          <span className="text-[11px] text-emerald-200">تم النسخ ✓</span>
+                          <Check className="w-3.5 h-3.5 text-emerald-200" />
+                          <span className="text-[11px] text-white">تم النسخ ✓</span>
                         </>
                       ) : (
                         <>
@@ -509,30 +508,30 @@ export default function OrderModal({
                   </div>
 
                   {/* Auto-redirect countdown notice */}
-                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-blue-200 font-bold bg-blue-900/30 py-1 rounded-lg">
-                    <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                  <div className="flex items-center justify-center gap-1.5 text-[11px] text-blue-800 font-bold bg-blue-50 border border-blue-200/80 py-1.5 rounded-xl">
+                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-ping" />
                     <span>
                       جاري نقلك تلقائياً لصفحة التتبع السرية خلال{" "}
-                      <strong className="text-cyan-300 font-mono text-xs">{redirectTimer}</strong> ثوانٍ...
+                      <strong className="text-blue-700 font-mono text-xs">{redirectTimer}</strong> ثوانٍ...
                     </span>
                   </div>
                 </div>
               )}
 
               {/* Package Summary Capsule in Success Screen */}
-              <div className="w-full bg-[#071a48]/80 border border-blue-400/30 rounded-2xl p-3 sm:p-4 mb-5 flex items-center justify-between text-right">
+              <div className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 sm:p-4 mb-5 flex items-center justify-between text-right shadow-xs">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden border border-white/20 shrink-0">
+                  <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-xl overflow-hidden border border-slate-200 shrink-0 shadow-xs">
                     <Image src={planImage} alt={planTitle} fill className="object-cover" />
                   </div>
                   <div>
-                    <span className="text-xs font-black text-white block">{planTitle}</span>
-                    <span className="text-[11px] text-cyan-300 font-bold block">
+                    <span className="text-xs font-black text-slate-900 block">{planTitle}</span>
+                    <span className="text-[11px] text-slate-600 font-bold block">
                       التاجر: {customerName} • {customerCity}
                     </span>
                   </div>
                 </div>
-                <div className="text-left font-mono text-sm sm:text-base font-black text-emerald-300">
+                <div className="text-left font-mono text-sm sm:text-base font-black text-emerald-700">
                   {formattedPrice}
                 </div>
               </div>
@@ -542,7 +541,7 @@ export default function OrderModal({
                 {createdOrder?.id && (
                   <button
                     onClick={() => router.push(`/order/${createdOrder.id}`)}
-                    className="w-full px-7 py-4 rounded-full bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-sm sm:text-base shadow-[0_0_30px_rgba(6,182,212,0.7)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer animate-pulse"
+                    className="w-full px-7 py-4 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-600 hover:from-blue-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2.5 cursor-pointer animate-pulse"
                   >
                     <Rocket className="w-5 h-5" />
                     <span>متابعة وتتبع حالة متجرك الآن 🚀</span>
@@ -551,7 +550,7 @@ export default function OrderModal({
 
                 <button
                   onClick={onClose}
-                  className="text-blue-300/70 hover:text-blue-200 text-xs font-semibold transition-colors cursor-pointer underline underline-offset-2"
+                  className="text-slate-500 hover:text-slate-800 text-xs font-semibold transition-colors cursor-pointer underline underline-offset-2"
                 >
                   العودة للمتجر
                 </button>
@@ -570,9 +569,9 @@ export default function OrderModal({
               <div className="lg:col-span-5 flex flex-col gap-4">
                 
                 {/* 1. Selected Package Master Card */}
-                <div className="relative rounded-3xl bg-[#06163f]/90 border border-cyan-400/30 p-4 sm:p-5 shadow-[0_10px_30px_rgba(2,10,35,0.6)] overflow-hidden group">
+                <div className="relative rounded-3xl bg-slate-50 border border-slate-200 p-4 sm:p-5 shadow-sm overflow-hidden group">
                   <div className="flex items-center gap-3.5 mb-3">
-                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-cyan-400/40 shadow-[0_0_20px_rgba(6,182,212,0.3)] shrink-0">
+                    <div className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-slate-200 shadow-sm shrink-0">
                       <Image
                         src={planImage}
                         alt={planTitle}
@@ -584,31 +583,31 @@ export default function OrderModal({
                       <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black bg-gradient-to-r ${planBadgeColor} mb-1 shadow-sm`}>
                         الباقة المختارة
                       </span>
-                      <h4 className="text-sm sm:text-base font-black text-white tracking-tight truncate">
+                      <h4 className="text-sm sm:text-base font-black text-slate-900 tracking-tight truncate">
                         {planTitle}
                       </h4>
-                      <p className="text-[11px] text-blue-200/80 font-medium line-clamp-1 mt-0.5">
+                      <p className="text-[11px] text-slate-500 font-medium line-clamp-1 mt-0.5">
                         {planSubtitle}
                       </p>
                     </div>
                   </div>
 
                   {/* Guaranteed Trust Pillars */}
-                  <div className="pt-3 border-t border-blue-900/60 space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-bold text-blue-100">
-                      <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <div className="pt-3 border-t border-slate-200 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                      <div className="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                       <span>تسليم متكامل وجاهز للبيع خلال 48 ساعة ⚡</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-blue-100">
-                      <div className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center shrink-0">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                      <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                       <span>ربط أوتوماتيكي لبوابة الدفع YouCan Pay 🇲🇦</span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-bold text-blue-100">
-                      <div className="w-4 h-4 rounded-full bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
+                      <div className="w-4 h-4 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                       <span>رابط تتبع سري فوري وخاص بك فقط 🔒</span>
@@ -616,18 +615,18 @@ export default function OrderModal({
                   </div>
 
                   {/* Price Banner Ribbon */}
-                  <div className="mt-4 pt-3 border-t border-blue-900/60 flex items-center justify-between">
-                    <span className="text-xs text-blue-200/90 font-bold">المبلغ المستحق للدفع:</span>
-                    <div className="px-3.5 py-1 rounded-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-600 text-white font-mono text-base sm:text-lg font-black shadow-[0_0_15px_rgba(6,182,212,0.4)]">
+                  <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
+                    <span className="text-xs text-slate-600 font-bold">المبلغ المستحق للدفع:</span>
+                    <div className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-mono text-base sm:text-lg font-black shadow-md shadow-blue-500/25">
                       {formattedPrice}
                     </div>
                   </div>
                 </div>
 
-                {/* 2. Interactive YouCan Pay Card Mockup */}
-                <div className="relative rounded-3xl bg-gradient-to-br from-[#0a1f55] via-[#0e2c7a] to-[#06143c] border-2 border-cyan-400/50 p-5 shadow-[0_15px_35px_rgba(2,10,35,0.7),inset_0_1px_1px_rgba(255,255,255,0.25)] text-white overflow-hidden transition-all duration-300">
-                  <div className="absolute -top-12 -left-12 w-48 h-48 bg-cyan-400/15 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/15 rounded-full blur-2xl pointer-events-none" />
+                {/* 2. Luxury Bank Card Mockup */}
+                <div className="relative rounded-3xl bg-gradient-to-br from-[#1e40af] via-[#1d4ed8] to-[#1e3a8a] border-2 border-blue-400/30 p-5 shadow-xl text-white overflow-hidden transition-all duration-300">
+                  <div className="absolute -top-12 -left-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-400/10 rounded-full blur-2xl pointer-events-none" />
 
                   {/* Card Header */}
                   <div className="relative z-10 flex items-center justify-between mb-5">
@@ -637,13 +636,13 @@ export default function OrderModal({
                         <div className="absolute inset-y-0 left-1/2 w-[1px] bg-amber-700/60" />
                         <div className="w-4 h-3 rounded border border-amber-800/40" />
                       </div>
-                      <span className="text-cyan-300 text-xs font-mono font-bold tracking-widest opacity-80">
+                      <span className="text-blue-100 text-xs font-mono font-bold tracking-widest opacity-80">
                         ))))
                       </span>
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-black tracking-wider text-cyan-200">
+                      <span className="text-[11px] font-black tracking-wider text-white">
                         YouCan Pay 🇲🇦
                       </span>
                       <div className="flex -space-x-1.5">
@@ -654,14 +653,14 @@ export default function OrderModal({
                   </div>
 
                   {/* Card Number */}
-                  <div className="relative z-10 mb-5 text-left font-mono tracking-widest text-base sm:text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-100 to-white drop-shadow-sm" dir="ltr">
-                    {cardNumber ? cardNumber : "•••• •••• •••• ••••"}
+                  <div className="relative z-10 mb-5 text-left font-mono tracking-widest text-base sm:text-lg font-black text-white drop-shadow-sm" dir="ltr">
+                    •••• •••• •••• ••••
                   </div>
 
                   {/* Card Footer: Merchant Name & City */}
                   <div className="relative z-10 flex items-end justify-between text-xs">
                     <div className="text-right">
-                      <span className="text-[9px] uppercase tracking-wider text-cyan-300/70 font-bold block mb-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-blue-200 font-bold block mb-0.5">
                         التاجر / العميل
                       </span>
                       <span className="font-bold text-white uppercase tracking-wide truncate max-w-[170px] block">
@@ -670,10 +669,10 @@ export default function OrderModal({
                     </div>
 
                     <div className="text-left" dir="ltr">
-                      <span className="text-[9px] uppercase tracking-wider text-cyan-300/70 font-bold block mb-0.5">
+                      <span className="text-[9px] uppercase tracking-wider text-blue-200 font-bold block mb-0.5">
                         المدينة
                       </span>
-                      <span className="font-bold text-cyan-200 truncate max-w-[100px] block">
+                      <span className="font-bold text-blue-100 truncate max-w-[100px] block">
                         {customerCity.split(" ")[0]}
                       </span>
                     </div>
@@ -688,25 +687,25 @@ export default function OrderModal({
               <div className="lg:col-span-7 flex flex-col gap-4">
                 
                 {/* 🌟 2-STEP STEPPER NAVIGATOR HEADER */}
-                <div className="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-[#051740]/90 border border-cyan-400/35 shadow-md">
+                <div className="flex items-center justify-between gap-2 p-2 sm:p-2.5 rounded-2xl bg-slate-100 border border-slate-200 shadow-xs">
                   {/* Step 1 Tab Button */}
                   <button
                     type="button"
                     onClick={() => setStep(1)}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
                       step === 1
-                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.45)] ring-2 ring-cyan-400/50"
-                        : "bg-white/5 text-blue-200/70 hover:bg-white/10"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 ring-2 ring-blue-400"
+                        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
                     }`}
                   >
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono font-black ${step === 1 ? "bg-white text-blue-900" : "bg-white/20 text-white"}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono font-black ${step === 1 ? "bg-white text-blue-700" : "bg-slate-200 text-slate-700"}`}>
                       1
                     </div>
                     <span>المرحلة 1: بيانات التاجر</span>
-                    {customerName.trim() && <Check className="w-3.5 h-3.5 text-emerald-300" />}
+                    {customerName.trim() && <Check className="w-3.5 h-3.5 text-emerald-500" />}
                   </button>
 
-                  <ChevronLeft className="w-4 h-4 text-cyan-400/60 shrink-0" />
+                  <ChevronLeft className="w-4 h-4 text-slate-400 shrink-0" />
 
                   {/* Step 2 Tab Button */}
                   <button
@@ -718,11 +717,11 @@ export default function OrderModal({
                     }}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-black transition-all cursor-pointer ${
                       step === 2
-                        ? "bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_rgba(6,182,212,0.45)] ring-2 ring-cyan-400/50"
-                        : "bg-white/5 text-blue-200/70 hover:bg-white/10"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 ring-2 ring-blue-400"
+                        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
                     }`}
                   >
-                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono font-black ${step === 2 ? "bg-white text-blue-900" : "bg-white/20 text-white"}`}>
+                    <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[11px] font-mono font-black ${step === 2 ? "bg-white text-blue-700" : "bg-slate-200 text-slate-700"}`}>
                       2
                     </div>
                     <span>المرحلة 2: معلومات المنتج والدفع</span>
@@ -736,14 +735,14 @@ export default function OrderModal({
                   <form onSubmit={handleProceedToStage2} className="space-y-4 animate-in fade-in duration-300">
                     
                     {/* Stage 1 Header Capsule */}
-                    <div className="p-3.5 rounded-2xl bg-[#061848]/80 border border-blue-400/30">
+                    <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
                       <div className="flex items-center gap-2 mb-1">
-                        <User className="w-4 h-4 text-cyan-300" />
-                        <h4 className="text-xs sm:text-sm font-black text-white">
+                        <User className="w-4 h-4 text-blue-600" />
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900">
                           المرحلة الأولى: بيانات التاجر الأساسية (Merchant Information)
                         </h4>
                       </div>
-                      <p className="text-[11px] text-blue-200/80 font-bold">
+                      <p className="text-[11px] text-slate-500 font-bold">
                         أدخل معلوماتك الشخصية للتواصل وتخصيص ملكية المتجر ورابط التتبع السري لك.
                       </p>
                     </div>
@@ -751,7 +750,7 @@ export default function OrderModal({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       {/* Name */}
                       <div>
-                        <label className="text-xs font-black text-blue-100 block mb-1">
+                        <label className="text-xs font-black text-slate-800 block mb-1">
                           الاسم الكامل للتاجر *
                         </label>
                         <div className="relative">
@@ -761,15 +760,15 @@ export default function OrderModal({
                             placeholder="مثال: يوسف الإدريسي"
                             value={customerName}
                             onChange={(e) => setCustomerName(e.target.value)}
-                            className="w-full px-3.5 py-3 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-9"
+                            className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:bg-white transition-all pl-9 shadow-inner"
                           />
-                          <User className="w-4 h-4 text-cyan-400 absolute left-3 top-3.5" />
+                          <User className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
                         </div>
                       </div>
 
                       {/* Email */}
                       <div>
-                        <label className="text-xs font-black text-blue-100 block mb-1">
+                        <label className="text-xs font-black text-slate-800 block mb-1">
                           البريد الإلكتروني للتاجر *
                         </label>
                         <div className="relative">
@@ -780,15 +779,15 @@ export default function OrderModal({
                             placeholder="merchant@gmail.com"
                             value={customerEmail}
                             onChange={(e) => setCustomerEmail(e.target.value)}
-                            className="w-full px-3.5 py-3 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-9 text-right"
+                            className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:bg-white transition-all pl-9 text-right shadow-inner"
                           />
-                          <Mail className="w-4 h-4 text-purple-400 absolute left-3 top-3.5" />
+                          <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3.5" />
                         </div>
                       </div>
 
                       {/* WhatsApp / Phone */}
                       <div>
-                        <label className="text-xs font-black text-blue-100 block mb-1">
+                        <label className="text-xs font-black text-slate-800 block mb-1">
                           رقم الواتساب / الهاتف الشخصي للتاجر *
                         </label>
                         <div className="relative">
@@ -799,15 +798,15 @@ export default function OrderModal({
                             placeholder="+212 6 XX XX XX XX"
                             value={customerPhone}
                             onChange={(e) => setCustomerPhone(e.target.value)}
-                            className="w-full px-3.5 py-3 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-9 text-right"
+                            className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-mono font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:bg-white transition-all pl-9 text-right shadow-inner"
                           />
-                          <Phone className="w-4 h-4 text-emerald-400 absolute left-3 top-3.5" />
+                          <Phone className="w-4 h-4 text-emerald-600 absolute left-3 top-3.5" />
                         </div>
                       </div>
 
                       {/* Moroccan City */}
                       <div>
-                        <label className="text-xs font-black text-blue-100 block mb-1">
+                        <label className="text-xs font-black text-slate-800 block mb-1">
                           المدينة بالمغرب *
                         </label>
                         <div className="relative">
@@ -818,14 +817,14 @@ export default function OrderModal({
                             placeholder="اختر أو اكتب مدينتك (مثال: الدار البيضاء)"
                             value={customerCity}
                             onChange={(e) => setCustomerCity(e.target.value)}
-                            className="w-full px-3.5 py-3 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 focus:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all pl-9"
+                            className="w-full px-3.5 py-3 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:bg-white transition-all pl-9 shadow-inner"
                           />
                           <datalist id="moroccan-cities-list">
                             {MOROCCAN_CITIES.map((c) => (
                               <option key={c} value={c} />
                             ))}
                           </datalist>
-                          <MapPin className="w-4 h-4 text-amber-400 absolute left-3 top-3.5" />
+                          <MapPin className="w-4 h-4 text-amber-500 absolute left-3 top-3.5" />
                         </div>
                       </div>
                     </div>
@@ -834,7 +833,7 @@ export default function OrderModal({
                     <div className="pt-3">
                       <button
                         type="submit"
-                        className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-cyan-400 via-blue-600 to-indigo-600 hover:from-cyan-300 hover:via-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-[0_0_30px_rgba(6,182,212,0.55)] hover:shadow-[0_0_45px_rgba(6,182,212,0.85)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer group"
+                        className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer group"
                       >
                         <span>المتابعة لمعلومات المنتج والدفع (الخطوة 2 من 2)</span>
                         <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
@@ -843,8 +842,8 @@ export default function OrderModal({
 
                     {/* Trust line */}
                     <div className="text-center pt-1">
-                      <p className="text-[11px] text-blue-200/70 font-bold flex items-center justify-center gap-2">
-                        <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
+                      <p className="text-[11px] text-slate-500 font-bold flex items-center justify-center gap-2">
+                        <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
                         <span>بياناتك الشخصية مشفرة ومحمية 100% وفق سياسة الخصوصية المغربية والدولية</span>
                       </p>
                     </div>
@@ -858,14 +857,14 @@ export default function OrderModal({
                   <form onSubmit={handleSubmitOrder} className="space-y-3.5 animate-in fade-in duration-300">
                     
                     {/* Stage 2 Header with Back Button */}
-                    <div className="p-3 rounded-2xl bg-[#061848]/80 border border-blue-400/30 flex items-center justify-between">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <ShoppingBag className="w-4 h-4 text-cyan-300" />
+                        <ShoppingBag className="w-4 h-4 text-blue-600" />
                         <div>
-                          <h4 className="text-xs sm:text-sm font-black text-white">
+                          <h4 className="text-xs sm:text-sm font-black text-slate-900">
                             المرحلة الثانية: مواصفات المنتج والمتجر
                           </h4>
-                          <span className="text-[10px] text-blue-200/80 font-bold block">
+                          <span className="text-[10px] text-slate-500 font-bold block">
                             التاجر: {customerName} ({customerCity})
                           </span>
                         </div>
@@ -874,7 +873,7 @@ export default function OrderModal({
                       <button
                         type="button"
                         onClick={() => setStep(1)}
-                        className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-cyan-200 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                        className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
                       >
                         <ArrowRight className="w-3.5 h-3.5" />
                         <span>تعديل بيانات التاجر</span>
@@ -884,7 +883,7 @@ export default function OrderModal({
                     {/* 1. Store / Product Name & Selling Price */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="text-xs font-black text-blue-100 block mb-1">
+                        <label className="text-xs font-black text-slate-800 block mb-1">
                           اسم متجرك أو منتجك (Store / Product Name)
                         </label>
                         <div className="relative">
@@ -893,14 +892,14 @@ export default function OrderModal({
                             placeholder="مثال: متجر الساعات الفاخرة"
                             value={storeName}
                             onChange={(e) => setStoreName(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-2xl bg-[#061845]/90 border border-blue-400/40 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 transition-all pl-9"
+                            className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:bg-white transition-all pl-9 shadow-inner"
                           />
-                          <Store className="w-4 h-4 text-cyan-400 absolute left-3 top-3" />
+                          <Store className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                         </div>
                       </div>
 
                       <div>
-                        <label className="text-xs font-black text-emerald-300 block mb-1">
+                        <label className="text-xs font-black text-slate-800 block mb-1">
                           ثمن بيع المنتج للزبائن بالدرهم (Selling Price) *
                         </label>
                         <div className="relative">
@@ -910,9 +909,9 @@ export default function OrderModal({
                             placeholder="مثال: 299 درهم أو 349 MAD"
                             value={productPrice}
                             onChange={(e) => setProductPrice(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-2xl bg-[#061845]/90 border border-emerald-400/50 text-xs font-bold text-white placeholder-blue-300/40 outline-none focus:border-emerald-400 shadow-inner transition-all pl-9"
+                            className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-emerald-600 focus:bg-white shadow-inner transition-all pl-9"
                           />
-                          <Tag className="w-4 h-4 text-emerald-400 absolute left-3 top-3" />
+                          <Tag className="w-4 h-4 text-emerald-600 absolute left-3 top-3" />
                         </div>
                       </div>
                     </div>
@@ -920,11 +919,11 @@ export default function OrderModal({
                     {/* 2. Order Reception Phone */}
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-black text-cyan-200 flex items-center gap-1.5">
-                          <Phone className="w-3.5 h-3.5 text-cyan-400" />
+                        <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                          <Phone className="w-3.5 h-3.5 text-blue-600" />
                           <span>رقم الهاتف الذي يستقبل فيه التاجر مبيعاته وطلبياته *</span>
                         </label>
-                        <span className="text-[10px] text-cyan-300/80 font-bold">
+                        <span className="text-[10px] text-blue-600 font-bold">
                           رقم واتساب المبيعات
                         </span>
                       </div>
@@ -936,30 +935,30 @@ export default function OrderModal({
                           placeholder="+212 6 XX XX XX XX"
                           value={orderPhone}
                           onChange={(e) => setOrderPhone(e.target.value)}
-                          className="w-full px-3.5 py-2.5 rounded-2xl bg-[#061845]/90 border border-cyan-400/50 text-xs font-mono font-bold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400 transition-all pl-9 text-right"
+                          className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border-2 border-slate-200 text-xs font-mono font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600 focus:bg-white transition-all pl-9 text-right shadow-inner"
                         />
-                        <Phone className="w-4 h-4 text-emerald-400 absolute left-3 top-3" />
+                        <Phone className="w-4 h-4 text-emerald-600 absolute left-3 top-3" />
                       </div>
-                      <p className="text-[10.5px] text-blue-200/70 font-semibold mt-1">
+                      <p className="text-[10.5px] text-slate-500 font-semibold mt-1">
                         ⚡ هذا هو الرقم الذي سنربطه في متجرك لتصلك عليه إشعارات وطلبيات الزبائن مباشرة عبر واتساب.
                       </p>
                     </div>
 
                     {/* 3. Product Images Upload */}
-                    <div className="rounded-2xl bg-[#061845]/90 border border-blue-400/35 p-3 space-y-2">
+                    <div className="rounded-2xl bg-slate-50 border border-slate-200 p-3 space-y-2">
                       <div className="flex items-center justify-between">
-                        <label className="text-xs font-black text-cyan-200 flex items-center gap-1.5">
-                          <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+                        <label className="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                          <ImageIcon className="w-3.5 h-3.5 text-blue-600" />
                           <span>رفع صور المنتج (Product Images)</span>
                         </label>
-                        <span className="text-[10px] text-cyan-300/80 font-bold">
+                        <span className="text-[10px] text-slate-500 font-bold">
                           {productImages.length > 0 ? `${productImages.length} صور تم اختيارها` : "يمكنك رفع عدة صور"}
                         </span>
                       </div>
 
-                      <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl border border-dashed border-cyan-400/50 bg-[#071d54]/50 hover:bg-[#0b276b]/70 cursor-pointer transition-colors group">
-                        <UploadCloud className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs font-bold text-cyan-200">
+                      <label className="flex items-center justify-center gap-2 p-2.5 rounded-xl border-2 border-dashed border-slate-300 bg-white hover:bg-slate-100 cursor-pointer transition-colors group">
+                        <UploadCloud className="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs font-bold text-slate-700">
                           اضغط لاختيار ورفع صور منتجك من جهازك 📸
                         </span>
                         <input
@@ -976,7 +975,7 @@ export default function OrderModal({
                           {productImages.map((img, idx) => (
                             <div
                               key={idx}
-                              className="relative w-12 h-12 rounded-xl overflow-hidden border border-cyan-400/60 shrink-0 group shadow-md"
+                              className="relative w-12 h-12 rounded-xl overflow-hidden border border-slate-200 shrink-0 group shadow-xs"
                             >
                               <img src={img} alt={`منتج ${idx + 1}`} className="w-full h-full object-cover" />
                               <button
@@ -997,7 +996,7 @@ export default function OrderModal({
                         placeholder="ملاحظات إضافية حول المنتج أو تصميمه (اختياري)"
                         value={productNotes}
                         onChange={(e) => setProductNotes(e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-xl bg-[#05143a] border border-blue-400/30 text-xs font-semibold text-white placeholder-blue-300/40 outline-none focus:border-cyan-400"
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600"
                       />
                     </div>
 
@@ -1006,7 +1005,7 @@ export default function OrderModal({
                       <button
                         type="submit"
                         disabled={isProcessing}
-                        className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-cyan-400 via-blue-600 to-indigo-600 hover:from-cyan-300 hover:via-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-[0_0_30px_rgba(6,182,212,0.55)] hover:shadow-[0_0_45px_rgba(6,182,212,0.85)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                        className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
                       >
                         {isProcessing ? (
                           <>
@@ -1015,7 +1014,7 @@ export default function OrderModal({
                           </>
                         ) : (
                           <>
-                            <Lock className="w-5 h-5 text-cyan-200" />
+                            <Lock className="w-5 h-5 text-blue-100" />
                             <span>متابعة إلى بوابة الدفع الآمن YouCan Pay ←</span>
                           </>
                         )}
@@ -1029,14 +1028,14 @@ export default function OrderModal({
                   /* ==================================================== */
                   <div className="space-y-3.5 animate-in fade-in duration-300">
                     {/* Header */}
-                    <div className="p-3 rounded-2xl bg-[#061848]/80 border border-cyan-400/30 flex items-center justify-between">
+                    <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Lock className="w-4 h-4 text-cyan-300" />
+                        <Lock className="w-4 h-4 text-blue-600" />
                         <div>
-                          <h4 className="text-xs sm:text-sm font-black text-white">
+                          <h4 className="text-xs sm:text-sm font-black text-slate-900">
                             المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦
                           </h4>
-                          <span className="text-[10px] text-cyan-300 font-bold block">
+                          <span className="text-[10px] text-blue-600 font-bold block">
                             طلب رقم {createdOrder?.order_number} • {formattedPrice}
                           </span>
                         </div>
@@ -1044,7 +1043,7 @@ export default function OrderModal({
                       <button
                         type="button"
                         onClick={() => setCreatedOrder(null)}
-                        className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-cyan-200 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                        className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
                       >
                         <ArrowRight className="w-3.5 h-3.5" />
                         <span>تعديل</span>
@@ -1072,7 +1071,7 @@ export default function OrderModal({
 
                     {/* Safety WhatsApp link */}
                     <div className="text-center pt-1">
-                      <p className="text-xs text-blue-200/80 font-bold flex items-center justify-center gap-1.5">
+                      <p className="text-xs text-slate-600 font-bold flex items-center justify-center gap-1.5">
                         <span>واجهتك مشكلة في الدفع؟</span>
                         <a
                           href={`https://wa.me/212762357491?text=${encodeURIComponent(
@@ -1080,7 +1079,7 @@ export default function OrderModal({
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-cyan-300 hover:underline font-black flex items-center gap-1"
+                          className="text-blue-600 hover:underline font-black flex items-center gap-1"
                         >
                           <WhatsAppIcon size={13} />
                           <span>تواصل مع الدعم الفني</span>
