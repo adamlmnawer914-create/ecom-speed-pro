@@ -74,14 +74,13 @@ export function getDeletedIds(): Set<string> {
     return globalThis.__ECOM_DELETED_CACHE__;
   }
   const set = new Set<string>();
-  const isUuid = (str: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str.trim());
 
   try {
     if (fs.existsSync(TMP_DELETED_FILE)) {
       const data = JSON.parse(fs.readFileSync(TMP_DELETED_FILE, "utf-8"));
       if (Array.isArray(data)) {
         data.forEach((item: string) => {
-          if (typeof item === "string" && isUuid(item)) set.add(item.trim());
+          if (typeof item === "string" && item.trim().length > 0) set.add(item.trim());
         });
       }
     }
@@ -92,7 +91,7 @@ export function getDeletedIds(): Set<string> {
       const data = JSON.parse(fs.readFileSync(LOCAL_DELETED_FILE, "utf-8"));
       if (Array.isArray(data)) {
         data.forEach((item: string) => {
-          if (typeof item === "string" && isUuid(item)) set.add(item.trim());
+          if (typeof item === "string" && item.trim().length > 0) set.add(item.trim());
         });
       }
     }
@@ -106,11 +105,28 @@ function recordDeletedId(id: string) {
   if (!id) return;
   const set = getDeletedIds();
   const clean = id.trim();
-  // Only record UUID format, never serial numbers like #ESP-101
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean)) {
-    return;
-  }
+  if (clean.length < 2) return;
   set.add(clean);
+
+  const arr = Array.from(set);
+  const json = JSON.stringify(arr, null, 2);
+
+  try {
+    ensureDir(TMP_DELETED_FILE);
+    fs.writeFileSync(TMP_DELETED_FILE, json, "utf-8");
+  } catch (e) {}
+
+  try {
+    ensureDir(LOCAL_DELETED_FILE);
+    fs.writeFileSync(LOCAL_DELETED_FILE, json, "utf-8");
+  } catch (e) {}
+}
+
+export function unrecordDeletedId(id: string) {
+  if (!id) return;
+  const set = getDeletedIds();
+  const clean = id.trim();
+  set.delete(clean);
 
   const arr = Array.from(set);
   const json = JSON.stringify(arr, null, 2);
@@ -164,7 +180,8 @@ function readLocalOrders(): Order[] {
   const deletedSet = getDeletedIds();
   const validRaw = rawList.filter((item: any) => {
     if (!item || !item.id) return false;
-    return !deletedSet.has(item.id);
+    const num = item.order_number || item.orderNumber || "";
+    return !deletedSet.has(item.id) && !deletedSet.has(num);
   });
 
   const mapped: Order[] = validRaw.map((item: any) => ({
@@ -342,9 +359,14 @@ export async function getAllOrders(): Promise<Order[]> {
         .order("created_at", { ascending: false });
 
       if (!error && Array.isArray(data)) {
-        return (data as Order[]).filter(
-          (o) => o && o.id && !deletedSet.has(o.id)
-        );
+        return (data as Order[]).filter((o) => {
+          if (!o || !o.id) return false;
+          if (deletedSet.has(o.id)) return false;
+          if (o.order_number && deletedSet.has(o.order_number)) return false;
+          const p = (o.phone_number || "").replace(/[^0-9]/g, "");
+          if (p && p.length >= 6 && deletedSet.has(p)) return false;
+          return true;
+        });
       }
     } catch (err) {
       console.warn("Supabase fetch all failed, falling back to local:", err);
@@ -352,7 +374,14 @@ export async function getAllOrders(): Promise<Order[]> {
   }
 
   const local = readLocalOrders();
-  return local.filter((o) => o && o.id && !deletedSet.has(o.id));
+  return local.filter((o) => {
+    if (!o || !o.id) return false;
+    if (deletedSet.has(o.id)) return false;
+    if (o.order_number && deletedSet.has(o.order_number)) return false;
+    const p = (o.phone_number || "").replace(/[^0-9]/g, "");
+    if (p && p.length >= 6 && deletedSet.has(p)) return false;
+    return true;
+  });
 }
 
 /**
@@ -361,7 +390,9 @@ export async function getAllOrders(): Promise<Order[]> {
 export async function createOrder(data: Partial<Order>): Promise<Order> {
   const deletedSet = getDeletedIds();
   let newId = data.id || crypto.randomUUID();
-  if (deletedSet.has(newId)) {
+  if (data.id && deletedSet.has(data.id)) {
+    unrecordDeletedId(data.id);
+  } else if (deletedSet.has(newId)) {
     newId = crypto.randomUUID();
   }
 
@@ -454,6 +485,7 @@ export async function deleteOrder(id: string): Promise<boolean> {
   const targetId = target?.id || id;
 
   recordDeletedId(targetId);
+  if (target?.order_number) recordDeletedId(target.order_number);
 
   const filtered = orders.filter((o) => o.id !== targetId && o.order_number !== id);
   writeLocalOrders(filtered);
@@ -476,6 +508,10 @@ export async function deleteCustomerOrders(phoneNumber: string, customerName?: s
   const cleanPhone = phoneNumber ? phoneNumber.replace(/[^0-9]/g, "") : "";
   const cleanName = customerName ? customerName.trim().toLowerCase() : "";
 
+  if (cleanPhone && cleanPhone.length >= 6) {
+    recordDeletedId(cleanPhone);
+  }
+
   const orders = readLocalOrders();
   const toDelete = orders.filter((o) => {
     const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
@@ -486,6 +522,7 @@ export async function deleteCustomerOrders(phoneNumber: string, customerName?: s
 
   toDelete.forEach((o) => {
     if (o.id) recordDeletedId(o.id);
+    if (o.order_number) recordDeletedId(o.order_number);
   });
 
   const remaining = orders.filter((o) => !toDelete.some((d) => d.id === o.id));

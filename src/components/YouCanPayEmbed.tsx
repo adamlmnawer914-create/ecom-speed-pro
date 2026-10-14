@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { Lock, AlertCircle, Loader2, Copy, Check, CreditCard, Sparkles } from "lucide-react";
+import { Lock, AlertCircle, Loader2, Copy, Check, CreditCard, Sparkles, ShieldCheck } from "lucide-react";
+import PayPalIcon from "@/components/PayPalIcon";
+import { getPayPalPaymentLink } from "@/constants/paypal";
 
 interface YouCanPayEmbedProps {
   createdOrderId: string;
@@ -38,6 +40,9 @@ export default function YouCanPayEmbed({
   onProcessingChange,
   onSuccess,
 }: YouCanPayEmbedProps) {
+  const paypalUrl = getPayPalPaymentLink(amount, planTitle);
+  const isPayPal = Boolean(paypalUrl);
+
   const [tokenId, setTokenId] = useState<string | null>(null);
   const [publicKey, setPublicKey] = useState<string>("");
   const [isSandbox, setIsSandbox] = useState(true);
@@ -49,9 +54,9 @@ export default function YouCanPayEmbed({
   const ycPayRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // ── 1. Get a fresh token for this order from our backend ──────────────────
+  // ── 1. Get a fresh token for this order from our backend (skip if PayPal) ─
   const fetchToken = useCallback(async () => {
-    if (!createdOrderId) return;
+    if (isPayPal || !createdOrderId) return;
     setError(null);
     try {
       const params = new URLSearchParams({
@@ -83,6 +88,7 @@ export default function YouCanPayEmbed({
 
   // ── 2. Load ycpay.js SDK ──────────────────────────────────────────────────
   useEffect(() => {
+    if (isPayPal) return;
     if (sdkLoaded) return;
     const existing = document.querySelector('script[src*="ycpay.js"]');
     if (existing) {
@@ -96,10 +102,11 @@ export default function YouCanPayEmbed({
     script.onerror = () =>
       setError("فشل تحميل SDK بوابة الدفع. تحقق من اتصالك بالإنترنت.");
     document.head.appendChild(script);
-  }, [sdkLoaded]);
+  }, [isPayPal, sdkLoaded]);
 
   // ── 3. Init YCPay instance & render credit card form ─────────────────────
   useEffect(() => {
+    if (isPayPal) return;
     if (!sdkLoaded || !tokenId || !publicKey || !containerRef.current) return;
     if (ycPayRef.current) return; // already initialised
 
@@ -121,9 +128,9 @@ export default function YouCanPayEmbed({
       console.warn("YCPay init warning:", err);
       setSdkReady(true);
     }
-  }, [sdkLoaded, tokenId, publicKey, isSandbox]);
+  }, [isPayPal, sdkLoaded, tokenId, publicKey, isSandbox]);
 
-  // ── 4. Pay handler ────────────────────────────────────────────────────────
+  // ── 4. Pay handler (YouCan Pay) ───────────────────────────────────────────
   const handlePay = async () => {
     if (!ycPayRef.current || !tokenId || !createdOrderId) return;
     setPaying(true);
@@ -163,11 +170,140 @@ export default function YouCanPayEmbed({
     }
   };
 
+  // ── 5. PayPal Pay handler ─────────────────────────────────────────────────
+  const handlePayPalPay = async () => {
+    if (!paypalUrl) return;
+    setPaying(true);
+    onProcessingChange(true);
+    setError(null);
+
+    try {
+      // Confirm / broadcast order status in database as PayPal
+      if (createdOrderId) {
+        await fetch("/api/payment/confirm", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: createdOrderId, payment_method: "PayPal" }),
+        }).catch(() => {});
+      }
+
+      onSuccess({
+        id: createdOrderId,
+        order_number: createdOrderId.startsWith("#")
+          ? createdOrderId
+          : "#ESP-" + createdOrderId.slice(0, 6).toUpperCase(),
+        payment_method: "PayPal",
+      });
+
+      // Open PayPal payment link directly for customer
+      const win = window.open(paypalUrl, "_blank");
+      if (!win || win.closed || typeof win.closed === "undefined") {
+        window.location.href = paypalUrl;
+      }
+    } catch (err) {
+      console.warn("PayPal redirect error:", err);
+      window.location.href = paypalUrl;
+    } finally {
+      setTimeout(() => {
+        setPaying(false);
+        onProcessingChange(false);
+      }, 1200);
+    }
+  };
+
   const handleCopyTestCard = () => {
     navigator.clipboard.writeText("4242424242424242");
     setCopiedCard(true);
     setTimeout(() => setCopiedCard(false), 2500);
   };
+
+  // ── SPECIAL CASE: PayPal Direct Payment Flow ──────────────────────────────
+  if (isPayPal && paypalUrl) {
+    return (
+      <div className="rounded-3xl bg-white border-2 border-slate-200 p-4 sm:p-5 space-y-4 shadow-sm text-slate-900" dir="rtl">
+        {/* Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-blue-50 text-[#003087] flex items-center justify-center border border-blue-200 shadow-xs">
+              <PayPalIcon size={20} />
+            </div>
+            <div>
+              <span className="text-xs sm:text-sm font-black text-slate-900 block flex items-center gap-1.5">
+                <span>بوابة الدفع الإلكتروني PayPal</span>
+                <span className="px-1.5 py-0.5 rounded-full bg-blue-100 text-[#003087] text-[10px] font-black">
+                  معتمد وموثق ✓
+                </span>
+              </span>
+              <span className="text-[10.5px] text-slate-500 font-bold block">
+                دفع آمن 100% باسم الوكالة (Ecom Speed Pro) عبر الحساب أو البطاقة البنكية
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="px-2 py-0.5 rounded bg-blue-50 text-[10px] font-black text-[#003087] border border-blue-200">
+              PayPal
+            </span>
+            <span className="px-2 py-0.5 rounded bg-amber-50 text-[10px] font-black text-amber-800 border border-amber-200">
+              VISA / MC
+            </span>
+          </div>
+        </div>
+
+        {/* Agency Information Card */}
+        <div className="rounded-2xl bg-gradient-to-br from-blue-50/80 via-indigo-50/40 to-slate-50 border-2 border-blue-200/80 p-3.5 space-y-2.5 text-right shadow-xs">
+          <div className="flex items-center justify-between">
+            <span className="font-black text-xs text-blue-950 flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-blue-600" />
+              <span>تفاصيل الدفع لحساب الوكالة:</span>
+            </span>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black border border-emerald-300">
+              Ecom Speed Pro
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div className="bg-white px-3 py-2 rounded-xl border border-blue-100 shadow-xs">
+              <span className="text-[10px] text-slate-400 font-bold block">الباقة المختارة:</span>
+              <strong className="text-slate-900 font-black text-xs block mt-0.5">{planTitle}</strong>
+            </div>
+            <div className="bg-white px-3 py-2 rounded-xl border border-blue-100 shadow-xs flex items-center justify-between">
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold block">المبلغ المطلوب سداده:</span>
+                <strong className="text-blue-700 font-black text-sm block mt-0.5">{formattedPrice}</strong>
+              </div>
+              <span className="px-2 py-1 rounded-lg bg-blue-50 text-blue-800 text-[11px] font-bold">MAD</span>
+            </div>
+          </div>
+
+          <p className="text-[11px] text-slate-600 font-semibold leading-relaxed">
+            ⚡ بالضغط على الزر أدناه، سيتم نقلك مباشرة إلى صفحة الدفع الرسمية عبر <strong>PayPal</strong> الخاصة بوكالتنا (Ecom Speed Pro) لإتمام عملية الشراء بأمان وحماية كاملة.
+          </p>
+        </div>
+
+        {/* Pay Button */}
+        <div className="pt-1">
+          <button
+            type="button"
+            onClick={handlePayPalPay}
+            disabled={paying || isProcessing}
+            className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] hover:to-[#003087] text-white font-black text-sm sm:text-base shadow-lg shadow-blue-900/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+          >
+            {paying || isProcessing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>جاري فتح رابط الدفع عبر PayPal...</span>
+              </>
+            ) : (
+              <>
+                <PayPalIcon size={22} className="text-white group-hover:scale-110 transition-transform" />
+                <span>ادفع الآن عبر PayPal</span>
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const isLoading = !tokenId || !sdkReady;
 

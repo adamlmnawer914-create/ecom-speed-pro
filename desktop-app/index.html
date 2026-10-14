@@ -83,7 +83,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-[#02133f] via-[#052b75] to-[#011440] text-slate-800 p-3 sm:p-5 lg:p-6 relative overflow-x-hidden transition-[zoom] duration-200">
+<body style="zoom: 0.8;" class="min-h-screen bg-gradient-to-br from-[#02133f] via-[#052b75] to-[#011440] text-slate-800 p-3 sm:p-5 lg:p-6 relative overflow-x-hidden transition-[zoom] duration-200">
 
   <!-- Background Cosmic Ethereal Rays -->
   <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -159,7 +159,7 @@
             <i data-lucide="minus" class="w-3.5 h-3.5"></i>
           </button>
           <button id="btnZoomReset" class="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 text-slate-950 font-black text-xs hover:scale-105 transition-all cursor-pointer">
-            <span id="zoomPercentText">100%</span>
+            <span id="zoomPercentText">80%</span>
           </button>
           <button id="btnZoomIn" class="w-7 h-7 rounded-xl bg-white/10 hover:bg-cyan-500/20 text-cyan-200 hover:text-white flex items-center justify-center transition-all cursor-pointer border border-white/10" title="تكبير الصفحة (+)">
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
@@ -239,6 +239,10 @@
         <button onclick="switchTab('settings')" id="tabBtn-settings" class="tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold text-cyan-100/90 hover:text-white hover:bg-white/10">
           <i data-lucide="settings" class="w-4 h-4 shrink-0"></i>
           <span>الأمان</span>
+        </button>
+        <button onclick="switchTab('trash')" id="tabBtn-trash" class="tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold text-rose-300/90 hover:text-white hover:bg-rose-500/20">
+          <i data-lucide="trash-2" class="w-4 h-4 shrink-0"></i>
+          <span>المحذوفات</span>
         </button>
       </aside>
 
@@ -341,7 +345,7 @@
 
           <!-- ORDERS TABLE CONTAINER -->
           <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
-            <table class="w-full text-right text-xs">
+            <table class="w-full min-w-[1350px] text-right text-xs">
               <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                 <tr>
                   <th class="p-3.5">الطلب</th>
@@ -353,7 +357,7 @@
                   <th class="p-3.5">هاتف استقبال الطلبات</th>
                   <th class="p-3.5">الحالة</th>
                   <th class="p-3.5">رابط المتجر</th>
-                  <th class="p-3.5 text-center">إجراءات</th>
+                  <th class="p-3.5 text-center min-w-[360px]">إجراءات</th>
                 </tr>
               </thead>
               <tbody id="ordersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
@@ -522,15 +526,21 @@
               <input id="customerSearchInput" oninput="renderCustomersTab()" type="text" placeholder="ابحث باسم العميل أو رقم الهاتف في سجل العملاء..." class="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500 transition-colors">
               <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 right-3"></i>
             </div>
-            <button onclick="exportCustomersCSV()" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
-              <i data-lucide="download" class="w-4 h-4"></i>
-              <span>تصدير سجل العملاء</span>
-            </button>
+            <div class="flex items-center gap-2">
+              <button onclick="switchTab('trash')" class="px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all" title="الانتقال إلى صفحة التجار والطلبات المحذوفة">
+                <i data-lucide="trash-2" class="w-4 h-4 text-rose-600"></i>
+                <span>سلة المحذوفات (<span id="crmTrashCount">0</span>)</span>
+              </button>
+              <button onclick="exportCustomersCSV()" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="download" class="w-4 h-4"></i>
+                <span>تصدير سجل العملاء</span>
+              </button>
+            </div>
           </div>
 
           <!-- Customers Table -->
           <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
-            <table class="w-full text-right text-xs">
+            <table class="w-full min-w-[1100px] text-right text-xs">
               <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                 <tr>
                   <th class="p-3.5">التاجر والمدينة</th>
@@ -539,7 +549,7 @@
                   <th class="p-3.5">إجمالي التعاملات</th>
                   <th class="p-3.5">آخر متجر / باقة</th>
                   <th class="p-3.5">تاريخ التعامل</th>
-                  <th class="p-3.5 text-center">إجراءات التاجر</th>
+                  <th class="p-3.5 text-center min-w-[300px]">إجراءات التاجر</th>
                 </tr>
               </thead>
               <tbody id="customersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
@@ -962,6 +972,66 @@
           </div>
         </div>
 
+        <!-- ========================================== -->
+        <!-- TAB 8: TRASH / DELETED (المحذوفات) -->
+        <!-- ========================================== -->
+        <div id="tabContent-trash" class="tab-pane hidden flex flex-col gap-5">
+          <!-- Header Strip -->
+          <div class="flex flex-wrap items-center justify-between gap-3 bg-rose-50 border border-rose-200 p-4 rounded-2xl">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                <i data-lucide="trash-2" class="w-5 h-5"></i>
+              </div>
+              <div>
+                <h3 class="font-black text-sm text-rose-900">سلة المحذوفات</h3>
+                <p class="text-xs text-rose-600 font-bold">الطلبات والتجار المحذوفون مؤقتاً — يمكنك حذفها نهائياً من هنا</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <button onclick="switchTab('customers')" class="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 flex items-center gap-1 cursor-pointer transition-all">
+                <span>العودة للتجار (CRM) ←</span>
+              </button>
+              <button onclick="selectAllTrash()" class="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 flex items-center gap-1.5 cursor-pointer transition-all">
+                <i data-lucide="check-square" class="w-4 h-4 text-blue-600"></i>
+                <span>تحديد الكل</span>
+              </button>
+              <button onclick="restoreSelectedTrash()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="undo-2" class="w-4 h-4"></i>
+                <span>استعادة المحدد</span>
+              </button>
+              <button onclick="permanentDeleteSelected()" class="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+                <span>حذف المحدد نهائياً</span>
+              </button>
+              <button onclick="clearAllTrash()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-800 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all">
+                <i data-lucide="x-circle" class="w-4 h-4"></i>
+                <span>إفراغ السلة</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Trash Table -->
+          <div class="overflow-x-auto rounded-2xl border border-rose-100 bg-white shadow-sm">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-rose-50 text-rose-700 font-bold border-b border-rose-100">
+                <tr>
+                  <th class="p-3.5 w-10">
+                    <input type="checkbox" id="trashSelectAllCheckbox" onchange="toggleAllTrash(this.checked)" class="rounded cursor-pointer w-4 h-4">
+                  </th>
+                  <th class="p-3.5">الطلب / التاجر</th>
+                  <th class="p-3.5">المتجر والباقة</th>
+                  <th class="p-3.5">المبلغ</th>
+                  <th class="p-3.5">تاريخ الحذف</th>
+                  <th class="p-3.5 text-center">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody id="trashTableBody" class="divide-y divide-rose-50 font-bold text-slate-700">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </main>
 
     </div>
@@ -1196,8 +1266,32 @@
     const DESKTOP_AUTH_SECRET = "ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b";
     let apiBase = "http://localhost:3000";
     let orders = [];
+    let deletedOrders = []; // Trash: soft-deleted orders stored here
+    let deletedIds = new Set(); // IDs to filter out from fetch results
     let currentTab = "orders";
-    let pageZoom = 1.0;
+    let pageZoom = 0.80;
+
+    // Persist deletedIds to localStorage for cross-session survival
+    function loadDeletedIds() {
+      try {
+        const stored = localStorage.getItem('esp_deleted_ids');
+        if (stored) {
+          const arr = JSON.parse(stored);
+          arr.forEach(id => deletedIds.add(id));
+        }
+        const storedOrders = localStorage.getItem('esp_deleted_orders');
+        if (storedOrders) {
+          deletedOrders = JSON.parse(storedOrders) || [];
+        }
+      } catch(e) {}
+    }
+
+    function saveDeletedIds() {
+      try {
+        localStorage.setItem('esp_deleted_ids', JSON.stringify([...deletedIds]));
+        localStorage.setItem('esp_deleted_orders', JSON.stringify(deletedOrders));
+      } catch(e) {}
+    }
 
     // Dual-Tone Audio Alert Chime
     function playOrderChime() {
@@ -1284,6 +1378,11 @@
         title: "أمان النظام وإعدادات الحماية",
         desc: "مفاتيح التوثيق المشفرة، حظر المتصفحات، وأدوات صيانة برنامج سطح المكتب",
         icon: "settings"
+      },
+      trash: {
+        title: "سلة المحذوفات — التجار والطلبات المحذوفة",
+        desc: "عرض العناصر المحذوفة مؤقتاً وإمكانية حذفها نهائياً أو استعادتها",
+        icon: "trash-2"
       }
     };
 
@@ -1349,6 +1448,9 @@
           break;
         case "settings":
           renderSettingsTab();
+          break;
+        case "trash":
+          renderTrashTab();
           break;
       }
     }
@@ -1416,12 +1518,15 @@
         }
       } catch (e) {}
 
+      // Filter out deleted IDs
+      const filteredCombined = combined.filter(o => !deletedIds.has(o.id));
+
       // Sort newest first
-      combined.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+      filteredCombined.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
 
       // Detect newly arrived order
-      if (orders.length > 0 && combined.length > orders.length) {
-        const newest = combined[0];
+      if (orders.length > 0 && filteredCombined.length > orders.length) {
+        const newest = filteredCombined[0];
         const existingIds = new Set(orders.map(o => o.id));
         if (newest && !existingIds.has(newest.id)) {
           playOrderChime();
@@ -1430,7 +1535,7 @@
         }
       }
 
-      orders = combined;
+      orders = filteredCombined;
 
       // Update Header Stats
       const totalCount = orders.length;
@@ -1624,40 +1729,44 @@
               ${storeCell}
             </td>
 
-            <!-- Col 10: Distinct Actions (with 'تسليم الطلب الآن' at the far left) -->
-            <td class="p-3.5 text-center flex items-center justify-center gap-1.5 flex-nowrap" onclick="event.stopPropagation();">
-              <!-- Required Feature: تسليم الطلب الآن -->
-              <button onclick="openQuickStoreUrlModal('${id}')" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1.5 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0" title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً">
-                <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
-                <span>تسليم الطلب الآن</span>
-              </button>
+            <!-- Col 10: Distinct Actions (with 'تسليم الطلب' and all action buttons fully unclipped) -->
+            <td class="p-3.5 text-center min-w-[360px]" onclick="event.stopPropagation();">
+              <div class="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                <!-- Required Feature: تسليم الطلب الآن -->
+                <button onclick="openQuickStoreUrlModal('${id}')" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0" title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً">
+                  <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
+                  <span>تسليم الطلب</span>
+                </button>
 
-              <!-- Action 1: Merchant Profile -->
-              <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="الملف الشخصي للتاجر (اسمه، مدينته، هاتف، معلوماته)">
-                <i data-lucide="user" class="w-3 h-3 text-blue-600"></i>
-                <span>ملف التاجر</span>
-              </button>
+                <!-- Action 1: Merchant Profile -->
+                <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="الملف الشخصي للتاجر (اسمه، مدينته، هاتف، معلوماته)">
+                  <i data-lucide="user" class="w-3 h-3 text-blue-600"></i>
+                  <span>ملف التاجر</span>
+                </button>
 
-              <!-- Action 2: Store & Order Dossier -->
-              <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="تفاصيل طلب المتجر ومشروعه (صور المنتج، ثمنه، ورقم الطلبات)">
-                <i data-lucide="store" class="w-3 h-3 text-slate-700"></i>
-                <span>طلب المتجر</span>
-              </button>
+                <!-- Action 2: Store & Order Dossier -->
+                <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="تفاصيل طلب المتجر ومشروعه (صور المنتج، ثمنه، ورقم الطلبات)">
+                  <i data-lucide="store" class="w-3 h-3 text-slate-700"></i>
+                  <span>طلب المتجر</span>
+                </button>
 
-              <!-- Action 3: Secret Tracking Link (Opens in browser) -->
-              <button onclick="openCustomerPrivateLink('${id}')" class="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center transition-all hover:scale-105 active:scale-95 cursor-pointer" title="فتح رابط التتبع السري للتاجر في المتصفح">
-                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-              </button>
+                <!-- Action 3: Secret Tracking Link (Opens in browser) -->
+                <button onclick="openCustomerPrivateLink('${id}')" class="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="فتح رابط التتبع السري للتاجر في المتصفح">
+                  <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </button>
 
-              <!-- Action 4: WhatsApp Merchant -->
-              ${cleanPhone ? `
-                <a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص متجرك (' + (storeName || plan) + ').')}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer" title="مراسلة التاجر عبر واتساب">
-                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                </a>
-              ` : ''}
+                <!-- Action 4: WhatsApp Merchant -->
+                ${cleanPhone ? `
+                  <a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص متجرك (' + (storeName || plan) + ').')}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer shrink-0" title="مراسلة التاجر عبر واتساب">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  </a>
+                ` : ''}
 
-              <!-- Action 5: Delete -->
-              <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف هذا الطلب"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                <!-- Action 5: Delete -->
+                <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer shrink-0 hover:scale-105 active:scale-95 transition-all shadow-xs" title="حذف هذا الطلب ونقله إلى سلة المحذوفات">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -1824,6 +1933,7 @@
       document.getElementById("crmTotalCustomers").innerText = totalCustomers;
       document.getElementById("crmVipCustomers").innerText = vipCount;
       document.getElementById("crmAvgCustomerSpend").innerText = avgSpend.toLocaleString() + " درهم";
+      if (document.getElementById("crmTrashCount")) document.getElementById("crmTrashCount").innerText = deletedOrders.length;
 
       const filtered = customerList.filter(c => {
         return !searchVal || c.name.toLowerCase().includes(searchVal) || c.phone.includes(searchVal) || c.city.toLowerCase().includes(searchVal);
@@ -1887,28 +1997,32 @@
             <td class="p-3.5 text-slate-500 font-mono text-[11px] font-bold">${formattedDate}</td>
 
             <!-- Col 7: Distinct Actions -->
-            <td class="p-3.5 text-center flex items-center justify-center gap-1" onclick="event.stopPropagation();">
-              <!-- Merchant Personal Profile Button -->
-              <button onclick="viewMerchantProfile('${c.phone || c.name}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="عرض الملف الشخصي للتاجر (اسمه، مدينته، هاتفه، تفاصيله)">
-                <i data-lucide="user" class="w-3.5 h-3.5 text-blue-600"></i>
-                <span>ملف التاجر</span>
-              </button>
+            <td class="p-3.5 text-center min-w-[300px]" onclick="event.stopPropagation();">
+              <div class="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                <!-- Merchant Personal Profile Button -->
+                <button onclick="viewMerchantProfile('${c.phone || c.name}')" class="px-2.5 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="عرض الملف الشخصي للتاجر (اسمه، مدينته، هاتفه، تفاصيله)">
+                  <i data-lucide="user" class="w-3.5 h-3.5 text-blue-600"></i>
+                  <span>ملف التاجر</span>
+                </button>
 
-              <!-- Filter Customer Orders -->
-              <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer" title="عرض جميع طلبات هذا التاجر في جدول الطلبات">
-                <i data-lucide="list-filter" class="w-3 h-3 text-slate-600"></i>
-                <span>سجل طلباته</span>
-              </button>
+                <!-- Filter Customer Orders -->
+                <button onclick="filterOrdersByCustomer('${c.phone || c.name}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="عرض جميع طلبات هذا التاجر في جدول الطلبات">
+                  <i data-lucide="list-filter" class="w-3 h-3 text-slate-600"></i>
+                  <span>سجل طلباته</span>
+                </button>
 
-              <!-- Direct WhatsApp -->
-              ${waLink ? `
-                <a href="${waLink}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer" title="مراسلة التاجر عبر واتساب">
-                  <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
-                </a>
-              ` : ''}
+                <!-- Direct WhatsApp -->
+                ${waLink ? `
+                  <a href="${waLink}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="مراسلة التاجر عبر واتساب">
+                    <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
+                  </a>
+                ` : ''}
 
-              <!-- Delete Customer Data -->
-              <button onclick="deleteCustomerData('${c.phone}', '${c.name}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer" title="حذف التاجر وسجلاته"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                <!-- Delete Customer Data -->
+                <button onclick="deleteCustomerData('${c.phone}', '${c.name}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer shrink-0 hover:scale-105 active:scale-95 transition-all shadow-xs" title="حذف هذا التاجر وجميع طلباته ونقلها إلى سلة المحذوفات">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                </button>
+              </div>
             </td>
           </tr>
         `;
@@ -2020,6 +2134,209 @@
       lucide.createIcons();
     }
 
+    // 8. RENDER TRASH TAB
+    function renderTrashTab() {
+      const tbody = document.getElementById("trashTableBody");
+      if (!tbody) return;
+
+      if (deletedOrders.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="p-10 text-center">
+              <div class="flex flex-col items-center gap-3 text-slate-400">
+                <i data-lucide="trash-2" class="w-12 h-12 text-rose-200"></i>
+                <p class="font-black text-sm">سلة المحذوفات فارغة</p>
+                <p class="text-xs font-bold">الطلبات التي تحذفها ستظهر هنا للمراجعة قبل الحذف النهائي</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
+      tbody.innerHTML = deletedOrders.map((o, idx) => {
+        const id = o.id;
+        const num = o.order_number || o.orderNumber || `#ESP-${(id || '').slice(0, 6)}`;
+        const name = o.customer_name || o.customerName || "تاجر";
+        const storeName = o.store_name || o.storeName || "—";
+        const plan = o.plan_tier || o.planTitle || "—";
+        const price = getOrderPrice(o);
+        const deletedAt = o.deleted_at ? new Date(o.deleted_at).toLocaleString("ar-MA", { dateStyle: "short", timeStyle: "short" }) : "غير محدد";
+        const phone = o.phone_number || o.customerPhone || "";
+
+        return `
+          <tr class="hover:bg-rose-50/50 transition-colors border-b border-rose-50">
+            <td class="p-3.5">
+              <input type="checkbox" data-trash-id="${id}" class="trash-checkbox rounded cursor-pointer w-4 h-4 accent-rose-600">
+            </td>
+            <td class="p-3.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-black text-xs shrink-0">
+                  ${name.charAt(0) || "ت"}
+                </div>
+                <div>
+                  <span class="font-black text-slate-700 block text-xs">${name}</span>
+                  <span class="text-[10px] text-rose-500 font-mono font-bold">${num}</span>
+                  ${phone ? `<span class="text-[10px] text-slate-400 font-mono block" dir="ltr">${phone}</span>` : ''}
+                </div>
+              </div>
+            </td>
+            <td class="p-3.5">
+              <span class="font-bold text-xs text-slate-600 block">${storeName}</span>
+              <span class="text-[10px] text-slate-400 font-bold">${plan}</span>
+            </td>
+            <td class="p-3.5 font-mono font-black text-rose-600 text-xs">${price.toLocaleString()} د.م</td>
+            <td class="p-3.5 font-mono text-[11px] text-slate-400 font-bold">${deletedAt}</td>
+            <td class="p-3.5 text-center" onclick="event.stopPropagation();">
+              <div class="flex items-center justify-center gap-1.5">
+                <button onclick="restoreFromTrash('${id}')" class="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer hover:scale-105" title="استعادة هذا الطلب">
+                  <i data-lucide="undo-2" class="w-3 h-3"></i>
+                  <span>استعادة</span>
+                </button>
+                <button onclick="permanentDeleteOne('${id}')" class="px-2.5 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer hover:scale-105" title="حذف نهائي لا يمكن التراجع عنه">
+                  <i data-lucide="trash" class="w-3 h-3"></i>
+                  <span>حذف نهائي</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      lucide.createIcons();
+    }
+
+    // Toggle all trash checkboxes
+    function toggleAllTrash(checked) {
+      document.querySelectorAll('.trash-checkbox').forEach(cb => {
+        cb.checked = checked;
+      });
+    }
+
+    // Select all handler (from button)
+    function selectAllTrash() {
+      const allChecked = document.querySelectorAll('.trash-checkbox:checked').length === document.querySelectorAll('.trash-checkbox').length;
+      document.querySelectorAll('.trash-checkbox').forEach(cb => {
+        cb.checked = !allChecked;
+      });
+      const masterCb = document.getElementById('trashSelectAllCheckbox');
+      if (masterCb) masterCb.checked = !allChecked;
+    }
+
+    // Restore a single order from trash
+    function restoreFromTrash(id) {
+      const restored = deletedOrders.find(o => o.id === id);
+      if (restored) {
+        const { deleted_at, ...cleanOrder } = restored;
+        orders.unshift(cleanOrder);
+        deletedIds.delete(id);
+        if (cleanOrder.order_number) deletedIds.delete(cleanOrder.order_number);
+        const p = (cleanOrder.phone_number || cleanOrder.customerPhone || "").replace(/[^0-9]/g, "");
+        if (p) deletedIds.delete(p);
+        deletedOrders = deletedOrders.filter(o => o.id !== id);
+        saveDeletedIds();
+
+        // Restore to API / Serverless
+        try {
+          fetch("http://localhost:3000/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cleanOrder)
+          }).catch(() => {});
+        } catch(e) {}
+        try {
+          fetch("https://ecom-speed-pro.vercel.app/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cleanOrder)
+          }).catch(() => {});
+        } catch(e) {}
+
+        triggerToast("تمت استعادة الطلب بنجاح ✅");
+        renderTrashTab();
+      }
+    }
+
+    // Restore selected items from trash
+    function restoreSelectedTrash() {
+      const selected = Array.from(document.querySelectorAll('.trash-checkbox:checked')).map(cb => cb.dataset.trashId);
+      if (selected.length === 0) {
+        triggerToast("يرجى تحديد طلب أو تاجر واحد على الأقل للاستعادة");
+        return;
+      }
+      const toRestore = deletedOrders.filter(o => selected.includes(o.id));
+      deletedOrders = deletedOrders.filter(o => !selected.includes(o.id));
+      toRestore.forEach(restored => {
+        const { deleted_at, ...cleanOrder } = restored;
+        orders.unshift(cleanOrder);
+        deletedIds.delete(restored.id);
+        if (cleanOrder.order_number) deletedIds.delete(cleanOrder.order_number);
+        const p = (cleanOrder.phone_number || cleanOrder.customerPhone || "").replace(/[^0-9]/g, "");
+        if (p) deletedIds.delete(p);
+
+        try {
+          fetch("http://localhost:3000/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cleanOrder)
+          }).catch(() => {});
+        } catch(e) {}
+        try {
+          fetch("https://ecom-speed-pro.vercel.app/api/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(cleanOrder)
+          }).catch(() => {});
+        } catch(e) {}
+      });
+
+      saveDeletedIds();
+      triggerToast(`تمت استعادة ${toRestore.length} عناصر بنجاح ✅`);
+      const masterCb = document.getElementById('trashSelectAllCheckbox');
+      if (masterCb) masterCb.checked = false;
+      renderTrashTab();
+    }
+
+    // Permanent delete one from trash
+    function permanentDeleteOne(id) {
+      if (!confirm("هل أنت متأكد من الحذف النهائي؟ لا يمكن التراجع عن هذه العملية.")) return;
+      deletedOrders = deletedOrders.filter(o => o.id !== id);
+      // Keep it in deletedIds so it still gets filtered from fetches
+      saveDeletedIds();
+      triggerToast("تم الحذف النهائي 🗑️");
+      renderTrashTab();
+    }
+
+    // Permanent delete selected items
+    function permanentDeleteSelected() {
+      const selected = Array.from(document.querySelectorAll('.trash-checkbox:checked')).map(cb => cb.dataset.trashId);
+      if (selected.length === 0) {
+        triggerToast("يرجى تحديد طلب واحد على الأقل أولاً");
+        return;
+      }
+      if (!confirm(`هل أنت متأكد من الحذف النهائي لـ ${selected.length} عنصر؟ لا يمكن التراجع عن هذه العملية.`)) return;
+      deletedOrders = deletedOrders.filter(o => !selected.includes(o.id));
+      saveDeletedIds();
+      triggerToast(`تم الحذف النهائي لـ ${selected.length} عناصر 🗑️`);
+      const masterCb = document.getElementById('trashSelectAllCheckbox');
+      if (masterCb) masterCb.checked = false;
+      renderTrashTab();
+    }
+
+    // Empty entire trash
+    function clearAllTrash() {
+      if (deletedOrders.length === 0) {
+        triggerToast("سلة المحذوفات فارغة أصلاً");
+        return;
+      }
+      if (!confirm(`هل أنت متأكد من إفراغ سلة المحذوفات بالكامل (${deletedOrders.length} عناصر)؟ لا يمكن التراجع.`)) return;
+      deletedOrders = [];
+      saveDeletedIds();
+      triggerToast("تم إفراغ سلة المحذوفات نهائياً 🗑️");
+      renderTrashTab();
+    }
+
     // Real-Time SSE
     function startRealtimeStream() {
       try {
@@ -2065,14 +2382,14 @@
       document.getElementById("zoomPercentText").innerText = `${Math.round(pageZoom * 100)}%`;
     };
     document.getElementById("btnZoomOut").onclick = () => {
-      pageZoom = Math.max(0.75, pageZoom - 0.05);
+      pageZoom = Math.max(0.60, pageZoom - 0.05);
       document.body.style.zoom = pageZoom;
       document.getElementById("zoomPercentText").innerText = `${Math.round(pageZoom * 100)}%`;
     };
     document.getElementById("btnZoomReset").onclick = () => {
-      pageZoom = 1.0;
+      pageZoom = 0.80;
       document.body.style.zoom = pageZoom;
-      document.getElementById("zoomPercentText").innerText = "100%";
+      document.getElementById("zoomPercentText").innerText = "80%";
     };
 
     // CSV Exports
@@ -2166,9 +2483,20 @@
       }
     }
 
-    // Delete Single Order
+    // Delete Single Order → Move to trash
     async function deleteOrder(id) {
-      if (!confirm("هل أنت متأكد من حذف هذا الطلب نهائياً؟")) return;
+      if (!confirm("هل أنت متأكد من حذف هذا الطلب؟ سيتم نقله إلى سلة المحذوفات.")) return;
+
+      const orderToDelete = orders.find(o => o.id === id);
+      if (orderToDelete) {
+        // Add to trash with deletion timestamp
+        deletedOrders.unshift({ ...orderToDelete, deleted_at: new Date().toISOString() });
+      }
+
+      // Mark as deleted so it's filtered out of future fetches
+      deletedIds.add(id);
+      saveDeletedIds();
+
       orders = orders.filter(o => o.id !== id);
       renderActiveTab();
 
@@ -2202,19 +2530,29 @@
         });
       } catch (e) {}
 
-      triggerToast("تم حذف الطلب بنجاح");
+      triggerToast("تم نقل الطلب إلى سلة المحذوفات 🗑️");
     }
 
-    // Delete Entire Customer Data
+    // Delete Entire Customer Data → Move to trash
     async function deleteCustomerData(phone, name) {
-      if (!confirm(`هل أنت متأكد من حذف العميل "${name}" وجميع طلباته نهائياً؟`)) return;
-      orders = orders.filter(o => {
+      if (!confirm(`هل أنت متأكد من حذف التاجر "${name}" وجميع طلباته؟ سيتم نقلها إلى سلة المحذوفات.`)) return;
+
+      const toDelete = orders.filter(o => {
         const p = (o.phone_number || o.customerPhone || "").trim();
         const n = (o.customer_name || o.customerName || "").trim();
-        if (phone && p === phone) return false;
-        if (name && n === name) return false;
-        return true;
+        if (phone && p === phone) return true;
+        if (!phone && name && n === name) return true;
+        return false;
       });
+
+      // Move to trash
+      toDelete.forEach(o => {
+        deletedIds.add(o.id);
+        deletedOrders.unshift({ ...o, deleted_at: new Date().toISOString() });
+      });
+      saveDeletedIds();
+
+      orders = orders.filter(o => !deletedIds.has(o.id));
       renderActiveTab();
 
       // Electron delete
@@ -2244,7 +2582,7 @@
         });
       } catch (e) {}
 
-      triggerToast("تم حذف سجل العميل وطلباته بنجاح");
+      triggerToast("تم نقل سجل التاجر إلى سلة المحذوفات 🗑️");
     }
 
     // ========================================================
@@ -3127,6 +3465,7 @@
 
     // Initialize
     (async () => {
+      loadDeletedIds(); // Load persisted deleted IDs before any fetch
       await initBackend();
       await fetchOrders();
       startRealtimeStream();

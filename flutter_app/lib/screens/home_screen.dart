@@ -206,48 +206,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  // Direct Admin Dashboard Button
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AdminDashboardScreen(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      height: 38,
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0B1739),
-                        borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: const Color(0xFF38BDF8), width: 1.2),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF38BDF8).withValues(alpha: 0.25),
-                            blurRadius: 8,
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(Icons.admin_panel_settings_rounded, size: 16, color: Color(0xFF38BDF8)),
-                          const SizedBox(width: 4),
-                          Text(
-                            'لوحة التحكم',
-                            style: GoogleFonts.cairo(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w900,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ],
               ),
 
@@ -261,15 +219,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     _navLink('من نحن', () => _scrollToServices()),
                     const SizedBox(width: 14),
                     _navLink('الخدمات ∨', () => _scrollToServices()),
-                    const SizedBox(width: 14),
-                    _navLink('لوحة التحكم ⚡', () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const AdminDashboardScreen(),
-                        ),
-                      );
-                    }),
                     const SizedBox(width: 14),
                     // Active "الرئيسية" pill button
                     // Active "الرئيسية" pill button

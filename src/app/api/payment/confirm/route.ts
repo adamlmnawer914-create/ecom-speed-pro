@@ -9,7 +9,7 @@ import { broadcastOrderEvent } from "@/lib/broadcast";
  */
 export async function POST(req: Request) {
   try {
-    const { orderId } = await req.json();
+    const { orderId, payment_method } = await req.json();
 
     if (!orderId) {
       return NextResponse.json(
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     if (existing.status === "pending") {
       const updated = await updateOrder(orderId, {
         status: "in_progress",
-        payment_method: "YouCan Pay (بطاقة بنكية معتمدة)",
+        payment_method: payment_method || existing.payment_method || "YouCan Pay (بطاقة بنكية معتمدة)",
       });
 
       if (updated) {

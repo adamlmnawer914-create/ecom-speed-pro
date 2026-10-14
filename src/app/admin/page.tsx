@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import {
   ShoppingCart,
@@ -23,6 +23,10 @@ import {
   CreditCard,
   Download,
   Trash2,
+  Trash,
+  Undo2,
+  CheckSquare,
+  XCircle,
   Plus,
   Store,
   Monitor,
@@ -64,8 +68,13 @@ export default function AdminDashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [currentTab, setCurrentTab] = useState<
-    "orders" | "home" | "customers" | "products" | "payments" | "reports" | "settings"
+    "orders" | "home" | "customers" | "products" | "payments" | "reports" | "settings" | "trash"
   >("orders");
+
+  // Trash state
+  const [deletedOrders, setDeletedOrders] = useState<(Order & { deleted_at: string })[]>([]);
+  const [deletedIds, setDeletedIds] = useState<Set<string>>(new Set());
+  const [trashSelected, setTrashSelected] = useState<Set<string>>(new Set());
 
   // Modals state
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -96,7 +105,7 @@ export default function AdminDashboardPage() {
   });
 
   // UI state
-  const [zoomLevel, setZoomLevel] = useState<number>(0.85);
+  const [zoomLevel, setZoomLevel] = useState<number>(0.80);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [showLiveBanner, setShowLiveBanner] = useState(true);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -107,7 +116,28 @@ export default function AdminDashboardPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Fetch orders from API
+  // Load/Save deleted IDs from localStorage
+  const loadDeletedData = useCallback(() => {
+    try {
+      const storedIds = localStorage.getItem('esp_admin_deleted_ids');
+      if (storedIds) {
+        setDeletedIds(new Set(JSON.parse(storedIds)));
+      }
+      const storedOrders = localStorage.getItem('esp_admin_deleted_orders');
+      if (storedOrders) {
+        setDeletedOrders(JSON.parse(storedOrders) || []);
+      }
+    } catch(e) {}
+  }, []);
+
+  const saveDeletedData = useCallback((ids: Set<string>, orders: (Order & { deleted_at: string })[]) => {
+    try {
+      localStorage.setItem('esp_admin_deleted_ids', JSON.stringify([...ids]));
+      localStorage.setItem('esp_admin_deleted_orders', JSON.stringify(orders));
+    } catch(e) {}
+  }, []);
+
+  // Fetch orders from API (filter out deleted IDs)
   const fetchOrders = async () => {
     try {
       setLoading(true);
@@ -119,9 +149,17 @@ export default function AdminDashboardPage() {
       });
       const data = await res.json();
       if (data && data.success && Array.isArray(data.orders)) {
-        setOrders(data.orders);
+        // Filter out deleted IDs
+        const currentDeletedIds = (() => {
+          try {
+            const stored = localStorage.getItem('esp_admin_deleted_ids');
+            return stored ? new Set<string>(JSON.parse(stored)) : new Set<string>();
+          } catch { return new Set<string>(); }
+        })();
+        const filtered = data.orders.filter((o: Order) => !currentDeletedIds.has(o.id));
+        setOrders(filtered);
         if (selectedOrder) {
-          const fresh = data.orders.find((o: Order) => o.id === selectedOrder.id);
+          const fresh = filtered.find((o: Order) => o.id === selectedOrder.id);
           if (fresh) setSelectedOrder(fresh);
         }
       }
@@ -134,6 +172,7 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
+    loadDeletedData();
     fetchOrders();
     const interval = setInterval(fetchOrders, 10000);
     return () => clearInterval(interval);
@@ -219,28 +258,186 @@ export default function AdminDashboardPage() {
     }
   };
 
-  // Delete Order
+  // Delete Order → Move to trash
   const handleDeleteOrder = async (orderId: string, orderNumber: string) => {
-    if (!confirm(`هل أنت متأكد من حذف الطلب ${orderNumber} نهائياً؟`)) return;
+    if (!confirm(`هل أنت متأكد من حذف الطلب ${orderNumber}؟ سيتم نقله إلى سلة المحذوفات.`)) return;
     try {
-      const res = await fetch(`/api/orders?id=${orderId}`, {
-        method: "DELETE",
-        headers: {
-          "x-admin-token": "2026",
-          "x-desktop-auth-token": ADMIN_TOKEN,
-        },
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOrders((prev) => prev.filter((o) => o.id !== orderId));
-        if (selectedOrder?.id === orderId) setSelectedOrder(null);
-        showToast(`تم حذف الطلب ${orderNumber} بنجاح 🗑️`);
-      } else {
-        showToast(data.message || "فشل حذف الطلب");
+      // Find the order to put it in trash
+      const orderToDelete = orders.find((o) => o.id === orderId);
+      if (orderToDelete) {
+        const newDeleted = [{ ...orderToDelete, deleted_at: new Date().toISOString() }, ...deletedOrders];
+        const newIds = new Set([...deletedIds, orderId]);
+        setDeletedOrders(newDeleted);
+        setDeletedIds(newIds);
+        saveDeletedData(newIds, newDeleted);
       }
+
+      setOrders((prev) => prev.filter((o) => o.id !== orderId));
+      if (selectedOrder?.id === orderId) setSelectedOrder(null);
+      showToast(`تم نقل الطلب ${orderNumber} إلى سلة المحذوفات 🗑️`);
+
+      // Delete from API (non-blocking)
+      fetch(`/api/orders?id=${orderId}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": "2026", "x-desktop-auth-token": ADMIN_TOKEN },
+      }).catch(() => {});
     } catch (err) {
       console.error(err);
       showToast("حدث خطأ أثناء حذف الطلب");
+    }
+  };
+
+  // Delete Entire Merchant Data → Move all their orders to trash
+  const handleDeleteMerchant = async (phone: string, name: string) => {
+    if (!confirm(`هل أنت متأكد من حذف التاجر "${name}" وجميع طلباته؟ سيتم نقله إلى سلة المحذوفات.`)) return;
+    try {
+      const cleanPhone = phone ? phone.replace(/[^0-9]/g, "") : "";
+      const toDelete = orders.filter((o) => {
+        const oPhone = (o.phone_number || "").replace(/[^0-9]/g, "");
+        const matchPhone = cleanPhone && cleanPhone.length >= 6 && (oPhone.includes(cleanPhone) || cleanPhone.includes(oPhone));
+        const matchName = name && o.customer_name?.trim().toLowerCase() === name.trim().toLowerCase();
+        return matchPhone || matchName;
+      });
+
+      if (toDelete.length > 0) {
+        const newDeleted = [
+          ...toDelete.map((o) => ({ ...o, deleted_at: new Date().toISOString() })),
+          ...deletedOrders,
+        ];
+        const newIds = new Set([...deletedIds]);
+        toDelete.forEach((o) => {
+          newIds.add(o.id);
+          if (o.order_number) newIds.add(o.order_number);
+        });
+        if (cleanPhone) newIds.add(cleanPhone);
+
+        setDeletedOrders(newDeleted);
+        setDeletedIds(newIds);
+        saveDeletedData(newIds, newDeleted);
+
+        const deleteIdsSet = new Set(toDelete.map((o) => o.id));
+        setOrders((prev) => prev.filter((o) => !deleteIdsSet.has(o.id)));
+      }
+
+      if (selectedMerchant && (selectedMerchant.phone === phone || selectedMerchant.name === name)) {
+        setSelectedMerchant(null);
+      }
+
+      showToast(`تم نقل التاجر "${name}" وجميع طلباته (${toDelete.length}) إلى سلة المحذوفات 🗑️`);
+
+      // API delete
+      fetch(`/api/orders?phone=${encodeURIComponent(phone)}&customer=${encodeURIComponent(name)}`, {
+        method: "DELETE",
+        headers: { "x-admin-token": "2026", "x-desktop-auth-token": ADMIN_TOKEN },
+      }).catch(() => {});
+    } catch (err) {
+      console.error(err);
+      showToast("حدث خطأ أثناء حذف بيانات التاجر");
+    }
+  };
+
+  // Restore from trash
+  const handleRestoreFromTrash = async (orderId: string) => {
+    const restored = deletedOrders.find((o) => o.id === orderId);
+    if (restored) {
+      const { deleted_at, ...cleanOrder } = restored;
+      setOrders((prev) => [cleanOrder as Order, ...prev]);
+      const newIds = new Set([...deletedIds]);
+      newIds.delete(orderId);
+      if (cleanOrder.order_number) newIds.delete(cleanOrder.order_number);
+      const p = (cleanOrder.phone_number || "").replace(/[^0-9]/g, "");
+      if (p) newIds.delete(p);
+      const newDeleted = deletedOrders.filter((o) => o.id !== orderId);
+      setDeletedIds(newIds);
+      setDeletedOrders(newDeleted);
+      saveDeletedData(newIds, newDeleted);
+      setTrashSelected((prev) => { const s = new Set(prev); s.delete(orderId); return s; });
+      try {
+        await fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cleanOrder),
+        });
+      } catch (e) {}
+      showToast("تمت استعادة الطلب بنجاح ✅");
+    }
+  };
+
+  // Restore selected items from trash
+  const handleRestoreSelected = async () => {
+    if (trashSelected.size === 0) { showToast("يرجى تحديد عنصر واحد على الأقل للاستعادة"); return; }
+    const toRestore = deletedOrders.filter((o) => trashSelected.has(o.id));
+    const newDeleted = deletedOrders.filter((o) => !trashSelected.has(o.id));
+    const newIds = new Set([...deletedIds]);
+    toRestore.forEach((o) => {
+      newIds.delete(o.id);
+      if (o.order_number) newIds.delete(o.order_number);
+      const p = (o.phone_number || "").replace(/[^0-9]/g, "");
+      if (p) newIds.delete(p);
+    });
+    const cleanOrders = toRestore.map(({ deleted_at, ...rest }) => rest as Order);
+    setOrders((prev) => [...cleanOrders, ...prev]);
+    setDeletedIds(newIds);
+    setDeletedOrders(newDeleted);
+    saveDeletedData(newIds, newDeleted);
+    setTrashSelected(new Set());
+    for (const o of cleanOrders) {
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(o),
+      }).catch(() => {});
+    }
+    showToast(`تمت استعادة ${toRestore.length} عناصر بنجاح ✅`);
+  };
+
+  // Permanent delete one from trash
+  const handlePermanentDeleteOne = (orderId: string) => {
+    if (!confirm("هل أنت متأكد من الحذف النهائي؟ لا يمكن التراجع.")) return;
+    const newDeleted = deletedOrders.filter((o) => o.id !== orderId);
+    setDeletedOrders(newDeleted);
+    // Keep in deletedIds so it stays filtered from API results
+    saveDeletedData(deletedIds, newDeleted);
+    setTrashSelected((prev) => { const s = new Set(prev); s.delete(orderId); return s; });
+    showToast("تم الحذف النهائي 🗑️");
+  };
+
+  // Permanent delete selected from trash
+  const handlePermanentDeleteSelected = () => {
+    if (trashSelected.size === 0) { showToast("يرجى تحديد عنصر واحد على الأقل"); return; }
+    if (!confirm(`هل أنت متأكد من الحذف النهائي لـ ${trashSelected.size} عناصر؟`)) return;
+    const newDeleted = deletedOrders.filter((o) => !trashSelected.has(o.id));
+    setDeletedOrders(newDeleted);
+    saveDeletedData(deletedIds, newDeleted);
+    setTrashSelected(new Set());
+    showToast(`تم الحذف النهائي لـ ${trashSelected.size} عناصر 🗑️`);
+  };
+
+  // Empty entire trash
+  const handleClearAllTrash = () => {
+    if (deletedOrders.length === 0) { showToast("سلة المحذوفات فارغة"); return; }
+    if (!confirm(`إفراغ سلة المحذوفات بالكامل (${deletedOrders.length} عناصر)؟ لا يمكن التراجع.`)) return;
+    setDeletedOrders([]);
+    saveDeletedData(deletedIds, []);
+    setTrashSelected(new Set());
+    showToast("تم إفراغ سلة المحذوفات نهائياً 🗑️");
+  };
+
+  // Toggle trash item selection
+  const toggleTrashItem = (id: string) => {
+    setTrashSelected((prev) => {
+      const s = new Set(prev);
+      if (s.has(id)) s.delete(id); else s.add(id);
+      return s;
+    });
+  };
+
+  // Toggle all trash items
+  const toggleAllTrash = (checked: boolean) => {
+    if (checked) {
+      setTrashSelected(new Set(deletedOrders.map((o) => o.id)));
+    } else {
+      setTrashSelected(new Set());
     }
   };
 
@@ -593,6 +790,23 @@ export default function AdminDashboardPage() {
                 </button>
               );
             })}
+            {/* Trash Tab Button - special styling */}
+            <button
+              onClick={() => setCurrentTab("trash")}
+              className={`tab-button flex-1 xl:flex-initial rounded-2xl flex items-center justify-between px-3.5 py-3 transition-all cursor-pointer text-xs font-bold relative ${
+                currentTab === "trash"
+                  ? "bg-gradient-to-r from-rose-600 via-rose-500 to-pink-600 text-white shadow-[0_0_25px_rgba(225,29,72,0.6)] font-black"
+                  : "text-rose-300/90 hover:text-white hover:bg-rose-500/20"
+              }`}
+            >
+              <Trash2 className="w-4 h-4 shrink-0" />
+              <span>المحذوفات</span>
+              {deletedOrders.length > 0 && (
+                <span className="absolute -top-1 -left-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-md">
+                  {deletedOrders.length > 9 ? "9+" : deletedOrders.length}
+                </span>
+              )}
+            </button>
           </aside>
 
           {/* ====================================================== */}
@@ -741,7 +955,7 @@ export default function AdminDashboardPage() {
 
                 {/* ORDERS TABLE CONTAINER (EXACT 9 COLUMNS) */}
                 <div className="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
-                  <table className="w-full text-right text-xs">
+                  <table className="w-full min-w-[1350px] text-right text-xs">
                     <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                       <tr>
                         <th className="p-3.5">الطلب</th>
@@ -752,7 +966,7 @@ export default function AdminDashboardPage() {
                         <th className="p-3.5">هاتف استقبال الطلبات</th>
                         <th className="p-3.5">الحالة</th>
                         <th className="p-3.5">رابط المتجر</th>
-                        <th className="p-3.5 text-center">إجراءات</th>
+                        <th className="p-3.5 text-center min-w-[360px]">إجراءات</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-bold text-slate-700">
@@ -991,92 +1205,95 @@ export default function AdminDashboardPage() {
                                 )}
                               </td>
 
-                              {/* Col 9: Distinct Actions (with 'تسليم الطلب الآن' at the far left) */}
+                              {/* Col 9: Distinct Actions (with 'تسليم الطلب' and all action buttons fully unclipped) */}
                               <td
-                                className="p-3.5 text-center flex items-center justify-center gap-1.5 flex-nowrap"
+                                className="p-3.5 text-center min-w-[360px]"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                {/* Required Feature: تسليم الطلب الآن */}
-                                <button
-                                  onClick={() => {
-                                    setQuickStoreOrderId(id);
-                                    setQuickStoreUrlInput(deliveredUrl || "");
-                                    setQuickStoreDeliveryStatus(status === "pending" ? "completed" : status);
-                                  }}
-                                  className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1.5 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
-                                  title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً"
-                                >
-                                  <Rocket className="w-3.5 h-3.5" />
-                                  <span>تسليم الطلب الآن</span>
-                                </button>
-                                {/* Action 1: Merchant Profile */}
-                                <button
-                                  onClick={() =>
-                                    setSelectedMerchant({
-                                      name,
-                                      phone,
-                                      city,
-                                      email: o.customer_email || "",
-                                    })
-                                  }
-                                  className="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                                  title="الملف الشخصي للتاجر"
-                                >
-                                  <User className="w-3 h-3 text-blue-600" />
-                                  <span>ملف التاجر</span>
-                                </button>
-
-                                {/* Action 2: Store & Order Dossier */}
-                                <button
-                                  onClick={() => setSelectedOrder(o)}
-                                  className="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-                                  title="تفاصيل طلب المتجر ومشروعه"
-                                >
-                                  <Store className="w-3 h-3 text-slate-700" />
-                                  <span>طلب المتجر</span>
-                                </button>
-
-                                {/* Action 3: Secret Tracking Link */}
-                                <Link
-                                  href={`/order/${id}`}
-                                  target="_blank"
-                                  className="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center shadow-xs cursor-pointer"
-                                  title="فتح صفحة التتبع السرية للتاجر"
-                                >
-                                  <ExternalLink className="w-3.5 h-3.5" />
-                                </Link>
-
-                                {/* Action 4: WhatsApp Merchant */}
-                                {cleanPhone && (
-                                  <a
-                                    href={`https://wa.me/${
-                                      cleanPhone.startsWith("212")
-                                        ? cleanPhone
-                                        : "212" + cleanPhone.replace(/^0/, "")
-                                    }?text=${encodeURIComponent(
-                                      "السلام عليكم أخي الكريم " +
-                                        name +
-                                        "، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك (" +
-                                        num +
-                                        ")."
-                                    )}`}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer transition-colors"
-                                    title="مراسلة التاجر عبر واتساب"
+                                <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                                  {/* Required Feature: تسليم الطلب الآن */}
+                                  <button
+                                    onClick={() => {
+                                      setQuickStoreOrderId(id);
+                                      setQuickStoreUrlInput(deliveredUrl || "");
+                                      setQuickStoreDeliveryStatus(status === "pending" ? "completed" : status);
+                                    }}
+                                    className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+                                    title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً"
                                   >
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                  </a>
-                                )}
+                                    <Rocket className="w-3.5 h-3.5" />
+                                    <span>تسليم الطلب</span>
+                                  </button>
 
-                                {/* Action 5: Delete */}
-                                <button
-                                  onClick={() => handleDeleteOrder(id, num)}
-                                  className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 cursor-pointer transition-colors"
-                                  title="حذف هذا الطلب"
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </button>
+                                  {/* Action 1: Merchant Profile */}
+                                  <button
+                                    onClick={() =>
+                                      setSelectedMerchant({
+                                        name,
+                                        phone,
+                                        city,
+                                        email: o.customer_email || "",
+                                      })
+                                    }
+                                    className="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+                                    title="الملف الشخصي للتاجر"
+                                  >
+                                    <User className="w-3 h-3 text-blue-600" />
+                                    <span>ملف التاجر</span>
+                                  </button>
+
+                                  {/* Action 2: Store & Order Dossier */}
+                                  <button
+                                    onClick={() => setSelectedOrder(o)}
+                                    className="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0"
+                                    title="تفاصيل طلب المتجر ومشروعه"
+                                  >
+                                    <Store className="w-3 h-3 text-slate-700" />
+                                    <span>طلب المتجر</span>
+                                  </button>
+
+                                  {/* Action 3: Secret Tracking Link */}
+                                  <Link
+                                    href={`/order/${id}`}
+                                    target="_blank"
+                                    className="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center shadow-xs cursor-pointer shrink-0"
+                                    title="فتح صفحة التتبع السرية للتاجر"
+                                  >
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                  </Link>
+
+                                  {/* Action 4: WhatsApp Merchant */}
+                                  {cleanPhone && (
+                                    <a
+                                      href={`https://wa.me/${
+                                        cleanPhone.startsWith("212")
+                                          ? cleanPhone
+                                          : "212" + cleanPhone.replace(/^0/, "")
+                                      }?text=${encodeURIComponent(
+                                        "السلام عليكم أخي الكريم " +
+                                          name +
+                                          "، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك (" +
+                                          num +
+                                          ")."
+                                      )}`}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer transition-colors shrink-0"
+                                      title="مراسلة التاجر عبر واتساب"
+                                    >
+                                      <MessageCircle className="w-3.5 h-3.5" />
+                                    </a>
+                                  )}
+
+                                  {/* Action 5: Delete */}
+                                  <button
+                                    onClick={() => handleDeleteOrder(id, num)}
+                                    className="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer shrink-0 hover:scale-105 active:scale-95 transition-all shadow-xs"
+                                    title="حذف هذا الطلب ونقله إلى سلة المحذوفات"
+                                  >
+                                    <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           );
@@ -1119,10 +1336,20 @@ export default function AdminDashboardPage() {
 
             {currentTab === "customers" && (
               <div className="flex flex-col gap-4 text-right">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <span className="text-xs font-mono font-bold text-slate-400">
-                    {customersList.length} تجار مسجلين
-                  </span>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3 flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-slate-400">
+                      {customersList.length} تجار مسجلين
+                    </span>
+                    <button
+                      onClick={() => setCurrentTab("trash")}
+                      className="px-3.5 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center gap-1.5 transition-all cursor-pointer shadow-xs"
+                      title="الانتقال إلى صفحة التجار والطلبات المحذوفة"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                      <span>سلة المحذوفات ({deletedOrders.length})</span>
+                    </button>
+                  </div>
                   <div className="flex items-center gap-2">
                     <h3 className="text-xl font-black text-slate-900">سجل العملاء (CRM)</h3>
                     <Users className="w-5 h-5 text-blue-600" />
@@ -1130,14 +1357,14 @@ export default function AdminDashboardPage() {
                 </div>
 
                 <div className="overflow-x-auto rounded-2xl border border-slate-100">
-                  <table className="w-full text-right text-xs">
+                  <table className="w-full min-w-[950px] text-right text-xs">
                     <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                       <tr>
                         <th className="p-3">التاجر والمدينة</th>
                         <th className="p-3">الهاتف الشخصي</th>
                         <th className="p-3">عدد المشاريع</th>
                         <th className="p-3">إجمالي المدفوعات</th>
-                        <th className="p-3 text-center">إجراءات</th>
+                        <th className="p-3 text-center min-w-[200px]">إجراءات</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-bold text-slate-700">
@@ -1163,19 +1390,198 @@ export default function AdminDashboardPage() {
                           <td className="p-3 font-mono font-black text-emerald-600">
                             {c.totalSpend.toLocaleString()} د.م
                           </td>
-                          <td className="p-3 text-center">
-                            <button
-                              onClick={() => setSelectedMerchant(c)}
-                              className="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs"
-                            >
-                              ملف التاجر
-                            </button>
+                          <td className="p-3 text-center min-w-[200px]">
+                            <div className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                              <button
+                                onClick={() => setSelectedMerchant(c)}
+                                className="px-2.5 py-1 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs cursor-pointer transition-all shrink-0"
+                              >
+                                ملف التاجر
+                              </button>
+                              <button
+                                onClick={() => handleDeleteMerchant(c.phone, c.name)}
+                                className="px-2 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition-all hover:scale-105 shrink-0"
+                                title="حذف هذا التاجر وجميع طلباته ونقلها إلى سلة المحذوفات"
+                              >
+                                <Trash2 className="w-3 h-3 text-rose-600" />
+                                <span>حذف التاجر</span>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
+              </div>
+            )}
+
+            {/* ==================================================== */}
+            {/* TAB: TRASH (سلة المحذوفات)                           */}
+            {/* ==================================================== */}
+            {currentTab === "trash" && (
+              <div className="flex flex-col gap-5">
+                {/* Header Strip */}
+                <div className="flex flex-wrap items-center justify-between gap-3 bg-rose-50 border border-rose-200 p-4 rounded-2xl">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center">
+                      <Trash2 className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-black text-sm text-rose-900">سلة المحذوفات</h3>
+                      <p className="text-xs text-rose-600 font-bold">
+                        {deletedOrders.length > 0
+                          ? `${deletedOrders.length} عنصر محذوف — يمكنك استعادتهم أو حذفهم نهائياً`
+                          : "السلة فارغة — الطلبات المحذوفة ستظهر هنا"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                      onClick={() => setCurrentTab("customers")}
+                      className="px-3 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 flex items-center gap-1 cursor-pointer transition-all"
+                    >
+                      <span>العودة للتجار (CRM) ←</span>
+                    </button>
+                    <button
+                      onClick={() => toggleAllTrash(trashSelected.size < deletedOrders.length)}
+                      className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200 flex items-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <CheckSquare className="w-4 h-4 text-blue-600" />
+                      <span>{trashSelected.size === deletedOrders.length && deletedOrders.length > 0 ? "إلغاء التحديد" : "تحديد الكل"}</span>
+                    </button>
+                    <button
+                      onClick={handleRestoreSelected}
+                      disabled={trashSelected.size === 0}
+                      className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                    >
+                      <Undo2 className="w-4 h-4" />
+                      <span>استعادة المحدد {trashSelected.size > 0 && `(${trashSelected.size})`}</span>
+                    </button>
+                    <button
+                      onClick={handlePermanentDeleteSelected}
+                      disabled={trashSelected.size === 0}
+                      className="px-3.5 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-40 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all"
+                    >
+                      <Trash className="w-4 h-4" />
+                      <span>حذف المحدد نهائياً {trashSelected.size > 0 && `(${trashSelected.size})`}</span>
+                    </button>
+                    <button
+                      onClick={handleClearAllTrash}
+                      disabled={deletedOrders.length === 0}
+                      className="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-800 disabled:opacity-40 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      <span>إفراغ السلة</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Trash Table */}
+                {deletedOrders.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-20 gap-4 text-slate-400 bg-white rounded-2xl border border-rose-100">
+                    <Trash2 className="w-14 h-14 text-rose-200" />
+                    <p className="font-black text-base">سلة المحذوفات فارغة</p>
+                    <p className="text-xs font-bold text-center max-w-xs">
+                      عندما تحذف طلباً أو تاجراً، سيظهر هنا بدلاً من الحذف الفوري. يمكنك مراجعته واستعادته أو حذفه نهائياً.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto rounded-2xl border border-rose-100 bg-white shadow-sm">
+                    <table className="w-full text-right text-xs">
+                      <thead className="bg-rose-50 text-rose-700 font-bold border-b border-rose-100">
+                        <tr>
+                          <th className="p-3.5 w-10">
+                            <input
+                              type="checkbox"
+                              checked={trashSelected.size === deletedOrders.length && deletedOrders.length > 0}
+                              onChange={(e) => toggleAllTrash(e.target.checked)}
+                              className="rounded cursor-pointer w-4 h-4 accent-rose-600"
+                            />
+                          </th>
+                          <th className="p-3.5">الطلب / التاجر</th>
+                          <th className="p-3.5">المتجر والباقة</th>
+                          <th className="p-3.5">المبلغ</th>
+                          <th className="p-3.5">تاريخ الحذف</th>
+                          <th className="p-3.5 text-center">إجراءات</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-rose-50 font-bold text-slate-700">
+                        {deletedOrders.map((o) => {
+                          const num = o.order_number || `#ESP-${o.id.slice(0, 6)}`;
+                          const name = o.customer_name || "تاجر";
+                          const storeName = o.store_name || "—";
+                          const plan = o.plan_tier || "—";
+                          const price = parsePrice(o);
+                          const deletedAtStr = o.deleted_at
+                            ? new Date(o.deleted_at).toLocaleString("ar-MA", { dateStyle: "short", timeStyle: "short" })
+                            : "غير محدد";
+                          const isSelected = trashSelected.has(o.id);
+
+                          return (
+                            <tr
+                              key={o.id}
+                              className={`hover:bg-rose-50/50 transition-colors border-b border-rose-50 ${isSelected ? "bg-rose-50/30" : ""}`}
+                            >
+                              <td className="p-3.5">
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleTrashItem(o.id)}
+                                  className="rounded cursor-pointer w-4 h-4 accent-rose-600"
+                                />
+                              </td>
+                              <td className="p-3.5">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center font-black text-xs shrink-0">
+                                    {name.charAt(0) || "ت"}
+                                  </div>
+                                  <div>
+                                    <span className="font-black text-slate-700 block text-xs">{name}</span>
+                                    <span className="text-[10px] text-rose-500 font-mono font-bold">{num}</span>
+                                    {o.phone_number && (
+                                      <span className="text-[10px] text-slate-400 font-mono block" dir="ltr">{o.phone_number}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </td>
+                              <td className="p-3.5">
+                                <span className="font-bold text-xs text-slate-600 block">{storeName}</span>
+                                <span className="text-[10px] text-slate-400 font-bold">{plan}</span>
+                              </td>
+                              <td className="p-3.5 font-mono font-black text-rose-600 text-xs">
+                                {price.toLocaleString()} د.م
+                              </td>
+                              <td className="p-3.5 font-mono text-[11px] text-slate-400 font-bold">
+                                {deletedAtStr}
+                              </td>
+                              <td className="p-3.5 text-center">
+                                <div className="flex items-center justify-center gap-1.5">
+                                  <button
+                                    onClick={() => handleRestoreFromTrash(o.id)}
+                                    className="px-2.5 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer hover:scale-105"
+                                    title="استعادة هذا الطلب"
+                                  >
+                                    <Undo2 className="w-3 h-3" />
+                                    <span>استعادة</span>
+                                  </button>
+                                  <button
+                                    onClick={() => handlePermanentDeleteOne(o.id)}
+                                    className="px-2.5 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold text-[11px] flex items-center gap-1 transition-all cursor-pointer hover:scale-105"
+                                    title="حذف نهائي لا يمكن التراجع عنه"
+                                  >
+                                    <Trash className="w-3 h-3" />
+                                    <span>حذف نهائي</span>
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
           </main>
@@ -1595,18 +2001,29 @@ export default function AdminDashboardPage() {
             })()}
 
             {/* Footer Buttons */}
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery(selectedMerchant.phone || selectedMerchant.name);
-                  setSelectedMerchant(null);
-                }}
-                className="px-4 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
-              >
-                <Search className="w-3.5 h-3.5" />
-                <span>تصفية طلبات هذا التاجر</span>
-              </button>
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery(selectedMerchant.phone || selectedMerchant.name);
+                    setSelectedMerchant(null);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>تصفية طلبات هذا التاجر</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteMerchant(selectedMerchant.phone, selectedMerchant.name)}
+                  className="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-black text-xs flex items-center gap-1.5 cursor-pointer border border-rose-200 transition-all hover:scale-105"
+                  title="حذف هذا التاجر وجميع طلباته ونقلها إلى سلة المحذوفات"
+                >
+                  <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                  <span>حذف التاجر بالكامل 🗑️</span>
+                </button>
+              </div>
 
               <button
                 type="button"

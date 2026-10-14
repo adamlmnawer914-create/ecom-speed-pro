@@ -33,6 +33,8 @@ import {
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import YouCanPayEmbed from "@/components/YouCanPayEmbed";
+import PayPalIcon from "@/components/PayPalIcon";
+import { getPayPalPaymentLink } from "@/constants/paypal";
 
 interface OrderModalProps {
   isOpen: boolean;
@@ -171,6 +173,10 @@ export default function OrderModal({
   const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 1500;
   const formattedPrice = `${rawNumericPrice.toLocaleString()} درهم`;
 
+  // PayPal Payment Link Check
+  const paypalUrl = getPayPalPaymentLink(rawNumericPrice, selectedPlan);
+  const isPayPalPlan = Boolean(paypalUrl);
+
   // Validation before going to Stage 2
   const handleProceedToStage2 = (e: React.FormEvent) => {
     e.preventDefault();
@@ -247,7 +253,7 @@ export default function OrderModal({
       plan_tier: planTitle,
       amount: rawNumericPrice,
       currency: "MAD",
-      payment_method: "YouCan Pay",
+      payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
       product_images: productImages,
       product_notes: productNotes.trim(),
       status: "pending",
@@ -1005,12 +1011,21 @@ export default function OrderModal({
                       <button
                         type="submit"
                         disabled={isProcessing}
-                        className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                        className={
+                          isPayPalPlan
+                            ? "w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] hover:to-[#003087] text-white font-black text-sm sm:text-base shadow-lg shadow-blue-900/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                            : "w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                        }
                       >
                         {isProcessing ? (
                           <>
                             <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>جاري تسجيل طلبك...</span>
+                            <span>{isPayPalPlan ? "جاري تسجيل طلبك وفتح PayPal..." : "جاري تسجيل طلبك..."}</span>
+                          </>
+                        ) : isPayPalPlan ? (
+                          <>
+                            <PayPalIcon size={22} className="text-white group-hover:scale-110 transition-transform" />
+                            <span>ادفع الآن عبر PayPal</span>
                           </>
                         ) : (
                           <>
@@ -1024,7 +1039,7 @@ export default function OrderModal({
                   </form>
                   ) : (
                   /* ==================================================== */
-                  /* STAGE 2b — بوابة الدفع YouCan Pay (ycpay.js)         */
+                  /* STAGE 2b — بوابة الدفع (PayPal أو YouCan Pay)        */
                   /* ==================================================== */
                   <div className="space-y-3.5 animate-in fade-in duration-300">
                     {/* Header */}
@@ -1033,7 +1048,9 @@ export default function OrderModal({
                         <Lock className="w-4 h-4 text-blue-600" />
                         <div>
                           <h4 className="text-xs sm:text-sm font-black text-slate-900">
-                            المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦
+                            {isPayPalPlan
+                              ? "المرحلة الأخيرة: الدفع الآمن عبر PayPal 🅿️"
+                              : "المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦"}
                           </h4>
                           <span className="text-[10px] text-blue-600 font-bold block">
                             طلب رقم {createdOrder?.order_number} • {formattedPrice}

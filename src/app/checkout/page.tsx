@@ -31,6 +31,8 @@ import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import YouCanPayEmbed from "@/components/YouCanPayEmbed";
 import PolicyModal from "@/components/PolicyModal";
+import PayPalIcon from "@/components/PayPalIcon";
+import { getPayPalPaymentLink } from "@/constants/paypal";
 
 const MOROCCAN_CITIES = [
   "الدار البيضاء (Casablanca)",
@@ -141,6 +143,10 @@ function CheckoutContent() {
   const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 500;
   const formattedPrice = `${rawNumericPrice.toLocaleString()} درهم`;
 
+  // PayPal Payment Link Check (باقة 500 درهم أو أي باقة متوفر لها رابط PayPal)
+  const paypalUrl = getPayPalPaymentLink(rawNumericPrice, selectedPlan);
+  const isPayPalPlan = Boolean(paypalUrl);
+
   // Countdown timer for auto-redirect to secret tracking page
   useEffect(() => {
     let interval: any = null;
@@ -231,7 +237,7 @@ function CheckoutContent() {
       plan_tier: planTitle,
       amount: rawNumericPrice,
       currency: "MAD",
-      payment_method: "YouCan Pay",
+      payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
       product_images: productImages,
       product_notes: productNotes.trim(),
       status: "pending",
@@ -260,7 +266,7 @@ function CheckoutContent() {
         const res = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...orderPayload, payment_method: "YouCan Pay" }),
+          body: JSON.stringify({ ...orderPayload, payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay" }),
         });
         const data = await res.json();
         if (data && data.success && data.order) {
@@ -290,7 +296,7 @@ function CheckoutContent() {
         plan_tier: planTitle,
         amount: rawNumericPrice,
         currency: "MAD",
-        payment_method: "YouCan Pay",
+        payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
         product_images: productImages,
         product_notes: productNotes.trim(),
         status: "pending",
@@ -302,6 +308,14 @@ function CheckoutContent() {
     setCreatedOrder(savedOrder);
     setOrderId(savedOrder.order_number || orderId);
     setIsProcessing(false);
+
+    // إذا كانت الباقة مدعومة برابط دفع PayPal (مثل باقة 500 درهم)، يتم فتح الرابط مباشرة للعميل
+    if (paypalUrl) {
+      const opened = window.open(paypalUrl, "_blank");
+      if (!opened || opened.closed || typeof opened.closed === "undefined") {
+        window.location.href = paypalUrl;
+      }
+    }
 
     try {
       const existing = localStorage.getItem("ecom_speed_pro_orders");
@@ -320,7 +334,7 @@ function CheckoutContent() {
         planTier: planTitle,
         price: rawNumericPrice,
         amount: rawNumericPrice,
-        paymentMethod: "YouCan Pay",
+        paymentMethod: isPayPalPlan ? "PayPal" : "YouCan Pay",
         productImages: productImages,
         productNotes: productNotes.trim(),
         status: "pending",
@@ -561,7 +575,11 @@ function CheckoutContent() {
                       <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
-                      <span>ربط أوتوماتيكي لبوابة الدفع YouCan Pay 🇲🇦</span>
+                      <span>
+                        {isPayPalPlan
+                          ? "دفع فوري وآمن 100% عبر PayPal 🅿️"
+                          : "ربط أوتوماتيكي لبوابة الدفع YouCan Pay 🇲🇦"}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
                       <div className="w-4 h-4 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
@@ -600,11 +618,11 @@ function CheckoutContent() {
 
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-black tracking-wider text-white">
-                        YouCan Pay 🇲🇦
+                        {isPayPalPlan ? "PayPal 🅿️" : "YouCan Pay 🇲🇦"}
                       </span>
                       <div className="flex -space-x-1.5">
-                        <span className="w-4 h-4 rounded-full bg-[#eb001b] inline-block opacity-90 shadow-sm" />
-                        <span className="w-4 h-4 rounded-full bg-[#f79e1b] inline-block opacity-90 shadow-sm" />
+                        <span className="w-4 h-4 rounded-full bg-[#0079C1] inline-block opacity-90 shadow-sm" />
+                        <span className="w-4 h-4 rounded-full bg-[#003087] inline-block opacity-90 shadow-sm" />
                       </div>
                     </div>
                   </div>
@@ -957,12 +975,21 @@ function CheckoutContent() {
                         <button
                           type="submit"
                           disabled={isProcessing}
-                          className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                          className={
+                            isPayPalPlan
+                              ? "w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] hover:to-[#003087] text-white font-black text-sm sm:text-base shadow-lg shadow-blue-900/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                              : "w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
+                          }
                         >
                           {isProcessing ? (
                             <>
                               <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              <span>جاري تسجيل طلبك...</span>
+                              <span>{isPayPalPlan ? "جاري تسجيل طلبك وفتح PayPal..." : "جاري تسجيل طلبك..."}</span>
+                            </>
+                          ) : isPayPalPlan ? (
+                            <>
+                              <PayPalIcon size={22} className="text-white group-hover:scale-110 transition-transform" />
+                              <span>ادفع الآن عبر PayPal</span>
                             </>
                           ) : (
                             <>
@@ -975,7 +1002,7 @@ function CheckoutContent() {
                     </form>
                   ) : (
                     /* ==================================================== */
-                    /* STAGE 2b — بوابة الدفع YouCan Pay (ycpay.js)         */
+                    /* STAGE 2b — بوابة الدفع (PayPal أو YouCan Pay)        */
                     /* ==================================================== */
                     <div className="space-y-3.5 animate-in fade-in duration-300">
                       {/* Header */}
@@ -984,7 +1011,9 @@ function CheckoutContent() {
                           <Lock className="w-4 h-4 text-blue-600" />
                           <div>
                             <h4 className="text-xs sm:text-sm font-black text-slate-900">
-                              المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦
+                              {isPayPalPlan
+                                ? "المرحلة الأخيرة: الدفع الآمن عبر PayPal 🅿️"
+                                : "المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦"}
                             </h4>
                             <span className="text-[10px] text-blue-600 font-bold block">
                               طلب رقم {createdOrder?.order_number} • {formattedPrice}

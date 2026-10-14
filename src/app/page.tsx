@@ -70,7 +70,7 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection
         onOpenOrderModal={handleOpenOrder}
-        onOpenPackageSelect={() => setPackageSelectOpen(true)}
+        onOpenPackageSelect={() => handleOpenOrder()}
       />
 
       {/* Features Ribbon */}
