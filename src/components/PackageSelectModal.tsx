@@ -49,13 +49,15 @@ export default function PackageSelectModal({
     }, 150);
   };
 
-  // Exact 3 Plans matching PricingSection.tsx on the Home Page
+  // 4 Approved Plans matching PricingSection.tsx
   const plans = [
     {
-      id: "landing",
-      name: "صفحة الهبوط (Landing Page)",
-      subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح",
-      price: "500 درهم",
+      id: "landing-local",
+      name: "صفحة هبوط — السوق المحلي",
+      market: "🇲🇦 المغرب",
+      subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
+      price: "1,500 DH",
+      planTier: "صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)",
       image: "/images/card_landing_new.webp",
       badge: {
         text: "الأكثر طلباً",
@@ -74,14 +76,17 @@ export default function PackageSelectModal({
         "صفحة هبوط احترافية مخصصة لمنتج رابح (Winner Product)",
         "تصميم محفز ومضاعف لمعدل التحويل (High Conversion)",
         "استقبال فوري ومؤتمت للطلبات والتحويلات المباشرة",
-        "سرعة تحميل فائقة وتوافق تام 100% مع جميع الهواتف",
+        "مرونة كاملة في خيارات الدفع: COD / تحويل بنكي / PayPal",
+        "استخدام النظام مدى الحياة",
       ],
     },
     {
-      id: "standard",
-      name: "المتجر القياسي (Standard Store)",
-      subtitle: "متجر متكامل متعدد المنتجات للعلامات التجارية الطموحة",
-      price: "1500 درهم",
+      id: "store-local",
+      name: "متجر متكامل + لوحة تحكم — المحلي",
+      market: "🇲🇦 المغرب",
+      subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
+      price: "3,000 DH",
+      planTier: "متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (3,000 MAD)",
       image: "/images/card_standard_new.webp",
       badge: {
         text: "الأكثر مبيعاً",
@@ -99,15 +104,46 @@ export default function PackageSelectModal({
       features: [
         "عرض منتجات متعددة بتصميم عصري جذاب ومرتب",
         "نظام سلس ومتكامل لاستقبال وتتبع وإدارة الطلبات",
-        "ربط بوابات الدفع الإلكتروني المؤتمتة (YouCan Pay, CMI)",
-        "واجهة متجاوبة 100% وسهلة الإدارة والتحديث",
+        "لوحة تحكم إدارية احترافية (Dashboard)",
+        "مرونة كاملة في خيارات الدفع: COD / تحويل بنكي / PayPal",
+        "استخدام النظام مدى الحياة",
       ],
     },
     {
-      id: "saas",
-      name: "منصة التجارة المتقدمة (Advanced SaaS)",
-      subtitle: "حل برمجي VIP متكامل لكبار التجار والشركات التوسعية",
-      price: "5000 درهم",
+      id: "landing-intl",
+      name: "صفحة هبوط — السوق الدولي",
+      market: "🌐 US / CA / AU",
+      subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
+      price: "4,500 DH",
+      planTier: "صفحة هبوط — السوق الدولي 🌐 (4,500 MAD)",
+      image: "/images/card_landing_new.webp",
+      badge: {
+        text: "مميز دولياً",
+        icon: Globe,
+        gradient: "from-emerald-500 via-teal-500 to-cyan-600",
+        shadow: "shadow-[0_0_20px_rgba(16,185,129,0.7)]",
+      },
+      cardBorder: "border-2 border-emerald-400/50 hover:border-emerald-400",
+      cardGlow: "shadow-[0_12px_40px_rgba(16,185,129,0.22)] hover:shadow-[0_18px_50px_rgba(16,185,129,0.38)]",
+      cardBg: "bg-white/95 hover:bg-white",
+      accentColor: "#10b981",
+      checkBg: "bg-emerald-500/15 text-emerald-700 border border-emerald-400/30",
+      priceGradient: "from-emerald-500 via-teal-500 to-cyan-600 text-white shadow-[0_4px_18px_rgba(16,185,129,0.45)]",
+      buttonGradient: "from-emerald-500 via-teal-500 to-cyan-600 text-white hover:shadow-[0_0_25px_rgba(16,185,129,0.85)]",
+      features: [
+        "صفحة هبوط مخصصة للأسواق الأمريكية والكندية والأسترالية",
+        "تصميم محفز ومضاعف لمعدل التحويل (High Conversion)",
+        "ربط بوابات الدفع العالمية: Stripe / PayPal / COD / تحويل بنكي",
+        "استخدام النظام مدى الحياة",
+      ],
+    },
+    {
+      id: "store-intl",
+      name: "متجر متكامل + لوحة تحكم — الدولي",
+      market: "🌐 US / CA / AU",
+      subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
+      price: "8,500 DH",
+      planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (8,500 MAD)",
       image: "/images/card_saas_new.webp",
       badge: {
         text: "الخيار الأقوى",
@@ -123,10 +159,10 @@ export default function PackageSelectModal({
       priceGradient: "from-amber-500 via-yellow-400 to-amber-600 text-[#0b1739] font-black shadow-[0_4px_20px_rgba(245,158,11,0.5)]",
       buttonGradient: "from-amber-500 via-yellow-400 to-amber-600 text-[#0b1739] font-black hover:shadow-[0_0_25px_rgba(245,158,11,0.9)]",
       features: [
-        "نظام متكامل بلوحة تحكم إدارية احترافية (Dashboard)",
-        "دمج بوابات الدفع الإلكترونية المؤتمتة (YouCan Pay, CMI)",
+        "متجر متكامل متعدد المنتجات مع لوحة تحكم إدارية (Dashboard)",
         "إرسال فواتير وإشعارات أوتوماتيكية للزبائن",
-        "ملكية النظام مدى الحياة بدون أي اشتراكات شهرية",
+        "ربط بوابات الدفع العالمية: Stripe / PayPal / COD / تحويل بنكي",
+        "استخدام النظام مدى الحياة",
       ],
     },
   ];
@@ -167,14 +203,14 @@ export default function PackageSelectModal({
           {/* Subtitle Banner */}
           <div className="text-center max-w-2xl mx-auto">
             <p className="text-xs sm:text-[15px] text-slate-600 font-bold leading-relaxed">
-              اختر إحدى الباقات الاحترافية الثلاث أدناه للانتقال المباشر إلى إتمام طلبك وتحديد وسيلة الدفع المناسبة:
+              اختر إحدى الباقات الاحترافية أدناه للانتقال المباشر إلى إتمام طلبك وتحديد وسيلة الدفع المناسبة:
             </p>
           </div>
 
           {/* ======================================================== */}
-          {/* 3 Rectangular Luxury Cards in ONE ROW (Exact replica)    */}
+          {/* 4 Rectangular Luxury Cards in Responsive Grid            */}
           {/* ======================================================== */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6 items-stretch">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 items-stretch">
             {plans.map((plan) => {
               const BadgeIcon = plan.badge.icon;
               return (
@@ -209,7 +245,7 @@ export default function PackageSelectModal({
                   <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
                     <div>
                       {/* Plan Title */}
-                      <h3 className="text-lg sm:text-[20px] font-black text-[#0b1739] mb-1 leading-snug">
+                      <h3 className="text-lg sm:text-[19px] font-black text-[#0b1739] mb-1 leading-snug">
                         {plan.name}
                       </h3>
                       <p className="text-xs text-[#475569] font-medium mb-3.5 leading-relaxed">
@@ -238,7 +274,7 @@ export default function PackageSelectModal({
 
                       {/* Order Button */}
                       <button
-                        onClick={() => handlePick(plan.name, plan.price)}
+                        onClick={() => handlePick(plan.planTier, plan.price)}
                         className={`flex-1 py-2 px-3 rounded-full bg-gradient-to-r ${plan.buttonGradient} text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer`}
                       >
                         <ShoppingCart className="w-3.5 h-3.5" />
