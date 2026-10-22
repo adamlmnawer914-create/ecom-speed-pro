@@ -58,7 +58,7 @@ export default function PackageSelectModal({
       subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
       price: "1,500 DH",
       planTier: "صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)",
-      image: "/images/card_landing_new.webp",
+      image: "/images/morocco_landing_showcase.jpg",
       badge: {
         text: "الأكثر طلباً",
         icon: Flame,
@@ -87,7 +87,7 @@ export default function PackageSelectModal({
       subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
       price: "3,000 DH",
       planTier: "متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (3,000 MAD)",
-      image: "/images/card_standard_new.webp",
+      image: "/images/morocco_store_showcase.jpg",
       badge: {
         text: "الأكثر مبيعاً",
         icon: Zap,
