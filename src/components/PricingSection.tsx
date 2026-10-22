@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ShoppingCart, Check, Flame, Globe, Zap, Crown, Sparkles } from "lucide-react";
+import { ShoppingCart, Check, Flame, Globe, Zap, Crown, Sparkles, Tag } from "lucide-react";
 
 interface PricingSectionProps {
   onSelectPlan: (planName: string, price: string) => void;
@@ -17,6 +17,7 @@ const LOCAL_PLANS = [
     subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
     originalPrice: "1,700 DH",
     discountPrice: "1,500 DH",
+    saveAmount: "وفر 200 DH",
     priceValue: "1500 درهم",
     planTier: "صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)",
     image: "/images/card_landing_new.webp",
@@ -43,6 +44,7 @@ const LOCAL_PLANS = [
     subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
     originalPrice: "3,000 DH",
     discountPrice: "2,500 DH",
+    saveAmount: "وفر 500 DH",
     priceValue: "2500 درهم",
     planTier: "متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (2,500 MAD)",
     image: "/images/card_standard_new.webp",
@@ -73,6 +75,7 @@ const INTERNATIONAL_PLANS = [
     subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
     originalPrice: "5,000 DH",
     discountPrice: "4,500 DH",
+    saveAmount: "وفر 500 DH",
     priceValue: "4500 درهم",
     planTier: "صفحة هبوط — السوق الدولي 🌐 (4,500 MAD)",
     image: "/images/card_landing_new.webp",
@@ -99,6 +102,7 @@ const INTERNATIONAL_PLANS = [
     subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
     originalPrice: "9,500 DH",
     discountPrice: "8,500 DH",
+    saveAmount: "وفر 1,000 DH",
     priceValue: "8500 درهم",
     planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (8,500 MAD)",
     image: "/images/card_saas_new.webp",
@@ -239,21 +243,39 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
                     </ul>
                   </div>
 
-                  {/* Bottom: Price (strikethrough + discount) + Order Button */}
-                  <div className="pt-4 border-t border-slate-200/70 flex items-center justify-between gap-3">
+                  {/* Bottom: Price (strikethrough + luxury icon discount) + Order Button */}
+                  <div className="pt-4 border-t border-slate-200/70 flex items-center justify-between gap-2.5 sm:gap-3">
                     {/* Price block */}
-                    <div className="flex flex-col items-start shrink-0 gap-0.5">
-                      <span className="text-[11px] text-slate-400 line-through font-semibold leading-none px-1">
-                        {plan.originalPrice}
-                      </span>
-                      <div className={`px-4 py-1.5 rounded-full bg-gradient-to-r ${plan.priceGradient} text-sm sm:text-base font-black flex items-center justify-center`}>
-                        <span>{plan.discountPrice}</span>
+                    <div className="flex flex-col items-start shrink-0">
+                      {/* Original price + Savings badge */}
+                      <div className="flex items-center gap-1.5 mb-1 px-1">
+                        <span className="text-[11px] sm:text-xs text-slate-400 line-through font-bold decoration-rose-500/70 decoration-[1.5px]">
+                          {plan.originalPrice}
+                        </span>
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 shadow-2xs">
+                          {plan.saveAmount}
+                        </span>
+                      </div>
+
+                      {/* Luxury Discount Price Icon Pod */}
+                      <div
+                        className={`relative inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-2xl bg-gradient-to-r ${plan.priceGradient} border border-white/40 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.03] select-none`}
+                      >
+                        {/* Luxury Icon inside a glowing crystal pod */}
+                        <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-xl bg-white/25 backdrop-blur-md border border-white/40 flex items-center justify-center shrink-0 shadow-inner">
+                          <Tag className="w-3.5 h-3.5 text-current drop-shadow-xs" />
+                        </div>
+                        {/* Price Text */}
+                        <span className="text-sm sm:text-base font-black tracking-tight leading-none drop-shadow-xs">
+                          {plan.discountPrice}
+                        </span>
                       </div>
                     </div>
+
                     {/* Order button */}
                     <button
                       onClick={() => onSelectPlan(plan.planTier, plan.priceValue)}
-                      className={`flex-1 py-2.5 px-4 rounded-full bg-gradient-to-r ${plan.buttonGradient} text-sm sm:text-[15px] font-black flex items-center justify-center gap-2 shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer`}
+                      className={`flex-1 py-2.5 px-3 sm:px-4 rounded-full bg-gradient-to-r ${plan.buttonGradient} text-xs sm:text-sm md:text-[15px] font-black flex items-center justify-center gap-1.5 sm:gap-2 shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer`}
                     >
                       <ShoppingCart className="w-4 h-4" />
                       <span>الطلب الآن</span>
