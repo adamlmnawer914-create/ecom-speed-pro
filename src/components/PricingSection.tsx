@@ -145,34 +145,52 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
         </div>
 
         {/* ── Market Tab Toggle ─────────────────────────────────────── */}
-        <div className="flex items-center justify-center mb-7">
-          <div className="relative flex bg-white/70 backdrop-blur-xl border border-blue-200/60 rounded-2xl p-1.5 shadow-[0_4px_24px_rgba(37,99,235,0.13)] gap-1">
-            {/* Animated sliding background */}
-            <span
-              aria-hidden="true"
-              className={`absolute top-1.5 bottom-1.5 rounded-xl bg-gradient-to-r transition-all duration-300 ease-out shadow-[0_2px_12px_rgba(37,99,235,0.25)] ${
-                activeMarket === "local"
-                  ? "left-1.5 right-[calc(50%+2px)] from-blue-600 via-indigo-600 to-blue-700"
-                  : "left-[calc(50%+2px)] right-1.5 from-emerald-500 via-teal-500 to-cyan-600"
-              }`}
-            />
+        <div className="flex items-center justify-center mb-8 px-2">
+          <div className="inline-flex items-center p-1.5 sm:p-2 rounded-3xl bg-white/85 backdrop-blur-2xl border border-slate-200/90 shadow-[0_10px_35px_rgba(37,99,235,0.08)] gap-2 max-w-full">
+            {/* 🇲🇦 Local Market Tab (Royal Moroccan Ruby) */}
             <button
+              type="button"
               onClick={() => setActiveMarket("local")}
-              className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm sm:text-base font-black transition-colors duration-200 cursor-pointer select-none ${
-                activeMarket === "local" ? "text-white" : "text-[#1e3a8a] hover:text-blue-700"
+              className={`relative z-10 flex items-center gap-2 sm:gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm md:text-base font-black transition-all duration-300 cursor-pointer select-none whitespace-nowrap ${
+                activeMarket === "local"
+                  ? "bg-gradient-to-r from-red-600 via-rose-600 to-red-700 text-white shadow-[0_6px_25px_rgba(225,29,72,0.48)] border border-rose-300/50 scale-[1.02]"
+                  : "bg-white/60 hover:bg-rose-50/80 text-rose-950/80 hover:text-rose-700 border border-rose-200/50 hover:border-rose-300 shadow-xs hover:scale-[1.01]"
               }`}
             >
-              <span className="text-lg leading-none">🇲🇦</span>
+              <span className="text-base sm:text-lg leading-none">🇲🇦</span>
               <span>السوق المحلي (المغرب)</span>
+              <span
+                className={`hidden md:inline-flex items-center text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors ${
+                  activeMarket === "local"
+                    ? "bg-white/20 text-white border border-white/25"
+                    : "bg-rose-100 text-rose-700 border border-rose-200/70"
+                }`}
+              >
+                MAD
+              </span>
             </button>
+
+            {/* 🌐 International Market Tab (Imperial Emerald & Cyan) */}
             <button
+              type="button"
               onClick={() => setActiveMarket("international")}
-              className={`relative z-10 flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm sm:text-base font-black transition-colors duration-200 cursor-pointer select-none ${
-                activeMarket === "international" ? "text-white" : "text-[#1e3a8a] hover:text-emerald-700"
+              className={`relative z-10 flex items-center gap-2 sm:gap-2.5 px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl text-xs sm:text-sm md:text-base font-black transition-all duration-300 cursor-pointer select-none whitespace-nowrap ${
+                activeMarket === "international"
+                  ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white shadow-[0_6px_25px_rgba(16,185,129,0.48)] border border-emerald-300/50 scale-[1.02]"
+                  : "bg-white/60 hover:bg-emerald-50/80 text-emerald-950/80 hover:text-emerald-700 border border-emerald-200/50 hover:border-emerald-300 shadow-xs hover:scale-[1.01]"
               }`}
             >
-              <span className="text-lg leading-none">🌐</span>
+              <span className="text-base sm:text-lg leading-none">🌐</span>
               <span>السوق الدولي (US/CA/AU)</span>
+              <span
+                className={`hidden md:inline-flex items-center text-[10px] px-2 py-0.5 rounded-full font-bold transition-colors ${
+                  activeMarket === "international"
+                    ? "bg-white/20 text-white border border-white/25"
+                    : "bg-emerald-100 text-emerald-800 border border-emerald-200/70"
+                }`}
+              >
+                Global VIP
+              </span>
             </button>
           </div>
         </div>
