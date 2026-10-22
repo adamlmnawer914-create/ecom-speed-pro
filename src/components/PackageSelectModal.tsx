@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { X, Sparkles, Check, ShoppingCart, ArrowDown, Flame, Zap, Crown } from "lucide-react";
+import { X, Sparkles, Check, ShoppingCart, ArrowDown, Flame, Zap, Crown, Globe } from "lucide-react";
 
 interface PackageSelectModalProps {
   isOpen: boolean;
