@@ -52,9 +52,10 @@ interface Order {
   product_price?: string | number;
   order_phone?: string;
   plan_tier: string;
-  status: "pending" | "in_progress" | "completed";
+  status: "pending" | "pending_payment" | "in_progress" | "completed" | string;
   delivered_url: string | null;
   payment_method?: string;
+  payment_status?: "paid" | "unpaid" | "pending" | string;
   product_notes?: string;
   product_images?: string[];
   created_at: string;
@@ -181,7 +182,7 @@ export default function AdminDashboardPage() {
   // Quick Status Update directly from table row dropdown
   const handleQuickStatusChange = async (
     orderId: string,
-    newStatus: "pending" | "in_progress" | "completed"
+    newStatus: string
   ) => {
     try {
       setIsUpdating(true);
@@ -205,6 +206,8 @@ export default function AdminDashboardPage() {
             ? "تم تغيير حالة الطلب إلى 'مكتمل ومسلّم' 🟢"
             : newStatus === "in_progress"
             ? "تم تغيير حالة الطلب إلى 'جاري التجهيز' 🔵"
+            : newStatus === "pending_payment"
+            ? "تم تغيير حالة الطلب إلى 'بانتظار الدفع' ⏳"
             : "تم تغيير حالة الطلب إلى 'قيد المراجعة' 🟡"
         );
       } else {
@@ -213,6 +216,41 @@ export default function AdminDashboardPage() {
     } catch (err) {
       console.error(err);
       showToast("حدث خطأ أثناء تحديث الحالة");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Confirm PayPal Payment — marks as paid and moves to in_progress
+  const handleConfirmPayPalPayment = async (orderId: string) => {
+    try {
+      setIsUpdating(true);
+      const res = await fetch("/api/orders", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-token": "2026",
+          "x-desktop-auth-token": ADMIN_TOKEN,
+        },
+        body: JSON.stringify({
+          id: orderId,
+          status: "in_progress",
+          payment_status: "paid",
+        }),
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        setOrders((prev) => prev.map((o) => (o.id === orderId ? data.order : o)));
+        if (selectedOrder && selectedOrder.id === orderId) {
+          setSelectedOrder(data.order);
+        }
+        showToast("✅ تم تأكيد استلام الدفعة ونقل الطلب إلى 'جاري التجهيز'");
+      } else {
+        showToast(data.message || "فشل تأكيد الدفعة");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast("حدث خطأ أثناء تأكيد الدفعة");
     } finally {
       setIsUpdating(false);
     }
@@ -502,6 +540,7 @@ export default function AdminDashboardPage() {
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "pending" && (o.status === "pending" || !o.status)) ||
+        (statusFilter === "pending_payment" && o.status === "pending_payment") ||
         (statusFilter === "in_progress" && o.status === "in_progress") ||
         (statusFilter === "completed" && (o.status === "completed" || (o as any).status === "paid"));
 
@@ -509,7 +548,7 @@ export default function AdminDashboardPage() {
     });
   }, [orders, searchQuery, statusFilter]);
 
-  // KPIs
+  // KPIs — pending_payment orders excluded from revenue until confirmed
   const totalOrdersCount = orders.length;
   const completedOrdersCount = orders.filter(
     (o) => o.status === "completed" || (o as any).status === "paid"
@@ -517,8 +556,19 @@ export default function AdminDashboardPage() {
   const pendingOrdersCount = orders.filter(
     (o) => o.status === "pending" || !o.status
   ).length;
+  const pendingPaymentCount = orders.filter(
+    (o) => o.status === "pending_payment"
+  ).length;
   const totalRevenue = useMemo(() => {
-    return orders.reduce((sum, o) => sum + parsePrice(o), 0);
+    // Only count orders that are NOT pending_payment (i.e., payment not yet confirmed)
+    return orders
+      .filter((o) => o.status !== "pending_payment")
+      .reduce((sum, o) => sum + parsePrice(o), 0);
+  }, [orders]);
+  const unpaidRevenue = useMemo(() => {
+    return orders
+      .filter((o) => o.status === "pending_payment")
+      .reduce((sum, o) => sum + parsePrice(o), 0);
   }, [orders]);
 
   // CSV Export
@@ -1179,7 +1229,7 @@ export default function AdminDashboardPage() {
                                       onClick={() => {
                                         setQuickStoreOrderId(id);
                                         setQuickStoreUrlInput(deliveredUrl);
-                                        setQuickStoreDeliveryStatus(status === "pending" ? "completed" : status);
+                                        setQuickStoreDeliveryStatus(status === "in_progress" ? "in_progress" : "completed");
                                       }}
                                       className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600 cursor-pointer"
                                       title="تعديل وتسليم رابط المتجر"
@@ -1193,7 +1243,7 @@ export default function AdminDashboardPage() {
                                       onClick={() => {
                                         setQuickStoreOrderId(id);
                                         setQuickStoreUrlInput("");
-                                        setQuickStoreDeliveryStatus(status === "pending" ? "completed" : status);
+                                        setQuickStoreDeliveryStatus(status === "in_progress" ? "in_progress" : "completed");
                                       }}
                                       className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 text-slate-600 hover:text-cyan-700 text-[11px] font-bold flex items-center gap-1 transition-all cursor-pointer"
                                       title="تسليم رابط المتجر للعميل"
@@ -1216,7 +1266,7 @@ export default function AdminDashboardPage() {
                                     onClick={() => {
                                       setQuickStoreOrderId(id);
                                       setQuickStoreUrlInput(deliveredUrl || "");
-                                      setQuickStoreDeliveryStatus(status === "pending" ? "completed" : status);
+                                      setQuickStoreDeliveryStatus(status === "in_progress" ? "in_progress" : "completed");
                                     }}
                                     className="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
                                     title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً"

@@ -254,9 +254,10 @@ export default function OrderModal({
       amount: rawNumericPrice,
       currency: "MAD",
       payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
+      payment_status: isPayPalPlan ? "unpaid" : "pending",
       product_images: productImages,
       product_notes: productNotes.trim(),
-      status: "pending",
+      status: isPayPalPlan ? "pending_payment" : "pending",
     };
 
     let savedOrder: any = null;
@@ -282,7 +283,12 @@ export default function OrderModal({
         const res = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...orderPayload, payment_method: "YouCan Pay" }),
+          body: JSON.stringify({
+            ...orderPayload,
+            payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
+            payment_status: isPayPalPlan ? "unpaid" : "pending",
+            status: isPayPalPlan ? "pending_payment" : "pending",
+          }),
         });
         const data = await res.json();
         if (data && data.success && data.order) {
@@ -310,8 +316,9 @@ export default function OrderModal({
         product_price: productPrice.trim(),
         order_phone: orderPhone.trim() || customerPhone.trim(),
         plan_tier: planTitle,
-        status: "pending",
-        payment_method: "YouCan Pay",
+        status: isPayPalPlan ? "pending_payment" : "pending",
+        payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
+        payment_status: isPayPalPlan ? "unpaid" : "pending",
         product_images: productImages,
         product_notes: productNotes.trim(),
         created_at: new Date().toISOString(),
@@ -339,10 +346,11 @@ export default function OrderModal({
         planTitle,
         price: rawNumericPrice,
         formattedPrice,
-        paymentMethod: "YouCan Pay",
+        paymentMethod: isPayPalPlan ? "PayPal" : "YouCan Pay",
+        paymentStatus: isPayPalPlan ? "unpaid" : "pending",
         productImages,
         productNotes: productNotes.trim(),
-        status: "pending",
+        status: isPayPalPlan ? "pending_payment" : "pending",
         createdAt: new Date().toISOString(),
       };
       localStorage.setItem("ecom_speed_pro_orders", JSON.stringify([legacyItem, ...list]));

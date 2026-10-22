@@ -14,9 +14,10 @@ export interface Order {
   product_price?: string | number; // ثمن بيع منتجه في المتجر
   order_phone?: string; // الرقم الذي يريد أن تصل فيه الطلبات
   plan_tier: string; // e.g. "500 MAD" | "1500 MAD" | "5000 MAD"
-  status: "pending" | "in_progress" | "completed";
+  status: "pending" | "pending_payment" | "in_progress" | "completed" | string;
   delivered_url: string | null;
   payment_method?: string;
+  payment_status?: "paid" | "unpaid" | "pending" | string;
   product_notes?: string;
   product_images?: string[];
   created_at: string;

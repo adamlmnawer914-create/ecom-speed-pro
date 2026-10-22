@@ -238,9 +238,10 @@ function CheckoutContent() {
       amount: rawNumericPrice,
       currency: "MAD",
       payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
+      payment_status: isPayPalPlan ? "unpaid" : "pending",
       product_images: productImages,
       product_notes: productNotes.trim(),
-      status: "pending",
+      status: isPayPalPlan ? "pending_payment" : "pending",
     };
 
     let savedOrder: any = null;
@@ -266,7 +267,12 @@ function CheckoutContent() {
         const res = await fetch("/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...orderPayload, payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay" }),
+          body: JSON.stringify({
+            ...orderPayload,
+            payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
+            payment_status: isPayPalPlan ? "unpaid" : "pending",
+            status: isPayPalPlan ? "pending_payment" : "pending",
+          }),
         });
         const data = await res.json();
         if (data && data.success && data.order) {
@@ -297,9 +303,10 @@ function CheckoutContent() {
         amount: rawNumericPrice,
         currency: "MAD",
         payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
+        payment_status: isPayPalPlan ? "unpaid" : "pending",
         product_images: productImages,
         product_notes: productNotes.trim(),
-        status: "pending",
+        status: isPayPalPlan ? "pending_payment" : "pending",
         delivered_url: null,
         created_at: new Date().toISOString(),
       };
@@ -335,9 +342,10 @@ function CheckoutContent() {
         price: rawNumericPrice,
         amount: rawNumericPrice,
         paymentMethod: isPayPalPlan ? "PayPal" : "YouCan Pay",
+        paymentStatus: isPayPalPlan ? "unpaid" : "pending",
         productImages: productImages,
         productNotes: productNotes.trim(),
-        status: "pending",
+        status: isPayPalPlan ? "pending_payment" : "pending",
         deliveredUrl: null,
         createdAt: new Date().toISOString(),
       };
