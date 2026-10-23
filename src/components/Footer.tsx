@@ -76,25 +76,8 @@ export default function Footer({
     }
   };
 
-  // Service packages data
+  // Service packages — RTL order: 1,500 (right) → 3,000 → 4,500 → 9,000 (left)
   const packages = [
-    {
-      id: "store-intl",
-      name: "متجر دولي VIP",
-      price: "9,000 د.م",
-      priceValue: "9000 درهم",
-      planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (9,000 MAD)",
-      icon: Crown,
-      iconBg: "from-purple-500 to-indigo-600",
-      iconShadow: "shadow-[0_6px_20px_rgba(147,51,234,0.5)]",
-      cardBg: "from-white/80 to-purple-50/60",
-      cardBorder: "border-purple-200/60 hover:border-purple-400/80",
-      cardShadow: "shadow-[0_8px_32px_rgba(147,51,234,0.12)] hover:shadow-[0_12px_40px_rgba(147,51,234,0.25)]",
-      priceBg: "from-purple-600 via-indigo-600 to-blue-600",
-      badge: "VIP",
-      badgeColor: "bg-purple-100 text-purple-700 border-purple-300",
-      emoji: "🌐",
-    },
     {
       id: "landing-local",
       name: "صفحة هبوط محلية",
@@ -104,12 +87,10 @@ export default function Footer({
       icon: Flame,
       iconBg: "from-rose-500 to-pink-600",
       iconShadow: "shadow-[0_6px_20px_rgba(244,63,94,0.5)]",
-      cardBg: "from-white/80 to-rose-50/60",
-      cardBorder: "border-rose-200/60 hover:border-rose-400/80",
-      cardShadow: "shadow-[0_8px_32px_rgba(244,63,94,0.12)] hover:shadow-[0_12px_40px_rgba(244,63,94,0.25)]",
-      priceBg: "from-rose-500 via-pink-500 to-red-500",
-      badge: "🇲🇦",
-      badgeColor: "bg-rose-100 text-rose-700 border-rose-300",
+      cardBg: "from-white/90 to-rose-50/70",
+      cardBorder: "border-rose-200/70 hover:border-rose-400",
+      cardShadow: "shadow-[0_8px_32px_rgba(244,63,94,0.12)] hover:shadow-[0_16px_44px_rgba(244,63,94,0.28)]",
+      priceBg: "from-rose-500 via-pink-500 to-fuchsia-600",
       emoji: "🇲🇦",
     },
     {
@@ -121,12 +102,10 @@ export default function Footer({
       icon: Store,
       iconBg: "from-cyan-500 to-blue-600",
       iconShadow: "shadow-[0_6px_20px_rgba(6,182,212,0.5)]",
-      cardBg: "from-white/80 to-cyan-50/60",
-      cardBorder: "border-cyan-200/60 hover:border-cyan-400/80",
-      cardShadow: "shadow-[0_8px_32px_rgba(6,182,212,0.12)] hover:shadow-[0_12px_40px_rgba(6,182,212,0.25)]",
-      priceBg: "from-cyan-500 via-blue-500 to-indigo-500",
-      badge: "🇲🇦",
-      badgeColor: "bg-cyan-100 text-cyan-700 border-cyan-300",
+      cardBg: "from-white/90 to-cyan-50/70",
+      cardBorder: "border-cyan-200/70 hover:border-cyan-400",
+      cardShadow: "shadow-[0_8px_32px_rgba(6,182,212,0.12)] hover:shadow-[0_16px_44px_rgba(6,182,212,0.28)]",
+      priceBg: "from-cyan-500 via-blue-500 to-indigo-600",
       emoji: "🇲🇦",
     },
     {
@@ -138,13 +117,26 @@ export default function Footer({
       icon: Globe,
       iconBg: "from-emerald-500 to-teal-600",
       iconShadow: "shadow-[0_6px_20px_rgba(16,185,129,0.5)]",
-      cardBg: "from-white/80 to-emerald-50/60",
-      cardBorder: "border-emerald-200/60 hover:border-emerald-400/80",
-      cardShadow: "shadow-[0_8px_32px_rgba(16,185,129,0.12)] hover:shadow-[0_12px_40px_rgba(16,185,129,0.25)]",
+      cardBg: "from-white/90 to-emerald-50/70",
+      cardBorder: "border-emerald-200/70 hover:border-emerald-400",
+      cardShadow: "shadow-[0_8px_32px_rgba(16,185,129,0.12)] hover:shadow-[0_16px_44px_rgba(16,185,129,0.28)]",
       priceBg: "from-emerald-500 via-teal-500 to-cyan-500",
-      badge: "🌐",
-      badgeColor: "bg-emerald-100 text-emerald-700 border-emerald-300",
       emoji: "🌐",
+    },
+    {
+      id: "store-intl",
+      name: "متجر دولي VIP",
+      price: "9,000 د.م",
+      priceValue: "9000 درهم",
+      planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (9,000 MAD)",
+      icon: Crown,
+      iconBg: "from-violet-600 via-purple-600 to-indigo-700",
+      iconShadow: "shadow-[0_6px_20px_rgba(124,58,237,0.6)]",
+      cardBg: "from-white/90 to-violet-50/70",
+      cardBorder: "border-violet-200/70 hover:border-violet-400",
+      cardShadow: "shadow-[0_8px_32px_rgba(124,58,237,0.15)] hover:shadow-[0_16px_44px_rgba(124,58,237,0.32)]",
+      priceBg: "from-violet-600 via-purple-600 to-indigo-600",
+      emoji: "👑",
     },
   ];
 
@@ -281,40 +273,42 @@ export default function Footer({
             </div>
           </div>
 
-          {/* ── ROW 2: Main Content Grid (Services + Payment + Mockup) ── */}
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto_auto] gap-5 xl:gap-6 items-start">
+          {/* ── ROW 2: Main Content Grid (Services + Payment) ── */}
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_auto] gap-5 xl:gap-7 items-start">
 
-            {/* LEFT COLUMN: 4 Service Package Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 xl:gap-4">
+            {/* LEFT COLUMN: 4 Service Package Cards — RTL: 1500 → 3000 → 4500 → 9000 */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
               {packages.map((pkg) => {
                 const PkgIcon = pkg.icon;
                 return (
                   <button
                     key={pkg.id}
                     onClick={() => onOpenOrderModal?.(pkg.planTier, pkg.priceValue)}
-                    className={`group relative rounded-2xl bg-gradient-to-b ${pkg.cardBg} backdrop-blur-md border ${pkg.cardBorder} ${pkg.cardShadow} p-4 flex flex-col items-center gap-3 cursor-pointer transition-all duration-300 hover:scale-[1.04] hover:-translate-y-1 text-center`}
+                    className={`group relative rounded-3xl bg-gradient-to-b ${pkg.cardBg} backdrop-blur-md border ${pkg.cardBorder} ${pkg.cardShadow} p-4 sm:p-5 flex flex-col items-center gap-3 cursor-pointer transition-all duration-300 hover:scale-[1.05] hover:-translate-y-1.5 text-center overflow-hidden`}
                   >
-                    {/* Glass highlight top */}
-                    <div className="absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+                    {/* Glass shimmer top line */}
+                    <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-white/90 to-transparent" />
+                    {/* Bottom glow reflection */}
+                    <div className="absolute inset-x-4 bottom-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
 
-                    {/* 3D Icon pod */}
-                    <div className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br ${pkg.iconBg} ${pkg.iconShadow} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                      {/* Inner glass reflection */}
-                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/30 to-transparent" />
-                      <PkgIcon className="w-7 h-7 sm:w-8 sm:h-8 text-white relative z-10 drop-shadow-sm" />
-                      {/* Badge */}
-                      <span className="absolute -top-2 -right-2 text-xs bg-white rounded-full w-5 h-5 flex items-center justify-center shadow-sm border border-slate-200/60 text-[10px]">
+                    {/* 3D Icon pod with floating effect */}
+                    <div className={`relative w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-2xl bg-gradient-to-br ${pkg.iconBg} ${pkg.iconShadow} flex items-center justify-center group-hover:scale-110 group-hover:-translate-y-1 transition-all duration-300`}>
+                      {/* Inner glass dome reflection */}
+                      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/40 via-white/10 to-transparent" />
+                      <PkgIcon className="w-8 h-8 sm:w-9 sm:h-9 text-white relative z-10 drop-shadow-md" />
+                      {/* Floating emoji badge */}
+                      <span className="absolute -top-2.5 -right-2.5 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-md border border-slate-200/60 text-sm">
                         {pkg.emoji}
                       </span>
                     </div>
 
-                    {/* Name */}
-                    <span className="text-xs sm:text-[13px] font-black text-[#0b1739] leading-tight">
+                    {/* Service name */}
+                    <span className="text-[13px] sm:text-sm font-black text-[#0b1739] leading-snug px-1">
                       {pkg.name}
                     </span>
 
-                    {/* Price pill */}
-                    <div className={`w-full py-1.5 px-2 rounded-xl bg-gradient-to-r ${pkg.priceBg} text-white text-xs sm:text-sm font-black shadow-md text-center`}>
+                    {/* Price badge — gradient pill */}
+                    <div className={`w-full py-2 px-3 rounded-2xl bg-gradient-to-r ${pkg.priceBg} text-white text-sm sm:text-[15px] font-black shadow-lg text-center tracking-wide`}>
                       {pkg.price}
                     </div>
                   </button>
@@ -434,74 +428,7 @@ export default function Footer({
 
             </div>
 
-            {/* RIGHT COLUMN: Device Mockup Preview */}
-            <div className="hidden xl:flex flex-col items-center justify-center xl:w-56 2xl:w-64">
-              <div className="relative w-full">
-                {/* Laptop frame */}
-                <div className="relative w-full aspect-[4/3] rounded-xl bg-gradient-to-br from-[#1a3ed8]/10 to-[#7209b7]/10 border-2 border-blue-300/40 shadow-[0_12px_40px_rgba(58,134,255,0.2)] overflow-hidden backdrop-blur-sm">
-                  {/* Screen content mockup */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/90 to-blue-50/80 p-2">
-                    {/* Mockup navbar */}
-                    <div className="flex items-center justify-between mb-1.5 pb-1 border-b border-blue-100">
-                      <div className="flex gap-0.5">
-                        <span className="w-2 h-2 rounded-full bg-red-400" />
-                        <span className="w-2 h-2 rounded-full bg-amber-400" />
-                        <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      </div>
-                      <div className="flex-1 mx-2 h-2 rounded-full bg-slate-200/80" />
-                    </div>
-                    {/* Hero strip */}
-                    <div className="w-full h-10 rounded-lg bg-gradient-to-r from-[#1a3ed8] to-[#7209b7] mb-1.5 flex items-center justify-center">
-                      <span className="text-white text-[8px] font-black tracking-wide">ECOM SPEED PRO</span>
-                    </div>
-                    {/* Product cards grid */}
-                    <div className="grid grid-cols-3 gap-1 mb-1.5">
-                      {[
-                        { color: "from-blue-100 to-cyan-100", icon: "👟" },
-                        { color: "from-purple-100 to-pink-100", icon: "👜" },
-                        { color: "from-emerald-100 to-teal-100", icon: "⌚" },
-                      ].map((item, i) => (
-                        <div key={i} className={`rounded-lg bg-gradient-to-br ${item.color} p-1.5 border border-white/80`}>
-                          <div className="text-base text-center">{item.icon}</div>
-                          <div className="w-full h-1.5 rounded-full bg-slate-300/60 mt-1" />
-                          <div className="w-3/4 h-1.5 rounded-full bg-blue-400/40 mt-0.5" />
-                        </div>
-                      ))}
-                    </div>
-                    {/* CTA button */}
-                    <div className="w-full h-4 rounded-lg bg-gradient-to-r from-[#1a3ed8] to-[#7209b7] flex items-center justify-center">
-                      <span className="text-white text-[7px] font-black">اطلب الآن</span>
-                    </div>
-                  </div>
-                </div>
-                {/* Laptop bottom stand */}
-                <div className="w-3/5 h-2 mx-auto bg-gradient-to-r from-slate-300/60 via-slate-400/60 to-slate-300/60 rounded-b-xl shadow-md" />
-                <div className="w-4/5 h-1 mx-auto bg-slate-300/40 rounded-full mt-0.5" />
 
-                {/* Phone floating overlay */}
-                <div className="absolute -bottom-4 -left-4 w-16 h-24 rounded-2xl border-2 border-blue-300/50 shadow-[0_8px_24px_rgba(58,134,255,0.25)] overflow-hidden bg-white/90">
-                  {/* Phone screen */}
-                  <div className="w-full h-full bg-gradient-to-b from-[#1a3ed8] to-[#7209b7] p-1.5 flex flex-col gap-1">
-                    <div className="w-full h-5 rounded bg-white/20 flex items-center justify-center">
-                      <span className="text-white text-[5px] font-black">متجر ESP</span>
-                    </div>
-                    <div className="w-full h-6 rounded bg-white/15 flex items-center justify-center">
-                      <span className="text-[8px]">👟</span>
-                    </div>
-                    <div className="w-full h-3 rounded-full bg-white/80 flex items-center justify-center">
-                      <span className="text-[5px] font-black text-blue-700">اشتري الآن</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-0.5">
-                      <div className="h-4 rounded bg-white/20 flex items-center justify-center text-[6px]">👜</div>
-                      <div className="h-4 rounded bg-white/20 flex items-center justify-center text-[6px]">⌚</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Decorative glow under devices */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-4/5 h-8 bg-blue-400/20 rounded-full blur-xl" />
-              </div>
-            </div>
 
           </div>
 
