@@ -183,15 +183,15 @@ export default function Navbar({
           </div>
 
           {/* Left in RTL: Search & Action Buttons Capsule */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             {/* Desktop Search Input Box */}
             <form onSubmit={handleSearchSubmit} className="relative hidden md:flex items-center">
               <input
                 type="text"
-                placeholder="... ابحث عن خدمة أو منتج"
+                placeholder="... ابحث عن خدمة أو باقة"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-44 xl:w-56 bg-white border border-[#b9dcfa] focus:border-blue-500 text-xs rounded-full pr-4 pl-10 py-1.5 outline-none transition-all placeholder:text-slate-400 text-slate-800 shadow-inner font-bold"
+                className="w-40 lg:w-48 xl:w-56 bg-white border border-[#b9dcfa] focus:border-blue-500 text-xs rounded-full pr-4 pl-10 py-1.5 outline-none transition-all placeholder:text-slate-400 text-slate-800 shadow-inner font-bold"
               />
               <button
                 type="submit"
@@ -202,9 +202,17 @@ export default function Navbar({
               </button>
             </form>
 
+            {/* Mobile Quick Search Button */}
+            <button
+              type="button"
+              onClick={() => onOpenSearch?.(searchQuery || "")}
+              className="md:hidden w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 flex items-center justify-center transition-all cursor-pointer shadow-xs"
+              title="بحث سريع"
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
 
-
-            {/* Desktop Action Icons: Cart, Wishlist, Account */}
+            {/* Action Icons: Cart (always visible), Wishlist & Account (responsive) */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               {/* 1. Cart Button */}
               <button
@@ -219,21 +227,21 @@ export default function Navbar({
                 </span>
               </button>
 
-              {/* 2. Wishlist Button */}
+              {/* 2. Wishlist Button (hidden on narrow screens to prevent cramming) */}
               <button
                 type="button"
                 onClick={onOpenWishlist}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                className="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
                 title="المفضلة"
               >
                 <Heart className="w-4 h-4 fill-current" />
               </button>
 
-              {/* 3. Account Button */}
+              {/* 3. Account Button (hidden on narrow screens to prevent cramming) */}
               <button
                 type="button"
                 onClick={onOpenAccount}
-                className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 flex items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
+                className="hidden sm:flex w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 items-center justify-center transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xs"
                 title="بوابة العملاء والمستثمرين"
               >
                 <User className="w-4 h-4 fill-current" />
@@ -243,7 +251,7 @@ export default function Navbar({
             {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden w-8 h-8 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center hover:bg-blue-100 transition-colors cursor-pointer shrink-0"
+              className="lg:hidden w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center hover:bg-blue-100 transition-colors cursor-pointer shrink-0"
               title="القائمة"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -252,81 +260,51 @@ export default function Navbar({
 
         </nav>
 
-        {/* Mobile Persistent Sub-Bar: Ensures ALL elements from the attached picture are directly visible on phone */}
-        <div className="lg:hidden bg-white/95 backdrop-blur-md border border-[#cbe4fb] rounded-2xl p-2.5 shadow-sm flex flex-col gap-2">
-          {/* Mobile Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="relative flex items-center w-full">
-            <input
-              type="text"
-              placeholder="... ابحث عن خدمة أو منتج"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-slate-50 border border-[#b9dcfa] focus:border-blue-500 rounded-full pr-4 pl-10 py-1.5 text-xs outline-none font-bold placeholder:text-slate-400 text-slate-800"
-            />
-            <button
-              type="submit"
-              className="absolute left-1 w-6 h-6 rounded-full bg-[#1d4ed8] text-white flex items-center justify-center shadow-xs cursor-pointer"
-            >
-              <Search className="w-3 h-3" />
-            </button>
-          </form>
-
-          {/* Mobile Horizontal Scrollable Navigation Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar text-xs font-black whitespace-nowrap">
+        {/* Mobile Persistent Sub-Bar: Slim, smooth quick-access pills */}
+        <div className="lg:hidden bg-white/95 backdrop-blur-md border border-[#cbe4fb] rounded-2xl px-2.5 py-1.5 shadow-xs flex items-center justify-between gap-1.5 overflow-hidden">
+          {/* Quick pills row */}
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-[11px] font-black whitespace-nowrap w-full py-0.5">
             <button
               onClick={() => navigateToSection("home")}
-              className="bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white px-3.5 py-1 rounded-full shadow-xs shrink-0 cursor-pointer"
+              className="bg-gradient-to-r from-[#00b4d8] via-[#3a86ff] to-[#7209b7] text-white px-3 py-1 rounded-full shadow-xs shrink-0 cursor-pointer"
             >
               الرئيسية
             </button>
             <button
               onClick={() => navigateToSection("services")}
-              className="px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shrink-0 cursor-pointer"
+              className="px-2.5 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shrink-0 cursor-pointer flex items-center gap-1"
             >
-              الخدمات ∨
+              <span>🇲🇦 باقات المغرب</span>
             </button>
             <button
-              type="button"
-              onClick={onOpenCart}
-              className="px-3 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shrink-0 cursor-pointer flex items-center gap-1"
+              onClick={() => navigateToSection("services")}
+              className="px-2.5 py-1 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 shrink-0 cursor-pointer flex items-center gap-1"
             >
-              <ShoppingCart className="w-3 h-3" />
-              <span>السلة (1)</span>
+              <span>🌐 باقات دولية</span>
             </button>
+            <Link
+              href="/track"
+              className="px-2.5 py-1 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 shrink-0 cursor-pointer flex items-center gap-1 font-black"
+            >
+              <span>تتبع طلبك</span>
+              <span className="text-[10px]">🔍</span>
+            </Link>
             <button
               type="button"
               onClick={onOpenWishlist}
-              className="px-3 py-1 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 shrink-0 cursor-pointer flex items-center gap-1"
+              className="sm:hidden px-2 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200 shrink-0 cursor-pointer flex items-center gap-1"
             >
-              <Heart className="w-3 h-3" />
+              <Heart className="w-3 h-3 fill-current" />
               <span>المفضلة</span>
             </button>
             <button
               type="button"
               onClick={onOpenAccount}
-              className="px-3 py-1 rounded-full bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0 cursor-pointer flex items-center gap-1"
+              className="sm:hidden px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0 cursor-pointer flex items-center gap-1"
             >
-              <User className="w-3 h-3" />
+              <User className="w-3 h-3 fill-current" />
               <span>حسابي</span>
             </button>
-            <button
-              onClick={() => navigateToSection("about")}
-              className="px-3 py-1 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 shrink-0 cursor-pointer"
-            >
-              من نحن
-            </button>
-            <button
-              onClick={() => navigateToSection("contact")}
-              className="px-3 py-1 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 shrink-0 cursor-pointer"
-            >
-              اتصل بنا
-            </button>
-            <Link
-              href="/track"
-              className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-50 to-cyan-50 hover:from-blue-100 text-blue-700 border border-blue-200 shrink-0 cursor-pointer font-black"
-            >
-              تتبع طلبك 🔍
-            </Link>
           </div>
         </div>
 
