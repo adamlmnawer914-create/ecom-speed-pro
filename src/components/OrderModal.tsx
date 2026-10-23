@@ -32,7 +32,6 @@ import {
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
-import YouCanPayEmbed from "@/components/YouCanPayEmbed";
 import PayPalIcon from "@/components/PayPalIcon";
 import { getPayPalPaymentLink } from "@/constants/paypal";
 
@@ -76,11 +75,11 @@ export default function OrderModal({
   selectedPrice,
   onOpenPolicyModal,
 }: OrderModalProps) {
-  // Stepper Stage: 1 = Merchant Info, 2 = Product Info & YouCan Pay
+  // Stepper Stage: 1 = Merchant Info, 2 = Product Info & PayPal / Cards
   const [step, setStep] = useState<1 | 2>(1);
 
-  // Single certified payment gateway
-  const [paymentMethod, setPaymentMethod] = useState("الدفع عبر YouCan Pay (بطاقة بنكية معتمدة CMI / 3D-Secure)");
+  // Certified payment gateways
+  const [paymentMethod, setPaymentMethod] = useState("PayPal / البطاقة البنكية (Visa / Mastercard)");
 
   // Stage 1: Merchant Contact Info (بيانات التاجر)
   const [customerName, setCustomerName] = useState("");
@@ -280,7 +279,7 @@ export default function OrderModal({
     setProductImages((prev) => prev.filter((_, idx) => idx !== index));
   };
 
-  // Submit Order Stage 2 — saves order to DB, then YouCanPayEmbed handles payment
+  // Submit Order Stage 2 — saves order to DB and prepares secure payment
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -302,19 +301,19 @@ export default function OrderModal({
       plan_tier: planTitle,
       amount: rawNumericPrice,
       currency: "MAD",
-      payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
-      payment_status: isPayPalPlan ? "unpaid" : "pending",
+      payment_method: "PayPal",
+      payment_status: "unpaid",
       product_images: productImages,
       product_notes: productNotes.trim(),
       white_label: whiteLabel,
-      status: isPayPalPlan ? "pending_payment" : "pending",
+      status: "pending_payment",
     };
 
     let savedOrder: any = null;
 
-    // ─── 1. Call YouCan Pay route (creates order in DB) ──────────────────────
+    // ─── 1. Save via /api/orders ──────────────────────────────────────────
     try {
-      const res = await fetch("/api/payment/youcan", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(orderPayload),
@@ -324,29 +323,7 @@ export default function OrderModal({
         savedOrder = data.order;
       }
     } catch (err) {
-      console.warn("YouCan Pay API error, using fallback:", err);
-    }
-
-    // ─── 2. Fallback: save via /api/orders ───────────────────────────────────
-    if (!savedOrder) {
-      try {
-        const res = await fetch("/api/orders", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...orderPayload,
-            payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
-            payment_status: isPayPalPlan ? "unpaid" : "pending",
-            status: isPayPalPlan ? "pending_payment" : "pending",
-          }),
-        });
-        const data = await res.json();
-        if (data && data.success && data.order) {
-          savedOrder = data.order;
-        }
-      } catch (err) {
-        console.warn("Fallback API sync error:", err);
-      }
+      console.warn("API sync error:", err);
     }
 
     // ─── 3. Client-side fallback ─────────────────────────────────────────────
@@ -366,9 +343,9 @@ export default function OrderModal({
         product_price: productPrice.trim(),
         order_phone: orderPhone.trim() || customerPhone.trim(),
         plan_tier: planTitle,
-        status: isPayPalPlan ? "pending_payment" : "pending",
-        payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
-        payment_status: isPayPalPlan ? "unpaid" : "pending",
+        status: "pending_payment",
+        payment_method: "PayPal",
+        payment_status: "unpaid",
         product_images: productImages,
         product_notes: productNotes.trim(),
         created_at: new Date().toISOString(),
@@ -377,7 +354,7 @@ export default function OrderModal({
 
     setCreatedOrder(savedOrder);
     setOrderId(savedOrder.order_number || savedOrder.id);
-    setIsProcessing(false); // Let YouCanPayEmbed handle processing state
+    setIsProcessing(false);
 
     // ─── 4. Save to localStorage ─────────────────────────────────────────────
     try {
@@ -396,18 +373,17 @@ export default function OrderModal({
         planTitle,
         price: rawNumericPrice,
         formattedPrice,
-        paymentMethod: isPayPalPlan ? "PayPal" : "YouCan Pay",
-        paymentStatus: isPayPalPlan ? "unpaid" : "pending",
+        paymentMethod: "PayPal",
+        paymentStatus: "unpaid",
         productImages,
         productNotes: productNotes.trim(),
-        status: isPayPalPlan ? "pending_payment" : "pending",
+        status: "pending_payment",
         createdAt: new Date().toISOString(),
       };
       localStorage.setItem("ecom_speed_pro_orders", JSON.stringify([legacyItem, ...list]));
     } catch (err) {
       console.warn("Storage warning:", err);
     }
-    // YouCanPayEmbed will now handle the actual payment flow
   };
 
 
@@ -426,9 +402,9 @@ export default function OrderModal({
     const origin = typeof window !== "undefined" ? window.location.origin : "https://ecom-speed-pro.vercel.app";
     const secretUrl = createdOrder?.id ? `${origin}/order/${createdOrder.id}` : "";
 
-    const message = `مرحباً وكالة ECOM SPEED PRO 🚀%0Aتم تأكيد حجز ودفع طلب جديد عبر YouCan Pay:%0A%0A*رقم الطلب:* ${createdOrder?.order_number || orderId}%0A*الباقة المختارة:* ${encodeURIComponent(
+    const message = `مرحباً وكالة ECOM SPEED PRO 🚀%0Aتم تسجيل طلب جديد بنجاح:%0A%0A*رقم الطلب:* ${createdOrder?.order_number || orderId}%0A*الباقة المختارة:* ${encodeURIComponent(
       planTitle
-    )}%0A*المبلغ:* ${rawNumericPrice} درهم%0A*بوابة الدفع:* YouCan Pay 🇲🇦 (Carte Bancaire / CMI)%0A*اسم التاجر:* ${encodeURIComponent(
+    )}%0A*المبلغ:* ${rawNumericPrice} درهم%0A*بوابة الدفع:* PayPal • Visa • Mastercard 💳%0A*اسم التاجر:* ${encodeURIComponent(
       customerName || "تاجر مميز"
     )}%0A*المدينة:* ${encodeURIComponent(customerCity)}%0A*هاتف التاجر:* ${encodeURIComponent(customerPhone)}%0A*اسم المتجر:* ${encodeURIComponent(
       storeName || "قيد التحديد"
@@ -471,7 +447,7 @@ export default function OrderModal({
                   ECOM SPEED PRO
                 </span>
                 <span className="px-2.5 py-0.5 rounded-full bg-blue-500/30 border border-blue-400/50 text-[10px] font-black text-white">
-                  بوابة الدفع الآمن YouCan Pay 🇲🇦
+                  بوابات الدفع الآمنة: PayPal • Visa • Mastercard 💳
                 </span>
               </div>
               <span className="text-[11px] text-blue-100 font-bold hidden sm:block">
@@ -480,11 +456,11 @@ export default function OrderModal({
             </div>
           </div>
 
-          {/* SSL & YouCan Pay Badge */}
+          {/* SSL & Payment Badge */}
           <div className="hidden md:flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/95 border border-slate-200 text-slate-800 text-xs font-black shadow-md backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
             <Lock className="w-3.5 h-3.5 text-emerald-600" />
-            <span>بوابة معتمدة YouCan Pay • تشفير 256-Bit SSL آمن 100%</span>
+            <span>بوابات معتمدة PayPal • Visa • Mastercard • تشفير 256-Bit SSL آمن 100%</span>
           </div>
 
           {/* Close Button */}
@@ -520,7 +496,7 @@ export default function OrderModal({
 
               <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-black mb-3 shadow-xs">
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>تم تأكيد الدفع عبر YouCan Pay وإنشاء رابط المتابعة السري!</span>
+                <span>تم تأكيد الطلب بنجاح وإنشاء رابط المتابعة السري!</span>
               </span>
 
               <h3 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 mb-2 tracking-tight">
@@ -668,7 +644,7 @@ export default function OrderModal({
                       <div className="w-4 h-4 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
-                      <span>ربط أوتوماتيكي لبوابة الدفع YouCan Pay 🇲🇦</span>
+                      <span>دفع فوري وآمن 100% عبر PayPal • Visa • Mastercard 🛡️</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs font-bold text-slate-700">
                       <div className="w-4 h-4 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0">
@@ -707,11 +683,11 @@ export default function OrderModal({
 
                     <div className="flex items-center gap-2">
                       <span className="text-[11px] font-black tracking-wider text-white">
-                        YouCan Pay 🇲🇦
+                        PayPal • Visa • Mastercard
                       </span>
                       <div className="flex -space-x-1.5">
-                        <span className="w-4 h-4 rounded-full bg-[#eb001b] inline-block opacity-90 shadow-sm" />
-                        <span className="w-4 h-4 rounded-full bg-[#f79e1b] inline-block opacity-90 shadow-sm" />
+                        <span className="w-4 h-4 rounded-full bg-[#0079C1] inline-block opacity-90 shadow-sm" />
+                        <span className="w-4 h-4 rounded-full bg-[#003087] inline-block opacity-90 shadow-sm" />
                       </div>
                     </div>
                   </div>
@@ -1101,26 +1077,17 @@ export default function OrderModal({
                       <button
                         type="submit"
                         disabled={isProcessing}
-                        className={
-                          isPayPalPlan
-                            ? "w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] hover:to-[#003087] text-white font-black text-sm sm:text-base shadow-lg shadow-blue-900/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
-                            : "w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
-                        }
+                        className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] hover:to-[#003087] text-white font-black text-sm sm:text-base shadow-lg shadow-blue-900/30 hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-70 group"
                       >
                         {isProcessing ? (
                           <>
                             <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            <span>{isPayPalPlan ? "جاري تسجيل طلبك وفتح PayPal..." : "جاري تسجيل طلبك..."}</span>
-                          </>
-                        ) : isPayPalPlan ? (
-                          <>
-                            <PayPalIcon size={22} className="text-white group-hover:scale-110 transition-transform" />
-                            <span>ادفع الآن عبر PayPal</span>
+                            <span>جاري تسجيل طلبك وفتح بوابة الدفع...</span>
                           </>
                         ) : (
                           <>
-                            <Lock className="w-5 h-5 text-blue-100" />
-                            <span>متابعة إلى بوابة الدفع الآمن YouCan Pay ←</span>
+                            <PayPalIcon size={22} className="text-white group-hover:scale-110 transition-transform" />
+                            <span>ادفع الآن عبر PayPal أو البطاقة (Visa / Mastercard)</span>
                           </>
                         )}
                       </button>
@@ -1129,7 +1096,7 @@ export default function OrderModal({
                   </form>
                   ) : (
                   /* ==================================================== */
-                  /* STAGE 2b — بوابة الدفع (PayPal أو YouCan Pay)        */
+                  /* STAGE 2b — بوابة الدفع (PayPal • Visa • Mastercard)  */
                   /* ==================================================== */
                   <div className="space-y-3.5 animate-in fade-in duration-300">
                     {/* Header */}
@@ -1138,9 +1105,7 @@ export default function OrderModal({
                         <Lock className="w-4 h-4 text-blue-600" />
                         <div>
                           <h4 className="text-xs sm:text-sm font-black text-slate-900">
-                            {isPayPalPlan
-                              ? "المرحلة الأخيرة: الدفع الآمن عبر PayPal 🅿️"
-                              : "المرحلة الأخيرة: الدفع الآمن عبر YouCan Pay 🇲🇦"}
+                            المرحلة الأخيرة: الدفع الآمن عبر PayPal • Visa • Mastercard 🅿️💳
                           </h4>
                           <span className="text-[10px] text-blue-600 font-bold block">
                             طلب رقم {createdOrder?.order_number} • {formattedPrice}
@@ -1157,24 +1122,53 @@ export default function OrderModal({
                       </button>
                     </div>
 
-                    <YouCanPayEmbed
-                      createdOrderId={createdOrder?.id || ""}
-                      amount={rawNumericPrice}
-                      currency="MAD"
-                      customerName={customerName}
-                      customerEmail={customerEmail}
-                      customerPhone={customerPhone}
-                      customerCity={customerCity}
-                      planTitle={planTitle}
-                      formattedPrice={formattedPrice}
-                      isProcessing={isProcessing}
-                      onProcessingChange={setIsProcessing}
-                      onSuccess={(order: any) => {
-                        setCreatedOrder(order);
-                        setOrderId(order.order_number || order.id);
-                        setIsSuccess(true);
-                      }}
-                    />
+                    <div className="p-6 rounded-3xl bg-gradient-to-b from-blue-50/90 via-white to-blue-50/50 border-2 border-blue-200 shadow-lg text-center flex flex-col items-center gap-4">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#003087] to-[#0079C1] p-[3px] shadow-lg shadow-blue-900/25 flex items-center justify-center">
+                        <PayPalIcon size={34} className="text-white" />
+                      </div>
+
+                      {/* Supported Badges */}
+                      <div className="flex items-center justify-center gap-2 flex-wrap">
+                        <span className="px-3 py-1 rounded-full bg-blue-100 text-[#003087] text-xs font-black border border-blue-200">
+                          PayPal 🅿️
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-slate-100 text-[#1a1f71] text-xs font-black border border-slate-200 italic">
+                          VISA 💳
+                        </span>
+                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-black border border-slate-200">
+                          Mastercard 💳
+                        </span>
+                      </div>
+
+                      <div>
+                        <h4 className="text-base sm:text-lg font-black text-slate-900 mb-1">
+                          تم تسجيل وتأكيد طلبك بنجاح!
+                        </h4>
+                        <p className="text-xs sm:text-sm text-slate-600 font-bold max-w-md mx-auto leading-relaxed">
+                          رقم طلبك الرسمي: <strong className="font-mono text-blue-700">{createdOrder?.order_number || orderId}</strong>.
+                          <br />
+                          يمكنك الدفع عبر حساب PayPal أو الدفع المباشر ببطاقتك البنكية (Visa / Mastercard) عبر خادم الدفع المشفر 100%.
+                        </p>
+                      </div>
+
+                      <a
+                        href={paypalUrl || "https://www.paypal.com/ncp/payment/79PH2FAVN728E"}
+                        className="w-full max-w-md py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] text-white font-black text-sm sm:text-base shadow-xl shadow-blue-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                      >
+                        <PayPalIcon size={22} className="text-white" />
+                        <span>المتابعة إلى الدفع الآمن (PayPal / Visa / Mastercard) ←</span>
+                      </a>
+
+                      {createdOrder?.id && (
+                        <a
+                          href={`/order/${createdOrder.id}`}
+                          className="text-xs text-blue-600 hover:text-blue-800 font-bold underline underline-offset-4 flex items-center gap-1.5"
+                        >
+                          <Lock className="w-3.5 h-3.5" />
+                          <span>رابطك السري المخصص لمتابعة حالة متجرك واستلامه</span>
+                        </a>
+                      )}
+                    </div>
 
                     {/* Safety WhatsApp link */}
                     <div className="text-center pt-1">
@@ -1182,7 +1176,7 @@ export default function OrderModal({
                         <span>واجهتك مشكلة في الدفع؟</span>
                         <a
                           href={`https://wa.me/212762357491?text=${encodeURIComponent(
-                            `مرحباً، أود المساعدة في إتمام الدفع عبر YouCan Pay للباقة: ${planTitle} (${formattedPrice}).`
+                            `مرحباً، أود المساعدة في إتمام الدفع للباقة: ${planTitle} (${formattedPrice}).`
                           )}`}
                           target="_blank"
                           rel="noopener noreferrer"

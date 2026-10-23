@@ -67,11 +67,11 @@ export default function SearchModal({
     },
     {
       id: "payment",
-      name: "ربط وتفعيل بوابات الدفع الإلكتروني (YouCan Pay & CMI)",
+      name: "ربط وتفعيل بوابات الدفع الإلكتروني (PayPal, Visa & Mastercard)",
       category: "بوابات الدفع والتشفير",
       price: "مجاناً مع الباقات",
       badge: "أمان بنكي 100% 🛡️",
-      desc: "تفعيل فوري لبطاقات فيزا، ماستركارد، وبطاقات الدفع المغربية مع حماية SSL",
+      desc: "تفعيل فوري لـ PayPal وبطاقات Visa و Mastercard العالمية مع حماية وتشفير SSL",
       image: "/images/card_saas_new.webp",
     },
   ];

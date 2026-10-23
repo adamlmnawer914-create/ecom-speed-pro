@@ -6,7 +6,7 @@ class InteractiveCreditCard extends StatelessWidget {
   final String cardNumber;
   final String cardHolder;
   final String expiryDate;
-  final String cardType; // 'visa', 'mastercard', 'cmi', 'youcan'
+  final String cardType; // 'visa', 'mastercard'
 
   const InteractiveCreditCard({
     super.key,

@@ -113,7 +113,7 @@ export const OFFICIAL_PACKAGES = [
     emoji: "🌐",
     gradient: "from-emerald-500 via-teal-600 to-cyan-600",
     badge: "معدل تحويل دولي 🚀",
-    desc: "صفحة هبوط فائقة السرعة مهيأة للأسواق الأمريكية والأوروبية مع Stripe & PayPal",
+    desc: "صفحة هبوط فائقة السرعة مهيأة للأسواق العالمية مع PayPal و Visa و Mastercard",
   },
   {
     id: "store-intl",

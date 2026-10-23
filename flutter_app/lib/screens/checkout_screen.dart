@@ -24,7 +24,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _stage1FormKey = GlobalKey<FormState>();
   final _stage2FormKey = GlobalKey<FormState>();
 
-  int _currentStep = 1; // 1: بيانات التاجر, 2: معلومات المنتج والدفع YouCan Pay
+  int _currentStep = 1; // 1: بيانات التاجر, 2: معلومات المنتج والدفع (PayPal • Visa • Mastercard)
 
   // Stage 1: Customer / Merchant Info Controllers
   final _nameController = TextEditingController();
@@ -158,7 +158,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       planTitle: widget.selectedPackage.name,
       price: widget.selectedPackage.numericPrice,
       formattedPrice: widget.selectedPackage.price,
-      paymentMethod: 'YouCan Pay',
+      paymentMethod: 'PayPal',
       productImages: List.from(_uploadedImages),
       productNotes: _notesController.text.trim(),
       status: 'new',
@@ -207,7 +207,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              'تم تأكيد الدفع عبر YouCan Pay بنجاح!',
+              'تم تأكيد الطلب بنجاح!',
               textAlign: TextAlign.center,
               style: GoogleFonts.cairo(
                 fontWeight: FontWeight.w900,
@@ -370,7 +370,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       backgroundColor: AppTheme.bgPrimary,
       appBar: AppBar(
         title: Text(
-          'بوابة الدفع الإلكتروني YouCan Pay 🇲🇦',
+          'بوابات الدفع: PayPal • Visa • Mastercard 💳',
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.w900,
             fontSize: 16,
@@ -646,7 +646,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               ],
 
               // ==========================================
-              // STEP 2: معلومات المنتج والدفع عبر YouCan Pay
+              // STEP 2: معلومات المنتج والدفع عبر PayPal • Visa • Mastercard
               // ==========================================
               if (_currentStep == 2) ...[
                 Form(
@@ -658,7 +658,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'المرحلة الثانية: مواصفات المنتج وبوابة YouCan Pay',
+                            'المرحلة الثانية: مواصفات المنتج وبوابة الدفع الآمنة',
                             style: GoogleFonts.cairo(
                               fontWeight: FontWeight.w800,
                               fontSize: 13,
@@ -797,7 +797,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
                       const SizedBox(height: 18),
 
-                      // YouCan Pay Badge Banner
+                      // PayPal & Card Gateways Badge Banner
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -813,13 +813,13 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 const Icon(Icons.verified_rounded, color: AppTheme.emeraldGreen, size: 20),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'بوابة الدفع YouCan Pay 🇲🇦',
+                                  'بوابات الدفع المعتمدة 💳',
                                   style: GoogleFonts.cairo(fontWeight: FontWeight.w900, fontSize: 13, color: Colors.white),
                                 ),
                               ],
                             ),
                             Text(
-                              'CMI • VISA • MC',
+                              'PayPal • VISA • MC',
                               style: GoogleFonts.shareTechMono(color: AppTheme.neonCyan, fontSize: 11, fontWeight: FontWeight.bold),
                             ),
                           ],
@@ -837,7 +837,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         label: Text(
                           _isSubmitting
                               ? 'جاري المعالجة...'
-                              : 'تأكيد الطلب والدفع عبر YouCan Pay (${widget.selectedPackage.price})',
+                              : 'تأكيد الطلب والدفع الآمن (${widget.selectedPackage.price})',
                           style: GoogleFonts.cairo(
                             fontWeight: FontWeight.w900,
                             fontSize: 14,

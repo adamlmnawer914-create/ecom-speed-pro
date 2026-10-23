@@ -23,7 +23,7 @@ class FeaturesRibbon extends StatelessWidget {
       {
         'icon': Icons.verified_user_rounded,
         'title': 'بوابات دفع رسمية',
-        'desc': 'ربط YouCan Pay & CMI آمن',
+        'desc': 'PayPal • Visa • Mastercard',
         'color': AppTheme.luxuryGold,
       },
       {

@@ -4,7 +4,7 @@ import { broadcastOrderEvent } from "@/lib/broadcast";
 
 /**
  * POST /api/payment/confirm
- * Called when client lands on /order/[id]?payment=success or completes payment via ycpay.js
+ * Called when client lands on /order/[id]?payment=success or completes payment via PayPal / Card
  * Safely marks the order as in_progress and notifies admin panel in real-time
  */
 export async function POST(req: Request) {
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
     if (existing.status === "pending") {
       const updates: any = {
-        payment_method: payment_method || existing.payment_method || "YouCan Pay",
+        payment_method: payment_method || existing.payment_method || "PayPal",
       };
 
       if (!isPayPalInitiate) {

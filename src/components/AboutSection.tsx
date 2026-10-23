@@ -60,8 +60,8 @@ export default function AboutSection() {
     },
     {
       icon: Lock,
-      title: "الأمان والربط البنكي الرسمي",
-      desc: "دمج مباشر مع بوابات YouCan Pay و CMI للدفع ببطاقات فيزا وماستركارد بأعلى درجات التشفير.",
+      title: "الأمان والدفع البنكي الرسمي",
+      desc: "دمج مباشر مع بوابات الدفع العالمية PayPal و Visa و Mastercard بأعلى درجات التشفير والحماية.",
       color: "text-emerald-600 bg-emerald-50 border-emerald-200",
     },
     {
@@ -148,7 +148,7 @@ export default function AboutSection() {
                   </div>
                   <div>
                     <span className="text-xs font-black text-slate-900 block">تشفير بنكي 100% معتمد</span>
-                    <span className="text-[11px] text-slate-500 font-semibold">بوابات CMI و YouCan Pay الرسمية</span>
+                    <span className="text-[11px] text-slate-500 font-semibold">بوابات الدفع الرسمية PayPal • Visa • Mastercard</span>
                   </div>
                 </div>
 

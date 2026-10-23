@@ -54,7 +54,7 @@ class OrderItem {
       planTitle: json['plan_tier']?.toString() ?? json['planTitle']?.toString() ?? '',
       price: (json['price'] is num) ? (json['price'] as num).toDouble() : 0.0,
       formattedPrice: json['formattedPrice']?.toString() ?? '${json['price']} درهم',
-      paymentMethod: json['payment_method']?.toString() ?? json['paymentMethod']?.toString() ?? 'YouCan Pay',
+      paymentMethod: json['payment_method']?.toString() ?? json['paymentMethod']?.toString() ?? 'PayPal',
       productImages: (json['product_images'] is List)
           ? (json['product_images'] as List).map((e) => e.toString()).toList()
           : (json['productImages'] is List)
@@ -109,16 +109,12 @@ class OrderItem {
   String get paymentMethodTitle {
     switch (paymentMethod.toLowerCase()) {
       case 'card':
-        return 'البطاقة البنكية';
-      case 'youcan':
-      case 'youcan pay':
-        return 'YouCan Pay 🇲🇦';
-      case 'cmi':
-        return 'CMI الإلكتروني';
-      case 'whatsapp':
-        return 'تحويل بنكي / واتساب';
+      case 'visa':
+      case 'mastercard':
+        return 'بطاقة بنكية (Visa / Mastercard)';
+      case 'paypal':
       default:
-        return paymentMethod;
+        return 'PayPal';
     }
   }
 
