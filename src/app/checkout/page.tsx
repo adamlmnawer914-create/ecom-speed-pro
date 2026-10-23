@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   ShieldCheck,
+  Shield,
   Lock,
   User,
   CheckCircle2,
@@ -66,17 +67,22 @@ function CheckoutContent() {
   // Query params or default values
   const paramPlan = searchParams.get("plan");
   const paramPrice = searchParams.get("price");
+  const paramWhiteLabel = searchParams.get("white_label") === "true";
 
   const [selectedPlan, setSelectedPlan] = useState(
-    paramPlan || "صفحة الهبوط (Landing Page)"
+    paramPlan || "متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (3,000 MAD)"
   );
-  const [selectedPrice, setSelectedPrice] = useState(paramPrice || "500 درهم");
+  const [selectedPrice, setSelectedPrice] = useState(paramPrice || "3000 درهم");
+  const [whiteLabel, setWhiteLabel] = useState(paramWhiteLabel);
 
   // Keep state synced if URL params change
   useEffect(() => {
     if (paramPlan) setSelectedPlan(paramPlan);
     if (paramPrice) setSelectedPrice(paramPrice);
-  }, [paramPlan, paramPrice]);
+    if (searchParams.get("white_label") !== null) {
+      setWhiteLabel(searchParams.get("white_label") === "true");
+    }
+  }, [paramPlan, paramPrice, searchParams]);
 
   // Stepper Stage: 1 = Merchant Info, 2 = Product Info & YouCan Pay
   const [step, setStep] = useState<1 | 2>(1);
@@ -111,59 +117,73 @@ function CheckoutContent() {
     setPolicyModalOpen(true);
   };
 
-  // Plan visual characteristics & Market identification
+  // Plan visual characteristics & Market identification with Buyout Fees
   const getPlanDetails = () => {
     const p = (selectedPlan || "").toLowerCase();
     const pr = parseInt((selectedPrice || "").replace(/[^0-9]/g, ""), 10) || 0;
 
-    // 1. International Landing (4,500 DH)
-    if (p.includes("هبوط") && (p.includes("دولي") || p.includes("intl") || pr === 4500)) {
+    // 1. International Landing (4,500 DH base + 2,500 DH White-label = 7,000 DH)
+    if (p.includes("هبوط") && (p.includes("دولي") || p.includes("intl") || pr === 4500 || pr === 7000)) {
       return {
+        id: "landing-intl",
         title: "صفحة هبوط — السوق الدولي 🌐",
         subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
         image: "/images/international_landing_showcase.jpg",
         badgeColor: "from-emerald-500 to-teal-600 text-white",
         market: "🌐 US / CA / AU",
+        basePrice: 4500,
+        whiteLabelFee: 2500,
       };
     }
 
-    // 2. International Store (9,000 DH / VIP)
+    // 2. International Store (9,000 DH base + 5,000 DH White-label = 14,000 DH)
     if (
       (p.includes("متجر") && (p.includes("دولي") || p.includes("intl"))) ||
       p.includes("saas") ||
       p.includes("متقدمة") ||
+      p.includes("vip") ||
       pr === 9000 ||
+      pr === 14000 ||
       pr === 8500 ||
       pr === 10000 ||
       pr === 5000
     ) {
       return {
+        id: "store-intl",
         title: "متجر متكامل + لوحة تحكم — الدولي 🌐",
         subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
         image: "/images/international_store_showcase.jpg",
         badgeColor: "from-amber-400 to-yellow-500 text-slate-950",
         market: "🌐 US / CA / AU",
+        basePrice: 9000,
+        whiteLabelFee: 5000,
       };
     }
 
-    // 3. Local Store (3,000 DH)
+    // 3. Local Store (3,000 DH base + 1,500 DH White-label = 4,500 DH)
     if ((p.includes("متجر") && (p.includes("محلي") || p.includes("local"))) || pr === 3000) {
       return {
+        id: "store-local",
         title: "متجر متكامل + لوحة تحكم — المحلي 🇲🇦",
         subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
         image: "/images/morocco_store_showcase.jpg",
         badgeColor: "from-cyan-500 to-blue-600 text-white",
         market: "🇲🇦 المغرب",
+        basePrice: 3000,
+        whiteLabelFee: 1500,
       };
     }
 
-    // 4. Local Landing (1,500 DH) — default
+    // 4. Local Landing (1,500 DH base + 1,000 DH White-label = 2,500 DH) — default
     return {
+      id: "landing-local",
       title: "صفحة هبوط — السوق المحلي 🇲🇦",
       subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
       image: "/images/morocco_landing_showcase.jpg",
       badgeColor: "from-rose-500 to-purple-600 text-white",
       market: "🇲🇦 المغرب",
+      basePrice: 1500,
+      whiteLabelFee: 1000,
     };
   };
 
@@ -173,11 +193,11 @@ function CheckoutContent() {
   const planImage = planDetails.image;
   const planBadgeColor = planDetails.badgeColor;
 
-  // Price formatting
-  const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 1500;
+  // Dynamic price calculation strictly considering White-label
+  const rawNumericPrice = planDetails.basePrice + (whiteLabel ? planDetails.whiteLabelFee : 0);
   const formattedPrice = `${rawNumericPrice.toLocaleString()} درهم`;
 
-  // PayPal Payment Link Check (باقة صفحة الهبوط المحلية المغربية 1500 درهم أو أي باقة متوفر لها رابط PayPal)
+  // PayPal Payment Link Check
   const paypalUrl = getPayPalPaymentLink(rawNumericPrice, selectedPlan);
   const isPayPalPlan = Boolean(paypalUrl);
 
@@ -275,6 +295,7 @@ function CheckoutContent() {
       payment_status: isPayPalPlan ? "unpaid" : "pending",
       product_images: productImages,
       product_notes: productNotes.trim(),
+      white_label: whiteLabel,
       status: isPayPalPlan ? "pending_payment" : "pending",
     };
 
@@ -338,6 +359,7 @@ function CheckoutContent() {
         currency: "MAD",
         payment_method: isPayPalPlan ? "PayPal" : "YouCan Pay",
         payment_status: isPayPalPlan ? "unpaid" : "pending",
+        white_label: whiteLabel,
         product_images: productImages,
         product_notes: productNotes.trim(),
         status: isPayPalPlan ? "pending_payment" : "pending",
@@ -369,6 +391,8 @@ function CheckoutContent() {
         amount: rawNumericPrice,
         paymentMethod: isPayPalPlan ? "PayPal" : "YouCan Pay",
         paymentStatus: isPayPalPlan ? "unpaid" : "pending",
+        white_label: whiteLabel,
+        whiteLabel: whiteLabel,
         productImages: productImages,
         productNotes: productNotes.trim(),
         status: isPayPalPlan ? "pending_payment" : "pending",
@@ -546,6 +570,12 @@ function CheckoutContent() {
                     <span className="text-[11px] text-slate-600 font-bold block">
                       التاجر: {customerName} • {customerCity}
                     </span>
+                    {whiteLabel && (
+                      <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-200">
+                        <Shield className="w-2.5 h-2.5 text-purple-600" />
+                        <span>شامل إزالة حقوق المطور (White-Label)</span>
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="text-left font-mono text-sm sm:text-base font-black text-emerald-700">
@@ -632,11 +662,64 @@ function CheckoutContent() {
                     </div>
                   </div>
 
-                  {/* Price Banner Ribbon */}
-                  <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between">
-                    <span className="text-xs text-slate-600 font-bold">المبلغ المستحق للدفع:</span>
-                    <div className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-mono text-base sm:text-lg font-black shadow-md shadow-blue-500/25">
-                      {formattedPrice}
+                  {/* ── White-Label Interactive Toggle (إزالة الحقوق) ── */}
+                  <div
+                    onClick={() => setWhiteLabel((prev) => !prev)}
+                    className={`w-full rounded-2xl p-2.5 sm:p-3 border transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-2.5 mt-3 ${
+                      whiteLabel
+                        ? "bg-purple-50/95 border-purple-300 shadow-[0_3px_15px_rgba(168,85,247,0.18)] ring-1 ring-purple-400/40"
+                        : "bg-purple-50/30 border-purple-200/70 hover:bg-purple-50/60 hover:border-purple-300"
+                    }`}
+                  >
+                    {/* Modern Pill Switch */}
+                    <div className="shrink-0">
+                      <div
+                        className={`w-10 h-5.5 rounded-full transition-colors duration-300 flex items-center px-0.5 ${
+                          whiteLabel ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
+                        }`}
+                      >
+                        <div className="w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300" />
+                      </div>
+                    </div>
+                    {/* Text info */}
+                    <div className="text-right flex-1 min-w-0">
+                      <div className="flex items-center justify-end gap-1 text-xs font-black text-purple-950">
+                        <span>إزالة الحقوق (White-Label)</span>
+                        <Shield className="w-3.5 h-3.5 text-purple-600 fill-purple-100" />
+                      </div>
+                      <div className="text-[10px] font-bold text-purple-700/85 leading-tight mt-0.5">
+                        بدون شعار المنصة (+{planDetails.whiteLabelFee.toLocaleString()} د.م)
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Price Banner Ribbon + Breakdown */}
+                  <div className="mt-3.5 pt-3 border-t border-slate-200 space-y-2">
+                    {whiteLabel && (
+                      <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 px-1">
+                        <span>سعر الباقة الأساسي:</span>
+                        <span className="font-mono">{planDetails.basePrice.toLocaleString()} د.م</span>
+                      </div>
+                    )}
+                    {whiteLabel && (
+                      <div className="flex items-center justify-between text-[11px] font-bold text-purple-700 px-1">
+                        <span className="flex items-center gap-1">
+                          <Shield className="w-3 h-3 text-purple-600" />
+                          <span>رسوم إزالة حقوق المطور:</span>
+                        </span>
+                        <span className="font-mono">+{planDetails.whiteLabelFee.toLocaleString()} د.م</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between pt-0.5">
+                      <div>
+                        <span className="text-xs text-slate-600 font-bold block">المبلغ المستحق للدفع:</span>
+                        {whiteLabel && (
+                          <span className="text-[10px] font-black text-purple-700 block">شامل إزالة الحقوق ✓</span>
+                        )}
+                      </div>
+                      <div className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white font-mono text-base sm:text-lg font-black shadow-md shadow-blue-500/25">
+                        {formattedPrice}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -844,8 +927,40 @@ function CheckoutContent() {
                       </div>
                     </div>
 
+                    {/* ── خيار إزالة حقوق المطور (White-Label) في نموذج البيانات ── */}
+                    <div
+                      onClick={() => setWhiteLabel((prev) => !prev)}
+                      className={`w-full rounded-2xl p-3 sm:p-4 border-2 transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-3 ${
+                        whiteLabel
+                          ? "bg-purple-50/95 border-purple-400 shadow-[0_4px_18px_rgba(168,85,247,0.18)] ring-2 ring-purple-300/40"
+                          : "bg-purple-50/30 border-purple-200/80 hover:bg-purple-50/60 hover:border-purple-300"
+                      }`}
+                    >
+                      {/* Pill Switch */}
+                      <div className="shrink-0">
+                        <div
+                          className={`w-11 h-6 rounded-full transition-colors duration-300 flex items-center px-0.5 ${
+                            whiteLabel ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
+                          }`}
+                        >
+                          <div className="w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300" />
+                        </div>
+                      </div>
+
+                      {/* Text details */}
+                      <div className="text-right flex-1 min-w-0">
+                        <div className="flex items-center justify-end gap-1.5 text-xs sm:text-sm font-black text-purple-950">
+                          <span>طلب خيار إزالة حقوق المطور (White-label)</span>
+                          <Shield className="w-4 h-4 text-purple-600 fill-purple-100" />
+                        </div>
+                        <div className="text-[11px] sm:text-xs font-bold text-purple-700/90 leading-tight mt-0.5">
+                          تسليم المتجر كعلامة تجارية مستقلة لك بدون أي شعار لوكالتنا (+{planDetails.whiteLabelFee.toLocaleString()} د.م)
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Stage 1 CTA Button: Proceed to Product Info (Stage 2) */}
-                    <div className="pt-3">
+                    <div className="pt-2">
                       <button
                         type="submit"
                         className="w-full py-4 px-6 rounded-full bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm sm:text-base shadow-lg shadow-blue-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer group"
@@ -1011,6 +1126,38 @@ function CheckoutContent() {
                           onChange={(e) => setProductNotes(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600"
                         />
+                      </div>
+
+                      {/* ── خيار إزالة الحقوق (White-label Toggle - مطابق للتصميم المرفق) ── */}
+                      <div
+                        onClick={() => setWhiteLabel(!whiteLabel)}
+                        className={`w-full rounded-2xl p-3 sm:p-3.5 border transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-3 ${
+                          whiteLabel
+                            ? "bg-purple-50/90 border-purple-300 shadow-[0_4px_18px_rgba(168,85,247,0.18)] ring-1 ring-purple-400/40"
+                            : "bg-purple-50/30 border-purple-200/60 hover:bg-purple-50/60 hover:border-purple-300"
+                        }`}
+                      >
+                        {/* Left: Modern Pill Toggle Switch */}
+                        <div className="shrink-0">
+                          <div
+                            className={`w-11 h-6 rounded-full transition-colors duration-300 flex items-center px-0.5 cursor-pointer ${
+                              whiteLabel ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
+                            }`}
+                          >
+                            <div className="w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300" />
+                          </div>
+                        </div>
+
+                        {/* Right: Text Description */}
+                        <div className="text-right flex-1 min-w-0">
+                          <div className="flex items-center justify-end gap-1.5 text-xs sm:text-[13px] font-black text-purple-950">
+                            <span>طلب خيار إزالة الحقوق (White-label)</span>
+                            <span className="text-purple-600">🛡️</span>
+                          </div>
+                          <div className="text-[10px] sm:text-[11px] font-bold text-purple-700/85 leading-tight mt-0.5">
+                            تسليم المتجر كعلامة تجارية مستقلة للتاجر بدون أي شعار للمنصة (+{planDetails.whiteLabelFee.toLocaleString()} د.م)
+                          </div>
+                        </div>
                       </div>
 
                       {/* CTA — Save order & go to payment */}

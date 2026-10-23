@@ -166,6 +166,12 @@
           </button>
         </div>
 
+        <!-- Purge Database Button -->
+        <button onclick="purgeAllOrders()" class="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-rose-600 via-red-600 to-pink-700 hover:from-rose-500 text-white font-black text-xs shadow-lg flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all cursor-pointer" title="تطهير ومسح جميع الطلبات الوهمية وتصفير العدادات إلى 0">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span class="hidden sm:inline">تطهير العدادات (0)</span>
+        </button>
+
         <!-- Manual Order Button -->
         <button id="btnOpenNewOrderModal" class="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 text-white font-black text-xs shadow-lg flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all cursor-pointer">
           <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -273,72 +279,113 @@
         <!-- TAB 1: ORDERS (الطلبات) -->
         <!-- ========================================== -->
         <div id="tabContent-orders" class="tab-pane flex flex-col gap-5">
-          <!-- 4 KPI CARDS -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <!-- 5 EXECUTIVE KPI CARDS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3.5">
+            <!-- KPI 1: Confirmed Revenue (PayPal COMPLETED Only) -->
+            <div class="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-4 shadow-lg shadow-emerald-600/20 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black text-emerald-100">✅ إجمالي الأرباح المؤكدة (PayPal)</span>
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-200"></i>
+              </div>
+              <div class="mt-2">
+                <div id="kpiTotalRevenue" class="text-2xl font-black font-mono">0 د.م</div>
+                <span class="text-[10px] text-emerald-200 font-bold block mt-0.5">الدفع الفعلي المستلم فقط</span>
+              </div>
+            </div>
+
+            <!-- KPI 2: Pending Revenue -->
+            <div class="rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-4 shadow-lg shadow-amber-600/20 flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-black text-amber-100">⏳ مبيعات معلقة (بانتظار الدفع)</span>
+                <i data-lucide="clock" class="w-4 h-4 text-amber-200"></i>
+              </div>
+              <div class="mt-2">
+                <div id="kpiPendingRevenue" class="text-2xl font-black font-mono">0 د.م</div>
+                <span class="text-[10px] text-amber-200 font-bold block mt-0.5">لم تكتمل بالـ Webhook</span>
+              </div>
+            </div>
+
+            <!-- KPI 3: Total Orders -->
             <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#3b82f6] to-[#60a5fa] text-white flex items-center justify-center shadow-md shrink-0">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#3b82f6] to-[#60a5fa] text-white flex items-center justify-center shadow-md shrink-0">
                 <i data-lucide="shopping-cart" class="w-5 h-5"></i>
               </div>
               <div class="text-right">
-                <span class="text-xs font-bold text-[#64748b] block mb-1">إجمالي الطلبات</span>
-                <div id="kpiTotalOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+                <span class="text-xs font-bold text-[#64748b] block mb-0.5">إجمالي الطلبات</span>
+                <div id="kpiTotalOrders" class="text-2xl font-black font-mono text-[#0b1739]">0</div>
               </div>
             </div>
 
+            <!-- KPI 4: Paid Orders -->
             <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#10b981] to-[#34d399] text-white flex items-center justify-center shadow-md shrink-0">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#10b981] to-[#34d399] text-white flex items-center justify-center shadow-md shrink-0">
                 <i data-lucide="check-circle-2" class="w-5 h-5"></i>
               </div>
               <div class="text-right">
-                <span class="text-xs font-bold text-[#64748b] block mb-1">الطلبات المكتملة</span>
-                <div id="kpiCompletedOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
+                <span class="text-xs font-bold text-[#64748b] block mb-0.5">مبيعات مدفوعة</span>
+                <div id="kpiCompletedOrders" class="text-2xl font-black font-mono text-emerald-600">0</div>
               </div>
             </div>
 
+            <!-- KPI 5: Pending Orders -->
             <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#f97316] to-[#fb923c] text-white flex items-center justify-center shadow-md shrink-0">
+              <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#f97316] to-[#fb923c] text-white flex items-center justify-center shadow-md shrink-0">
                 <i data-lucide="hourglass" class="w-5 h-5"></i>
               </div>
               <div class="text-right">
-                <span class="text-xs font-bold text-[#64748b] block mb-1">قيد المراجعة</span>
-                <div id="kpiReviewOrders" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0</div>
-              </div>
-            </div>
-
-            <div class="rounded-2xl bg-white border border-[#d8e5f5] p-4 shadow-sm flex items-center justify-between gap-3 hover:shadow-md transition-all">
-              <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#a855f7] to-[#c084fc] text-white flex items-center justify-center shadow-md shrink-0">
-                <i data-lucide="wallet" class="w-5 h-5"></i>
-              </div>
-              <div class="text-right">
-                <span class="text-xs font-bold text-[#64748b] block mb-1">إجمالي المبيعات</span>
-                <div id="kpiTotalRevenue" class="text-2xl sm:text-3xl font-black font-mono text-[#0b1739]">0 درهم</div>
+                <span class="text-xs font-bold text-[#64748b] block mb-0.5">طلبات معلقة</span>
+                <div id="kpiReviewOrders" class="text-2xl font-black font-mono text-amber-600">0</div>
               </div>
             </div>
           </div>
 
-          <!-- SEARCH & FILTER BAR -->
-          <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-blue-100 shadow-sm">
-            <div class="flex-1 min-w-[240px] relative">
-              <input id="searchInput" type="text" placeholder="ابحث باسم العميل أو رقم الهاتف..." class="w-full py-2.5 px-4 pr-10 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500 transition-colors">
-              <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute top-1/2 -translate-y-1/2 right-3"></i>
+          <!-- SEARCH & 4-FILTER BAR -->
+          <div class="flex flex-wrap items-center justify-between gap-2.5 bg-white p-3 rounded-2xl border border-blue-100 shadow-sm">
+            <div class="flex-1 min-w-[200px] relative">
+              <input id="searchInput" type="text" placeholder="ابحث باسم التاجر أو رقم الهاتف أو المتجر..." class="w-full py-2 px-3 pr-9 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500 transition-colors">
+              <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400 absolute top-1/2 -translate-y-1/2 right-3"></i>
             </div>
 
-            <div class="flex items-center gap-2">
-              <select id="statusFilter" class="py-2.5 px-3 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
-                <option value="all">جميع الحالات</option>
-                <option value="pending">قيد المراجعة</option>
-                <option value="in_progress">جاري التجهيز</option>
-                <option value="completed">مكتمل ومسلّم</option>
-              </select>
+            <!-- Filter 1: 4 Official Packages -->
+            <select id="packageFilter" class="py-2 px-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
+              <option value="all">كل الباقات (4 باقات)</option>
+              <option value="landing-local">صفحة هبوط محلية (1,500 DH)</option>
+              <option value="store-local">متجر محلي متكامل (3,000 DH)</option>
+              <option value="landing-intl">صفحة هبوط دولية (4,500 DH)</option>
+              <option value="store-intl">متجر دولي VIP (9,000 DH)</option>
+            </select>
 
-              <button onclick="fetchOrders()" class="px-3.5 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer" title="تحديث لحظي لجميع الطلبات">
-                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                <span>تحديث فوري</span>
+            <!-- Filter 2: Payment Status -->
+            <select id="paymentStatusFilter" class="py-2 px-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
+              <option value="all">كل المدفوعات</option>
+              <option value="paid">✅ مدفوعة PayPal فقط</option>
+              <option value="pending">⏳ معلقة (بانتظار الدفع)</option>
+            </select>
+
+            <!-- Filter 3: White-label -->
+            <select id="whiteLabelFilter" class="py-2 px-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
+              <option value="all">حقوق المنصة (الكل)</option>
+              <option value="white_label">🛡️ إزالة الحقوق (White-label)</option>
+              <option value="normal">علامة Ecom Speed Pro</option>
+            </select>
+
+            <!-- Filter 4: Order Execution Status -->
+            <select id="statusFilter" class="py-2 px-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer focus:outline-none">
+              <option value="all">حالة التنفيذ (الكل)</option>
+              <option value="pending">🟡 قيد المراجعة</option>
+              <option value="in_progress">🔵 جاري التجهيز</option>
+              <option value="completed">🟢 مكتمل ومسلّم</option>
+            </select>
+
+            <div class="flex items-center gap-1.5">
+              <button onclick="fetchOrders()" class="px-3 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs flex items-center gap-1 transition-all cursor-pointer" title="تحديث لحظي لجميع الطلبات">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span>تحديث</span>
               </button>
 
-              <button id="btnExportCSV" class="px-3.5 py-2.5 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1.5 cursor-pointer hover:scale-105 active:scale-95 transition-all">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span>تصدير CSV</span>
+              <button id="btnExportCSV" class="px-3 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 text-white font-black text-xs shadow-md flex items-center gap-1 cursor-pointer hover:scale-105 active:scale-95 transition-all">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                <span>CSV</span>
               </button>
             </div>
           </div>
@@ -356,6 +403,7 @@
                   <th class="p-3.5">بوابة الدفع</th>
                   <th class="p-3.5">هاتف استقبال الطلبات</th>
                   <th class="p-3.5">الحالة</th>
+                  <th class="p-3.5">إزالة الحقوق (White-Label)</th>
                   <th class="p-3.5">رابط المتجر</th>
                   <th class="p-3.5 text-center min-w-[360px]">إجراءات</th>
                 </tr>
@@ -371,54 +419,172 @@
         <!-- TAB 2: HOME / DASHBOARD (الرئيسية) -->
         <!-- ========================================== -->
         <div id="tabContent-home" class="tab-pane hidden flex flex-col gap-5">
-          <!-- 4 Executive Cards -->
+          <!-- 4 Executive Financial Overview Cards -->
           <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-            <div class="rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white p-5 shadow-lg relative overflow-hidden">
+            <div class="rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 text-white p-5 shadow-lg shadow-emerald-600/20 relative overflow-hidden">
               <div class="relative z-10">
-                <span class="text-xs font-bold text-blue-200 block mb-1">صافي الإيرادات التراكمية</span>
-                <div id="homeTotalRevenue" class="text-3xl font-black font-mono">0 درهم</div>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-300 font-bold">
-                  <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-                  <span>نمو مستمر +100% هذا الشهر</span>
+                <span class="text-xs font-bold text-emerald-100 block mb-1">✅ إجمالي الأرباح المؤكدة عبر PayPal</span>
+                <div id="homeTotalRevenue" class="text-3xl font-black font-mono">0 د.م</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-200 font-bold">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                  <span>مبيعات تم استلام أموالها فعلياً (COMPLETED)</span>
                 </div>
               </div>
               <i data-lucide="circle-dollar-sign" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
             </div>
 
-            <div class="rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white p-5 shadow-lg relative overflow-hidden">
+            <div class="rounded-2xl bg-gradient-to-br from-amber-500 via-orange-500 to-amber-600 text-white p-5 shadow-lg shadow-amber-600/20 relative overflow-hidden">
               <div class="relative z-10">
-                <span class="text-xs font-bold text-emerald-200 block mb-1">متوسط قيمة الطلب (AOV)</span>
-                <div id="homeAvgOrderValue" class="text-3xl font-black font-mono">0 درهم</div>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-200 font-bold">
-                  <i data-lucide="award" class="w-3.5 h-3.5"></i>
-                  <span>باقة المتجر القياسي هي الأكثر طلباً</span>
+                <span class="text-xs font-bold text-amber-100 block mb-1">⏳ المبيعات المعلقة (بانتظار الدفع)</span>
+                <div id="homeAvgOrderValue" class="text-3xl font-black font-mono">0 د.م</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-amber-200 font-bold">
+                  <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                  <span>طلبات ملأ أصحابها البيانات ولم يدفعوا بعد</span>
                 </div>
               </div>
-              <i data-lucide="wallet" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
+              <i data-lucide="hourglass" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
             </div>
 
-            <div class="rounded-2xl bg-gradient-to-br from-purple-600 to-fuchsia-700 text-white p-5 shadow-lg relative overflow-hidden">
+            <div class="rounded-2xl bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 text-white p-5 shadow-lg shadow-blue-600/20 relative overflow-hidden">
               <div class="relative z-10">
-                <span class="text-xs font-bold text-purple-200 block mb-1">معدل تسليم المشاريع</span>
-                <div id="homeCompletionRate" class="text-3xl font-black font-mono">100%</div>
+                <span class="text-xs font-bold text-blue-100 block mb-1">📦 إجمالي الطلبات الكلية</span>
+                <div id="homeCompletionRate" class="text-3xl font-black font-mono">0</div>
+                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-blue-200 font-bold">
+                  <i data-lucide="shopping-bag" class="w-3.5 h-3.5"></i>
+                  <span>جميع الطلبات المسجلة في قاعدة البيانات</span>
+                </div>
+              </div>
+              <i data-lucide="layers" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
+            </div>
+
+            <div class="rounded-2xl bg-gradient-to-br from-purple-600 via-fuchsia-600 to-purple-700 text-white p-5 shadow-lg shadow-purple-600/20 relative overflow-hidden">
+              <div class="relative z-10">
+                <span class="text-xs font-bold text-purple-100 block mb-1">🛡️ طلبات إزالة الحقوق (White-label)</span>
+                <div id="homeActiveCustomers" class="text-3xl font-black font-mono">0</div>
                 <div class="mt-2 flex items-center gap-1.5 text-[11px] text-purple-200 font-bold">
-                  <i data-lucide="check-check" class="w-3.5 h-3.5"></i>
-                  <span>التزام تام بمواعيد التسليم (24-48 ساعة)</span>
-                </div>
-              </div>
-              <i data-lucide="check-circle" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
-            </div>
-
-            <div class="rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 shadow-lg relative overflow-hidden">
-              <div class="relative z-10">
-                <span class="text-xs font-bold text-amber-100 block mb-1">العملاء النشطون</span>
-                <div id="homeActiveCustomers" class="text-3xl font-black font-mono">0 عميل</div>
-                <div class="mt-2 flex items-center gap-1.5 text-[11px] text-amber-100 font-bold">
-                  <i data-lucide="users" class="w-3.5 h-3.5"></i>
-                  <span>قاعدة عملاء مستمرة في التوسع</span>
+                  <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                  <span>علامة تجارية مستقلة للتاجر 100%</span>
                 </div>
               </div>
               <i data-lucide="user-check" class="w-24 h-24 text-white/10 absolute -bottom-4 -left-4"></i>
+            </div>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- 💎 THE 4 OFFICIAL PACKAGES LUXURY CARDS (Right-to-Left)  -->
+          <!-- مرتبة من اليمين لليسار: 1,500 ثم 3,000 ثم 4,500 ثم 9,000 -->
+          <!-- ======================================================== -->
+          <div class="space-y-3">
+            <div class="flex items-center justify-between border-b border-blue-100 pb-2">
+              <div class="flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-5 h-5 text-amber-500"></i>
+                <h3 class="text-base font-black text-slate-900">الباقات والخدمات الرسمية الأربع المعتمدة</h3>
+              </div>
+              <span class="text-xs font-black text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+                4 باقات رسمية فقط
+              </span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+              <!-- Package 1: صفحة هبوط محلية (1,500 DH) -->
+              <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-rose-400 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+                <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600"></div>
+                <div>
+                  <div class="flex items-center justify-between mb-3 pt-1">
+                    <span class="text-xs font-black px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200">المغرب 🇲🇦</span>
+                    <span class="text-2xl">🇲🇦</span>
+                  </div>
+                  <span class="text-[10px] font-black text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full inline-block mb-1">الأكثر طلباً محلياً 🔥</span>
+                  <h4 class="text-base font-black text-slate-900 mb-1">صفحة هبوط محلية</h4>
+                  <div class="text-2xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 my-2">1,500 DH</div>
+                  <p class="text-[11px] text-slate-600 font-bold leading-relaxed">صفحة هبوط سريعة ذات معدل تحويل مرتفع مع ربط أوتوماتيكي لبوابات الدفع والدومين</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-slate-500">المبيعات المؤكدة:</span>
+                    <span id="homePkgCount-landing-local" class="font-mono text-rose-600 font-black">0 مبيعات</span>
+                  </div>
+                  <button onclick="openNewOrderModalWithPlan('صفحة هبوط محلية (1,500 DH)')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-colors">
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                    <span>إنشاء طلب</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Package 2: متجر محلي متكامل (3,000 DH) -->
+              <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-cyan-400 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+                <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600"></div>
+                <div>
+                  <div class="flex items-center justify-between mb-3 pt-1">
+                    <span class="text-xs font-black px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200">المغرب 🇲🇦</span>
+                    <span class="text-2xl">🇲🇦</span>
+                  </div>
+                  <span class="text-[10px] font-black text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-full inline-block mb-1">متجر متعدد المنتجات ⚡</span>
+                  <h4 class="text-base font-black text-slate-900 mb-1">متجر محلي متكامل</h4>
+                  <div class="text-2xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 my-2">3,000 DH</div>
+                  <p class="text-[11px] text-slate-600 font-bold leading-relaxed">متجر مغربي متكامل بلوحة تحكم متقدمة، بوابات دفع محلية وتتبع الطلبيات</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-slate-500">المبيعات المؤكدة:</span>
+                    <span id="homePkgCount-store-local" class="font-mono text-cyan-600 font-black">0 مبيعات</span>
+                  </div>
+                  <button onclick="openNewOrderModalWithPlan('متجر محلي متكامل (3,000 DH)')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-colors">
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                    <span>إنشاء طلب</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Package 3: صفحة هبوط دولية (4,500 DH) -->
+              <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-emerald-400 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+                <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600"></div>
+                <div>
+                  <div class="flex items-center justify-between mb-3 pt-1">
+                    <span class="text-xs font-black px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200">دولي 🌐</span>
+                    <span class="text-2xl">🌐</span>
+                  </div>
+                  <span class="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mb-1">معدل تحويل دولي 🚀</span>
+                  <h4 class="text-base font-black text-slate-900 mb-1">صفحة هبوط دولية</h4>
+                  <div class="text-2xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 my-2">4,500 DH</div>
+                  <p class="text-[11px] text-slate-600 font-bold leading-relaxed">صفحة هبوط فائقة السرعة مهيأة للأسواق الأمريكية والأوروبية مع Stripe & PayPal</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-slate-500">المبيعات المؤكدة:</span>
+                    <span id="homePkgCount-landing-intl" class="font-mono text-emerald-600 font-black">0 مبيعات</span>
+                  </div>
+                  <button onclick="openNewOrderModalWithPlan('صفحة هبوط دولية (4,500 DH)')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-colors">
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                    <span>إنشاء طلب</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Package 4: متجر دولي VIP (9,000 DH) -->
+              <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-amber-400 p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+                <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500"></div>
+                <div>
+                  <div class="flex items-center justify-between mb-3 pt-1">
+                    <span class="text-xs font-black px-2.5 py-1 rounded-full bg-slate-100 text-slate-800 border border-slate-200">عالمي 👑</span>
+                    <span class="text-2xl">👑</span>
+                  </div>
+                  <span class="text-[10px] font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full inline-block mb-1">VIP سحابي عالمي 💎</span>
+                  <h4 class="text-base font-black text-slate-900 mb-1">متجر دولي VIP</h4>
+                  <div class="text-2xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500 my-2">9,000 DH</div>
+                  <p class="text-[11px] text-slate-600 font-bold leading-relaxed">أقوى بنية برمجية تجارية دولية متعددة العملات واللغات مع بوابات دفع عالمية</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                  <div class="flex items-center justify-between text-xs font-bold">
+                    <span class="text-slate-500">المبيعات المؤكدة:</span>
+                    <span id="homePkgCount-store-intl" class="font-mono text-amber-600 font-black">0 مبيعات</span>
+                  </div>
+                  <button onclick="openNewOrderModalWithPlan('متجر دولي VIP (9,000 DH)')" class="w-full py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs flex items-center justify-center gap-1 cursor-pointer transition-colors">
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>
+                    <span>إنشاء طلب</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -568,137 +734,164 @@
             <p class="text-xs text-slate-500 font-bold">يمكنك إنشاء طلب فوري لأي باقة أو مشاركة تفاصيلها مع العميل</p>
           </div>
 
-          <!-- 3 Luxury Packages Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <!-- Package 1: Landing Page (500 MAD) -->
-            <div class="rounded-3xl bg-white border border-blue-100 p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-blue-300 transition-all group relative overflow-hidden">
+          <!-- 4 Official Packages Luxury Cards with PayPal Direct Links -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+            <!-- Package 1: صفحة هبوط محلية (1,500 DH) -->
+            <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-rose-400 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+              <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600"></div>
               <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[11px] font-black">
-                    تسليم سريع 24 ساعة ⚡
+                <div class="flex items-center justify-between pt-1">
+                  <span class="px-3 py-1 rounded-full bg-rose-50 text-rose-700 text-[11px] font-black">
+                    المغرب 🇲🇦 • الأكثر طلباً 🔥
                   </span>
-                  <div class="w-9 h-9 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
-                    <i data-lucide="zap" class="w-5 h-5"></i>
-                  </div>
+                  <span class="text-2xl">🇲🇦</span>
                 </div>
-
                 <div>
-                  <h4 class="text-lg font-black text-slate-900">صفحة هبوط احترافية</h4>
+                  <h4 class="text-lg font-black text-slate-900">صفحة هبوط محلية</h4>
                   <p class="text-xs text-slate-500 mt-1">Landing Page فائقة السرعة للمنتج الفردي والعروض المباشرة</p>
                 </div>
-
                 <div class="py-2 border-y border-slate-100 flex items-baseline gap-1">
-                  <span class="text-3xl font-black font-mono text-[#0b1739]">500</span>
-                  <span class="text-xs font-bold text-slate-500">درهم مغربي</span>
+                  <span class="text-3xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600">1,500</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي (DH)</span>
                 </div>
-
                 <ul class="space-y-2 text-xs font-bold text-slate-600">
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> دومين مجاني واستضافة لسنة</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> متجاوبة بالكامل للهاتف والكمبيوتر</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط مباشر مع WhatsApp للطلبات</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط TikTok Pixel و Facebook Pixel</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> صفحة هبوط احترافية لمنتج رابح محلي</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> تصميم محفز ومضاعف لمعدل التحويل</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط أوتوماتيكي لبوابات الدفع والدومين</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> سرعة تحميل فائقة وتوافق تام مع الهواتف</li>
                 </ul>
-              </div>
-
-              <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold">
-                  <span class="text-slate-400">المبيعات:</span>
-                  <span id="prodCount-landing" class="font-mono text-blue-700 font-black">0 طلبات</span>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
+                  https://www.paypal.com/ncp/payment/79PH2FAVN728E
                 </div>
-                <button onclick="openNewOrderModalWithPlan('صفحة هبوط احترافية (500 MAD)')" class="w-full py-2.5 rounded-xl bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات المؤكدة:</span>
+                  <span id="prodCount-landing-local" class="font-mono text-rose-600 font-black">0 مبيعات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('صفحة هبوط محلية (1,500 DH)')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
                   <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                  <span>إنشاء طلب جديد لهذه الباقة</span>
+                  <span>إنشاء طلب لهذه الباقة</span>
                 </button>
               </div>
             </div>
 
-            <!-- Package 2: Standard Store (1500 MAD) - Best Seller -->
-            <div class="rounded-3xl bg-gradient-to-b from-white to-blue-50/50 border-2 border-amber-400/80 p-6 shadow-xl flex flex-col justify-between hover:scale-[1.02] transition-all group relative overflow-hidden">
-              <div class="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-[11px] shadow-md flex items-center gap-1">
-                <i data-lucide="sparkles" class="w-3 h-3"></i>
-                <span>الباقة الأكثر طلباً ⭐</span>
-              </div>
-
-              <div class="space-y-4 pt-2">
-                <div class="flex items-center justify-between">
-                  <span class="px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-[11px] font-black">
-                    متجر كامل وشامل
-                  </span>
-                  <div class="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center text-amber-600">
-                    <i data-lucide="store" class="w-5 h-5"></i>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 class="text-lg font-black text-slate-900">المتجر الإلكتروني القياسي</h4>
-                  <p class="text-xs text-slate-500 mt-1">متجر تجارة إلكترونية كامل ومتكامل جاهز للبيع الفوري</p>
-                </div>
-
-                <div class="py-2 border-y border-amber-100 flex items-baseline gap-1">
-                  <span class="text-3xl font-black font-mono text-amber-600">1,500</span>
-                  <span class="text-xs font-bold text-slate-500">درهم مغربي</span>
-                </div>
-
-                <ul class="space-y-2 text-xs font-bold text-slate-600">
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> متجر إلكتروني متكامل عالي السرعة</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط بوابة YouCan Pay و CMI للبطاقات البنكية</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> تجهيز 10 منتجات رابحة بتصاميمها</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> صفحات الخصوصية والشروط وتتبع الشحنات</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> تدريب كامل بالفيديو على الإدارة</li>
-                </ul>
-              </div>
-
-              <div class="mt-6 pt-4 border-t border-amber-100 space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold">
-                  <span class="text-slate-400">المبيعات:</span>
-                  <span id="prodCount-store" class="font-mono text-amber-600 font-black">0 طلبات</span>
-                </div>
-                <button onclick="openNewOrderModalWithPlan('المتجر القياسي (1,500 MAD)')" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-500 hover:from-amber-300 text-slate-950 font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer">
-                  <i data-lucide="plus-circle" class="w-4 h-4 text-slate-950"></i>
-                  <span>إنشاء طلب جديد لهذه الباقة</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Package 3: SaaS / VIP (5000 MAD) -->
-            <div class="rounded-3xl bg-white border border-purple-100 p-6 shadow-sm flex flex-col justify-between hover:shadow-xl hover:border-purple-300 transition-all group relative overflow-hidden">
+            <!-- Package 2: متجر محلي متكامل (3,000 DH) -->
+            <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-cyan-400 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+              <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600"></div>
               <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <span class="px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-black">
-                    للمشاريع الكبرى 👑
+                <div class="flex items-center justify-between pt-1">
+                  <span class="px-3 py-1 rounded-full bg-cyan-50 text-cyan-700 text-[11px] font-black">
+                    المغرب 🇲🇦 • متجر كامل ⚡
                   </span>
-                  <div class="w-9 h-9 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600">
-                    <i data-lucide="crown" class="w-5 h-5"></i>
-                  </div>
+                  <span class="text-2xl">🇲🇦</span>
                 </div>
-
                 <div>
-                  <h4 class="text-lg font-black text-slate-900">النظام السحابي المتكامل VIP</h4>
-                  <p class="text-xs text-slate-500 mt-1">حلول متقدمة للعلامات التجارية والشركات المتنامية</p>
+                  <h4 class="text-lg font-black text-slate-900">متجر محلي متكامل</h4>
+                  <p class="text-xs text-slate-500 mt-1">متجر مغربي متكامل بلوحة تحكم متقدمة، بوابات دفع محلية وتتبع الطلبيات</p>
                 </div>
-
                 <div class="py-2 border-y border-slate-100 flex items-baseline gap-1">
-                  <span class="text-3xl font-black font-mono text-purple-700">5,000</span>
-                  <span class="text-xs font-bold text-slate-500">درهم مغربي</span>
+                  <span class="text-3xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600">3,000</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي (DH)</span>
                 </div>
-
                 <ul class="space-y-2 text-xs font-bold text-slate-600">
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> منصة تجارة إلكترونية سحابية مخصصة</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط أوتوماتيكي مع شركات الشحن والتوصيل (API)</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> إدارة المخزون، الفواتير، ونقاط البيع</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> إطلاق وإدارة حملات إعلانية ممولة</li>
-                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> دعم فني VIP ومدير حساب خاص مدار الساعة</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> متجر مغربي متكامل متعدد الأقسام والمنتجات</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> لوحة تحكم إدارية احترافية لتتبع الطلبات</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط بوابات الدفع الإلكتروني المحلية (PayPal, CMI)</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> واجهة متجاوبة 100% وسهلة الإدارة والتحديث</li>
                 </ul>
-              </div>
-
-              <div class="mt-6 pt-4 border-t border-slate-100 space-y-3">
-                <div class="flex items-center justify-between text-xs font-bold">
-                  <span class="text-slate-400">المبيعات:</span>
-                  <span id="prodCount-vip" class="font-mono text-purple-700 font-black">0 طلبات</span>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
+                  https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG
                 </div>
-                <button onclick="openNewOrderModalWithPlan('النظام المتكامل VIP (5,000 MAD)')" class="w-full py-2.5 rounded-xl bg-purple-50 hover:bg-purple-600 hover:text-white text-purple-700 font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات المؤكدة:</span>
+                  <span id="prodCount-store-local" class="font-mono text-cyan-600 font-black">0 مبيعات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('متجر محلي متكامل (3,000 DH)')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
                   <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                  <span>إنشاء طلب جديد لهذه الباقة</span>
+                  <span>إنشاء طلب لهذه الباقة</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Package 3: صفحة هبوط دولية (4,500 DH) -->
+            <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-emerald-400 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+              <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600"></div>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between pt-1">
+                  <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-black">
+                    دولي 🌐 • معدل تحويل عالمي 🚀
+                  </span>
+                  <span class="text-2xl">🌐</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-black text-slate-900">صفحة هبوط دولية</h4>
+                  <p class="text-xs text-slate-500 mt-1">Landing Page مهيأة للأسواق الأمريكية والأوروبية مع Stripe & PayPal</p>
+                </div>
+                <div class="py-2 border-y border-slate-100 flex items-baseline gap-1">
+                  <span class="text-3xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600">4,500</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي (DH)</span>
+                </div>
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> صفحة هبوط دولية فائقة السرعة للأسواق العالمية</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> دعم عملات ولغات متعددة ومعدلات تحويل عالمية</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط مباشر مع Stripe و PayPal الدولي</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> بنية سحابية فائقة السرعة على خوادم عالمية</li>
+                </ul>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
+                  https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN
+                </div>
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات المؤكدة:</span>
+                  <span id="prodCount-landing-intl" class="font-mono text-emerald-600 font-black">0 مبيعات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('صفحة هبوط دولية (4,500 DH)')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>إنشاء طلب لهذه الباقة</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Package 4: متجر دولي VIP (9,000 DH) -->
+            <div class="rounded-3xl bg-white border-2 border-slate-200 hover:border-amber-400 p-6 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between text-right relative overflow-hidden group">
+              <div class="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500"></div>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between pt-1">
+                  <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black">
+                    عالمي 👑 • VIP سحابي 💎
+                  </span>
+                  <span class="text-2xl">👑</span>
+                </div>
+                <div>
+                  <h4 class="text-lg font-black text-slate-900">متجر دولي VIP</h4>
+                  <p class="text-xs text-slate-500 mt-1">أقوى بنية برمجية تجارية دولية متعددة العملات واللغات</p>
+                </div>
+                <div class="py-2 border-y border-slate-100 flex items-baseline gap-1">
+                  <span class="text-3xl font-black font-mono text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-yellow-500 to-orange-500">9,000</span>
+                  <span class="text-xs font-bold text-slate-500">درهم مغربي (DH)</span>
+                </div>
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> متجر دولي VIP سحابي متكامل متعدد اللغات والعملات</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> دمج بوابات الدفع العالمية (PayPal, Stripe)</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> نظام مؤتمت للفواتير، وتتبع الشحنات، ونقاط البيع</li>
+                  <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> مدير حساب خاص ودعم فني متواصل مدار الساعة</li>
+                </ul>
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
+                  https://www.paypal.com/ncp/payment/PNG5TW29Q96P6
+                </div>
+              </div>
+              <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
+                <div class="flex items-center justify-between text-xs font-bold">
+                  <span class="text-slate-400">المبيعات المؤكدة:</span>
+                  <span id="prodCount-store-intl" class="font-mono text-amber-600 font-black">0 مبيعات</span>
+                </div>
+                <button onclick="openNewOrderModalWithPlan('متجر دولي VIP (9,000 DH)')" class="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm">
+                  <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                  <span>إنشاء طلب لهذه الباقة</span>
                 </button>
               </div>
             </div>
@@ -1161,22 +1354,36 @@
           </div>
         </div>
 
-        <!-- 3. Plan & Payment -->
+        <!-- 3. Plan & Payment Status -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
-            <label class="block font-bold text-slate-700 mb-1">الباقة المختارة *</label>
+            <label class="block font-bold text-slate-700 mb-1">الباقة الرسمية المختارة *</label>
             <select id="inputNewOrderPlan" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
-              <option value="المتجر القياسي (1,500 MAD)">المتجر القياسي (1,500 MAD)</option>
-              <option value="صفحة هبوط احترافية (500 MAD)">صفحة هبوط احترافية (500 MAD)</option>
-              <option value="النظام المتكامل VIP (5,000 MAD)">النظام السحابي المتكامل VIP (5,000 MAD)</option>
+              <option value="صفحة هبوط محلية (1,500 DH)">صفحة هبوط محلية (1,500 DH)</option>
+              <option value="متجر محلي متكامل (3,000 DH)">متجر محلي متكامل (3,000 DH)</option>
+              <option value="صفحة هبوط دولية (4,500 DH)">صفحة هبوط دولية (4,500 DH)</option>
+              <option value="متجر دولي VIP (9,000 DH)">متجر دولي VIP (9,000 DH)</option>
             </select>
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">طريقة الدفع المعتمدة</label>
-            <select id="inputNewOrderPayment" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
-              <option value="YouCan Pay 🇲🇦 (Carte Bancaire)">YouCan Pay 🇲🇦 (بطاقة بنكية / CMI)</option>
+            <label class="block font-bold text-slate-700 mb-1">حالة الدفع (PayPal)</label>
+            <select id="inputNewOrderPaymentStatus" class="w-full py-2 px-3 rounded-xl bg-slate-50 border border-slate-200 font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+              <option value="pending">⏳ معلق (بانتظار تأكيد الدفع)</option>
+              <option value="paid">✅ مدفوع ومؤكد PayPal (COMPLETED)</option>
             </select>
           </div>
+        </div>
+
+        <!-- 3.5 White-Label Option Toggle -->
+        <div class="p-3 rounded-xl bg-purple-50/70 border border-purple-200 flex items-center justify-between">
+          <div>
+            <span class="text-xs font-black text-purple-900 block">طلب خيار إزالة الحقوق (White-label) 🛡️</span>
+            <span class="text-[10px] text-purple-700 font-bold block">تسليم المتجر كعلامة تجارية مستقلة للتاجر بدون أي شعار للمنصة</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="inputNewOrderWhiteLabel" class="sr-only peer">
+            <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+          </label>
         </div>
 
         <!-- 4. Product Images URLs -->
@@ -1537,25 +1744,81 @@
 
       orders = filteredCombined;
 
-      // Update Header Stats
+      // Update Header Stats (Confirmed Revenue PayPal Only)
       const totalCount = orders.length;
-      const totalRev = orders.reduce((sum, o) => sum + (parseInt(String(o.price || "1500").replace(/[^0-9]/g, ""), 10) || 1500), 0);
+      const confirmedRev = orders.filter(o => o.payment_status === "paid").reduce((sum, o) => sum + getOrderPrice(o), 0);
       document.getElementById("headerOrdersCount").innerText = `${totalCount} طلبات مسجلة`;
-      document.getElementById("headerRevenueCount").innerText = `${totalRev.toLocaleString()} د.م مبيعات`;
+      document.getElementById("headerRevenueCount").innerText = `${confirmedRev.toLocaleString()} د.م أرباح مؤكدة`;
 
       renderActiveTab();
     }
 
-    // Helper: parse price
+    // ========================================================
+    // 💎 THE 4 OFFICIAL PACKAGES CONFIGURATION
+    // ========================================================
+    const OFFICIAL_PACKAGES = [
+      {
+        id: "landing-local",
+        name: "صفحة هبوط محلية",
+        market: "المغرب 🇲🇦",
+        price: 1500,
+        priceFormatted: "1,500 DH",
+        paypalUrl: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
+        emoji: "🇲🇦",
+        badge: "الأكثر طلباً محلياً 🔥"
+      },
+      {
+        id: "store-local",
+        name: "متجر محلي متكامل",
+        market: "المغرب 🇲🇦",
+        price: 3000,
+        priceFormatted: "3,000 DH",
+        paypalUrl: "https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG",
+        emoji: "🇲🇦",
+        badge: "متجر متعدد المنتجات ⚡"
+      },
+      {
+        id: "landing-intl",
+        name: "صفحة هبوط دولية",
+        market: "دولي 🌐",
+        price: 4500,
+        priceFormatted: "4,500 DH",
+        paypalUrl: "https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN",
+        emoji: "🌐",
+        badge: "معدل تحويل دولي 🚀"
+      },
+      {
+        id: "store-intl",
+        name: "متجر دولي VIP",
+        market: "عالمي 👑",
+        price: 9000,
+        priceFormatted: "9,000 DH",
+        paypalUrl: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
+        emoji: "👑",
+        badge: "VIP سحابي عالمي 💎"
+      }
+    ];
+
+    // Identify which of the 4 official packages an order belongs to
+    function identifyPackage(o) {
+      const t = (o.plan_tier || o.planTitle || "").toLowerCase();
+      if (t.includes("9,000") || t.includes("9000") || (t.includes("دولي") && t.includes("متجر")) || t.includes("vip")) {
+        return OFFICIAL_PACKAGES[3];
+      }
+      if (t.includes("4,500") || t.includes("4500") || (t.includes("دولي") && t.includes("هبوط"))) {
+        return OFFICIAL_PACKAGES[2];
+      }
+      if (t.includes("3,000") || t.includes("3000") || (t.includes("محلي") && t.includes("متجر")) || t.includes("متكامل")) {
+        return OFFICIAL_PACKAGES[1];
+      }
+      return OFFICIAL_PACKAGES[0];
+    }
+
+    // Helper: calculate price based strictly on the 4 official packages
     function getOrderPrice(o) {
       if (o.price && typeof o.price === "number") return o.price;
-      const str = String(o.price || o.plan_tier || o.planTitle || "1500");
-      const match = str.match(/([0-9,]+)/);
-      if (match) {
-        const num = parseInt(match[1].replace(/,/g, ""), 10);
-        if (!isNaN(num) && num > 0) return num;
-      }
-      return 1500;
+      const pkg = identifyPackage(o);
+      return pkg.price;
     }
 
     // 1. RENDER ORDERS TAB
@@ -1563,27 +1826,51 @@
       const tbody = document.getElementById("ordersTableBody");
       const searchVal = (document.getElementById("searchInput")?.value || "").trim().toLowerCase();
       const statusVal = document.getElementById("statusFilter")?.value || "all";
+      const paymentStatusVal = document.getElementById("paymentStatusFilter")?.value || "all";
+      const packageVal = document.getElementById("packageFilter")?.value || "all";
+      const whiteLabelVal = document.getElementById("whiteLabelFilter")?.value || "all";
 
       const filtered = orders.filter(o => {
         const name = (o.customer_name || o.customerName || "").toLowerCase();
         const phone = (o.phone_number || o.customerPhone || "").toLowerCase();
-        const matchesSearch = !searchVal || name.includes(searchVal) || phone.includes(searchVal);
+        const storeName = (o.store_name || o.storeName || "").toLowerCase();
+        const num = (o.order_number || o.orderNumber || "").toLowerCase();
+        
+        const matchesSearch = !searchVal || name.includes(searchVal) || phone.includes(searchVal) || storeName.includes(searchVal) || num.includes(searchVal);
         const matchesStatus = statusVal === "all" || o.status === statusVal;
-        return matchesSearch && matchesStatus;
+        
+        // Filter by payment status (Paid PayPal vs Pending)
+        const isPaid = o.payment_status === "paid";
+        const matchesPayment = paymentStatusVal === "all" || (paymentStatusVal === "paid" ? isPaid : !isPaid);
+        
+        // Filter by 4 official packages
+        const pkg = identifyPackage(o);
+        const matchesPackage = packageVal === "all" || pkg.id === packageVal;
+
+        // Filter by White-label
+        const isWhiteLabel = o.white_label === true;
+        const matchesWhiteLabel = whiteLabelVal === "all" || (whiteLabelVal === "white_label" ? isWhiteLabel : !isWhiteLabel);
+
+        return matchesSearch && matchesStatus && matchesPayment && matchesPackage && matchesWhiteLabel;
       });
 
       const totalCount = orders.length;
-      const completedCount = orders.filter(o => o.status === "completed" || o.status === "paid").length;
-      const reviewCount = orders.filter(o => o.status === "pending" || !o.status).length;
-      const totalRev = orders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const paidOrders = orders.filter(o => o.payment_status === "paid");
+      const pendingOrders = orders.filter(o => o.payment_status !== "paid");
+      
+      const confirmedRev = paidOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const pendingRev = pendingOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
 
       document.getElementById("kpiTotalOrders").innerText = totalCount;
-      document.getElementById("kpiCompletedOrders").innerText = completedCount;
-      document.getElementById("kpiReviewOrders").innerText = reviewCount;
-      document.getElementById("kpiTotalRevenue").innerText = totalRev.toLocaleString() + " درهم";
+      document.getElementById("kpiCompletedOrders").innerText = paidOrders.length;
+      document.getElementById("kpiReviewOrders").innerText = pendingOrders.length;
+      if (document.getElementById("kpiPendingRevenue")) {
+        document.getElementById("kpiPendingRevenue").innerText = pendingRev.toLocaleString() + " د.م";
+      }
+      document.getElementById("kpiTotalRevenue").innerText = confirmedRev.toLocaleString() + " د.م";
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="10" class="p-8 text-center text-slate-400 font-bold">لا توجد طلبات تطابق البحث</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" class="p-8 text-center text-slate-400 font-bold">لا توجد طلبات تطابق معايير الفلترة</td></tr>`;
         return;
       }
 
@@ -1597,19 +1884,22 @@
         const productPrice = o.product_price || o.productPrice || "";
         const orderPhone = o.order_phone || o.orderPhone || phone;
         const productImages = Array.isArray(o.product_images) ? o.product_images : [];
-        const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
+        const pkg = identifyPackage(o);
+        const plan = pkg.name;
         const price = getOrderPrice(o);
         const status = o.status || "pending";
+        const isPaid = o.payment_status === "paid";
+        const isWhiteLabel = o.white_label === true;
         const deliveredUrl = o.delivered_url || o.deliveredUrl || "";
         const cleanPhone = phone.replace(/[^0-9]/g, "");
         const cleanOrderPhone = orderPhone.replace(/[^0-9]/g, "");
         const date = o.created_at ? new Date(o.created_at).toLocaleDateString("ar-MA", { month: "short", day: "numeric" }) : "اليوم";
 
-        // 1. Quick Inline Status Selector (Direct from table, zero modal)
+        // 1. Quick Inline Status Selector
         const statusSelector = `
           <div class="relative inline-block" onclick="event.stopPropagation();">
             <select onchange="updateOrderStatusQuick('${id}', this.value)" class="py-1 px-2.5 rounded-full text-[10px] font-black cursor-pointer focus:outline-none transition-all shadow-sm ${
-              status === 'completed' || status === 'paid'
+              status === 'completed' || isPaid
                 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
                 : status === 'in_progress'
                 ? 'bg-blue-100 text-blue-800 border border-blue-300 hover:bg-blue-200'
@@ -1617,7 +1907,7 @@
             }">
               <option value="pending" ${status === 'pending' || !status ? 'selected' : ''}>🟡 قيد المراجعة</option>
               <option value="in_progress" ${status === 'in_progress' ? 'selected' : ''}>🔵 جاري التجهيز</option>
-              <option value="completed" ${status === 'completed' || status === 'paid' ? 'selected' : ''}>🟢 مكتمل ومسلّم</option>
+              <option value="completed" ${status === 'completed' || isPaid ? 'selected' : ''}>🟢 مكتمل ومسلّم</option>
             </select>
           </div>
         `;
@@ -1693,21 +1983,40 @@
               </div>
             </td>
 
-            <!-- Col 4: Plan -->
-            <td class="p-3.5 font-bold text-xs text-slate-700">${plan}</td>
+            <!-- Col 4: Official Package & White-label -->
+            <td class="p-3.5">
+              <div class="font-black text-xs text-slate-800 flex items-center gap-1">
+                <span>${pkg.emoji}</span>
+                <span>${pkg.name}</span>
+              </div>
+              ${isWhiteLabel ? `
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9.5px] font-black bg-purple-100 text-purple-800 mt-1 border border-purple-200">
+                  🛡️ إزالة الحقوق (White-label)
+                </span>
+              ` : `
+                <span class="text-[9.5px] text-slate-400 block mt-0.5">علامة المنصة العادية</span>
+              `}
+            </td>
 
             <!-- Col 5: Price -->
             <td class="p-3.5 font-mono font-black text-emerald-600 text-xs">${price.toLocaleString()} د.م</td>
 
-            <!-- Col 6: Payment Gateway (YouCan Pay strictly) -->
+            <!-- Col 6: PayPal Payment Status (Paid vs Pending) -->
             <td class="p-3.5">
-              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-50 text-cyan-800 border border-cyan-200">
-                <i data-lucide="credit-card" class="w-3 h-3 text-cyan-600"></i>
-                <span>YouCan Pay 🇲🇦</span>
-              </span>
+              ${isPaid ? `
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  <span>PayPal مؤكد ✅</span>
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300">
+                  <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                  <span>معلق بانتظار الدفع ⏳</span>
+                </span>
+              `}
             </td>
 
-            <!-- Col 7: Order Receiving Phone (For Store Orders) -->
+            <!-- Col 7: Order Receiving Phone -->
             <td class="p-3.5">
               <div class="flex items-center gap-1.5">
                 <span class="font-mono font-bold text-xs text-slate-800" dir="ltr">${orderPhone}</span>
@@ -1724,46 +2033,66 @@
               ${statusSelector}
             </td>
 
-            <!-- Col 9: Delivered Store URL -->
+            <!-- Col 9: White-Label Check (إزالة حقوق المطور) -->
+            <td class="p-3.5" onclick="event.stopPropagation();">
+              ${isWhiteLabel ? `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-purple-100 text-purple-900 border border-purple-300 shadow-2xs">
+                  <i data-lucide="shield" class="w-3.5 h-3.5 text-purple-700"></i>
+                  <span>بدون حقوق (White-label)</span>
+                </span>
+              ` : `
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                  <span>مع حقوق Ecom Speed Pro</span>
+                </span>
+              `}
+            </td>
+
+            <!-- Col 10: Delivered Store URL -->
             <td class="p-3.5">
               ${storeCell}
             </td>
 
-            <!-- Col 10: Distinct Actions (with 'تسليم الطلب' and all action buttons fully unclipped) -->
-            <td class="p-3.5 text-center min-w-[360px]" onclick="event.stopPropagation();">
+            <!-- Col 10: Distinct Actions -->
+            <td class="p-3.5 text-center min-w-[380px]" onclick="event.stopPropagation();">
               <div class="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                <!-- Action: Toggle Payment Status -->
+                <button onclick="toggleOrderPaymentPaid('${id}', ${!isPaid})" class="px-2.5 py-1.5 rounded-xl ${isPaid ? 'bg-slate-100 text-slate-700 hover:bg-amber-50 hover:text-amber-700' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'} font-bold text-[10.5px] flex items-center gap-1 transition-all cursor-pointer shrink-0" title="تأكيد أو إلغاء احتساب الدفع عبر PayPal">
+                  <i data-lucide="${isPaid ? 'rotate-ccw' : 'check-circle'}" class="w-3.5 h-3.5"></i>
+                  <span>${isPaid ? 'إلغاء الدفع' : 'تأكيد الدفع ✓'}</span>
+                </button>
+
                 <!-- Required Feature: تسليم الطلب الآن -->
                 <button onclick="openQuickStoreUrlModal('${id}')" class="px-2.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-600 hover:from-emerald-400 hover:to-cyan-500 text-white font-black text-[11px] flex items-center gap-1 shadow-md shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0" title="تسليم المتجر للعميل وتحديث صفحة التتبع فوراً">
                   <i data-lucide="rocket" class="w-3.5 h-3.5"></i>
-                  <span>تسليم الطلب</span>
+                  <span>تسليم</span>
                 </button>
 
                 <!-- Action 1: Merchant Profile -->
-                <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="الملف الشخصي للتاجر (اسمه، مدينته، هاتف، معلوماته)">
+                <button onclick="viewMerchantProfile('${phone || name}')" class="px-2 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="الملف الشخصي للتاجر">
                   <i data-lucide="user" class="w-3 h-3 text-blue-600"></i>
-                  <span>ملف التاجر</span>
+                  <span>الملف</span>
                 </button>
 
                 <!-- Action 2: Store & Order Dossier -->
-                <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="تفاصيل طلب المتجر ومشروعه (صور المنتج، ثمنه، ورقم الطلبات)">
+                <button onclick="viewOrder('${id}')" class="px-2 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-[10.5px] flex items-center gap-1 transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="تفاصيل طلب المتجر ومشروعه">
                   <i data-lucide="store" class="w-3 h-3 text-slate-700"></i>
-                  <span>طلب المتجر</span>
+                  <span>الطلب</span>
                 </button>
 
-                <!-- Action 3: Secret Tracking Link (Opens in browser) -->
-                <button onclick="openCustomerPrivateLink('${id}')" class="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="فتح رابط التتبع السري للتاجر في المتصفح">
+                <!-- Action 3: Secret Tracking Link -->
+                <button onclick="openCustomerPrivateLink('${id}')" class="p-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 text-white font-bold text-[10.5px] flex items-center transition-all hover:scale-105 active:scale-95 cursor-pointer shrink-0" title="فتح رابط التتبع السري للتاجر">
                   <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
                 </button>
 
-                <!-- Action 4: WhatsApp Merchant -->
+                <!-- Action 4: WhatsApp -->
                 ${cleanPhone ? `
-                  <a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص متجرك (' + (storeName || plan) + ').')}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer shrink-0" title="مراسلة التاجر عبر واتساب">
+                  <a href="https://wa.me/${cleanPhone.startsWith('212') ? cleanPhone : '212' + cleanPhone.replace(/^0/, '')}?text=${encodeURIComponent('السلام عليكم أخي الكريم ' + name + '، نتواصل معك من إدارة Ecom Speed Pro بخصوص طلبك (' + (storeName || plan) + ').')}" target="_blank" class="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 cursor-pointer shrink-0" title="مراسلة التاجر عبر واتساب">
                     <i data-lucide="message-circle" class="w-3.5 h-3.5"></i>
                   </a>
                 ` : ''}
 
                 <!-- Action 5: Delete -->
-                <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer shrink-0 hover:scale-105 active:scale-95 transition-all shadow-xs" title="حذف هذا الطلب ونقله إلى سلة المحذوفات">
+                <button onclick="deleteOrder('${id}')" class="p-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer shrink-0 hover:scale-105 active:scale-95 transition-all shadow-xs" title="حذف هذا الطلب">
                   <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
                 </button>
               </div>
@@ -1778,71 +2107,92 @@
     // 2. RENDER HOME TAB
     function renderHomeTab() {
       const totalCount = orders.length;
-      const totalRev = orders.reduce((sum, o) => sum + getOrderPrice(o), 0);
-      const aov = totalCount > 0 ? Math.round(totalRev / totalCount) : 0;
-      const completedCount = orders.filter(o => o.status === "completed" || o.status === "paid").length;
-      const completionRate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 100;
-      
-      const uniquePhones = new Set(orders.map(o => (o.phone_number || o.customerPhone || "").trim()).filter(Boolean));
+      const paidOrders = orders.filter(o => o.payment_status === "paid");
+      const pendingOrders = orders.filter(o => o.payment_status !== "paid");
+      const whiteLabelOrders = orders.filter(o => o.white_label === true);
 
-      document.getElementById("homeTotalRevenue").innerText = totalRev.toLocaleString() + " درهم";
-      document.getElementById("homeAvgOrderValue").innerText = aov.toLocaleString() + " درهم";
-      document.getElementById("homeCompletionRate").innerText = `${completionRate}%`;
-      document.getElementById("homeActiveCustomers").innerText = `${uniquePhones.size || totalCount} عميل`;
+      // Financial Accuracy: Only paid orders are included in Confirmed Revenue
+      const confirmedRev = paidOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const pendingRev = pendingOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
 
-      // Plan Distribution breakdown
-      let countLanding = 0, revLanding = 0;
-      let countStore = 0, revStore = 0;
-      let countVip = 0, revVip = 0;
+      document.getElementById("homeTotalRevenue").innerText = confirmedRev.toLocaleString() + " د.م";
+      document.getElementById("homeAvgOrderValue").innerText = pendingRev.toLocaleString() + " د.م";
+      document.getElementById("homeCompletionRate").innerText = `${totalCount} طلبات`;
+      document.getElementById("homeActiveCustomers").innerText = `${whiteLabelOrders.length} طلبات إزالة حقوق`;
+
+      // The 4 Official Packages breakdown
+      const pkgCounts = {
+        "landing-local": { count: 0, rev: 0 },
+        "store-local": { count: 0, rev: 0 },
+        "landing-intl": { count: 0, rev: 0 },
+        "store-intl": { count: 0, rev: 0 }
+      };
 
       orders.forEach(o => {
+        const pkg = identifyPackage(o);
         const p = getOrderPrice(o);
-        const planStr = (o.plan_tier || o.planTitle || "").toLowerCase();
-        if (p <= 500 || planStr.includes("500") || planStr.includes("هبوط") || planStr.includes("landing")) {
-          countLanding++;
-          revLanding += p;
-        } else if (p >= 4000 || planStr.includes("5000") || planStr.includes("vip") || planStr.includes("سحابي")) {
-          countVip++;
-          revVip += p;
-        } else {
-          countStore++;
-          revStore += p;
+        if (pkgCounts[pkg.id]) {
+          pkgCounts[pkg.id].count++;
+          if (o.payment_status === "paid") {
+            pkgCounts[pkg.id].rev += p;
+          }
         }
       });
 
-      const maxRev = Math.max(totalRev, 1);
-      const pctLanding = Math.round((revLanding / maxRev) * 100);
-      const pctStore = Math.round((revStore / maxRev) * 100);
-      const pctVip = Math.round((revVip / maxRev) * 100);
+      // Update Horizontal Showcase counters
+      if (document.getElementById("homePkgCount-landing-local")) {
+        document.getElementById("homePkgCount-landing-local").innerText = `${pkgCounts["landing-local"].count} طلبات (${pkgCounts["landing-local"].rev.toLocaleString()} د.م)`;
+      }
+      if (document.getElementById("homePkgCount-store-local")) {
+        document.getElementById("homePkgCount-store-local").innerText = `${pkgCounts["store-local"].count} طلبات (${pkgCounts["store-local"].rev.toLocaleString()} د.م)`;
+      }
+      if (document.getElementById("homePkgCount-landing-intl")) {
+        document.getElementById("homePkgCount-landing-intl").innerText = `${pkgCounts["landing-intl"].count} طلبات (${pkgCounts["landing-intl"].rev.toLocaleString()} د.م)`;
+      }
+      if (document.getElementById("homePkgCount-store-intl")) {
+        document.getElementById("homePkgCount-store-intl").innerText = `${pkgCounts["store-intl"].count} طلبات (${pkgCounts["store-intl"].rev.toLocaleString()} د.م)`;
+      }
+
+      const maxRev = Math.max(confirmedRev, 1);
 
       document.getElementById("homePlanBars").innerHTML = `
         <div class="space-y-1.5">
           <div class="flex items-center justify-between text-xs font-black">
-            <span class="text-blue-700">المتجر القياسي (1,500 د.م)</span>
-            <span class="font-mono text-slate-800">${revStore.toLocaleString()} د.م (${countStore} طلبات - ${pctStore}%)</span>
+            <span class="text-rose-600">صفحة هبوط محلية (1,500 د.م) 🇲🇦</span>
+            <span class="font-mono text-slate-800">${pkgCounts["landing-local"].rev.toLocaleString()} د.م (${pkgCounts["landing-local"].count} طلبات - ${Math.round((pkgCounts["landing-local"].rev / maxRev) * 100)}%)</span>
           </div>
-          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
-            <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 transition-all duration-500" style="width: ${Math.max(pctStore, 5)}%"></div>
-          </div>
-        </div>
-
-        <div class="space-y-1.5">
-          <div class="flex items-center justify-between text-xs font-black">
-            <span class="text-emerald-700">صفحة هبوط سريعة (500 د.م)</span>
-            <span class="font-mono text-slate-800">${revLanding.toLocaleString()} د.م (${countLanding} طلبات - ${pctLanding}%)</span>
-          </div>
-          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
-            <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 transition-all duration-500" style="width: ${Math.max(pctLanding, 5)}%"></div>
+          <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-rose-500 to-pink-600 transition-all duration-500" style="width: ${Math.max(Math.round((pkgCounts["landing-local"].rev / maxRev) * 100), 4)}%"></div>
           </div>
         </div>
 
         <div class="space-y-1.5">
           <div class="flex items-center justify-between text-xs font-black">
-            <span class="text-purple-700">النظام المتكامل VIP (5,000 د.م)</span>
-            <span class="font-mono text-slate-800">${revVip.toLocaleString()} د.م (${countVip} طلبات - ${pctVip}%)</span>
+            <span class="text-blue-600">متجر محلي متكامل (3,000 د.م) 🇲🇦</span>
+            <span class="font-mono text-slate-800">${pkgCounts["store-local"].rev.toLocaleString()} د.م (${pkgCounts["store-local"].count} طلبات - ${Math.round((pkgCounts["store-local"].rev / maxRev) * 100)}%)</span>
           </div>
-          <div class="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
-            <div class="h-full rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-600 transition-all duration-500" style="width: ${Math.max(pctVip, 5)}%"></div>
+          <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 transition-all duration-500" style="width: ${Math.max(Math.round((pkgCounts["store-local"].rev / maxRev) * 100), 4)}%"></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-black">
+            <span class="text-emerald-600">صفحة هبوط دولية (4,500 د.م) 🌐</span>
+            <span class="font-mono text-slate-800">${pkgCounts["landing-intl"].rev.toLocaleString()} د.م (${pkgCounts["landing-intl"].count} طلبات - ${Math.round((pkgCounts["landing-intl"].rev / maxRev) * 100)}%)</span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 transition-all duration-500" style="width: ${Math.max(Math.round((pkgCounts["landing-intl"].rev / maxRev) * 100), 4)}%"></div>
+          </div>
+        </div>
+
+        <div class="space-y-1.5">
+          <div class="flex items-center justify-between text-xs font-black">
+            <span class="text-amber-600">متجر دولي VIP (9,000 د.م) 👑</span>
+            <span class="font-mono text-slate-800">${pkgCounts["store-intl"].rev.toLocaleString()} د.م (${pkgCounts["store-intl"].count} طلبات - ${Math.round((pkgCounts["store-intl"].rev / maxRev) * 100)}%)</span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-500" style="width: ${Math.max(Math.round((pkgCounts["store-intl"].rev / maxRev) * 100), 4)}%"></div>
           </div>
         </div>
       `;
@@ -2033,68 +2383,79 @@
 
     // 4. RENDER PRODUCTS TAB
     function renderProductsTab() {
-      let countLanding = 0, countStore = 0, countVip = 0;
+      const counts = {
+        "landing-local": 0,
+        "store-local": 0,
+        "landing-intl": 0,
+        "store-intl": 0
+      };
+
       orders.forEach(o => {
-        const p = getOrderPrice(o);
-        const planStr = (o.plan_tier || o.planTitle || "").toLowerCase();
-        if (p <= 500 || planStr.includes("500") || planStr.includes("هبوط") || planStr.includes("landing")) {
-          countLanding++;
-        } else if (p >= 4000 || planStr.includes("5000") || planStr.includes("vip") || planStr.includes("سحابي")) {
-          countVip++;
-        } else {
-          countStore++;
+        const pkg = identifyPackage(o);
+        if (counts[pkg.id] !== undefined) {
+          counts[pkg.id]++;
         }
       });
 
-      document.getElementById("prodCount-landing").innerText = `${countLanding} طلبات`;
-      document.getElementById("prodCount-store").innerText = `${countStore} طلبات`;
-      document.getElementById("prodCount-vip").innerText = `${countVip} طلبات`;
+      if (document.getElementById("prodCount-landing-local")) {
+        document.getElementById("prodCount-landing-local").innerText = `${counts["landing-local"]} طلبات`;
+      }
+      if (document.getElementById("prodCount-store-local")) {
+        document.getElementById("prodCount-store-local").innerText = `${counts["store-local"]} طلبات`;
+      }
+      if (document.getElementById("prodCount-landing-intl")) {
+        document.getElementById("prodCount-landing-intl").innerText = `${counts["landing-intl"]} طلبات`;
+      }
+      if (document.getElementById("prodCount-store-intl")) {
+        document.getElementById("prodCount-store-intl").innerText = `${counts["store-intl"]} طلبات`;
+      }
       lucide.createIcons();
     }
 
-    // 5. RENDER PAYMENTS TAB
+    // 5. RENDER PAYMENTS TAB (PayPal Webhooks & Accuracy)
     function renderPaymentsTab() {
       const tbody = document.getElementById("paymentsTableBody");
-      let revCard = 0, revCod = 0, revBank = 0;
+      const paidOrders = orders.filter(o => o.payment_status === "paid");
+      const pendingOrders = orders.filter(o => o.payment_status !== "paid");
+      
+      const confirmedRev = paidOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const pendingRev = pendingOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
 
-      orders.forEach(o => {
-        const p = getOrderPrice(o);
-        const m = (o.payment_method || "").toLowerCase();
-        if (m.includes("cod") || m.includes("استلام") || m.includes("livraison")) {
-          revCod += p;
-        } else if (m.includes("virement") || m.includes("تحويل")) {
-          revBank += p;
-        } else {
-          revCard += p;
-        }
-      });
-
-      document.getElementById("payGateRev-card").innerText = revCard.toLocaleString() + " درهم";
-      document.getElementById("payGateRev-cod").innerText = revCod.toLocaleString() + " درهم";
-      document.getElementById("payGateRev-bank").innerText = revBank.toLocaleString() + " درهم";
-      document.getElementById("paymentsCountText").innerText = `${orders.length} عمليات مسجلة`;
+      if (document.getElementById("payGateRev-card")) {
+        document.getElementById("payGateRev-card").innerText = confirmedRev.toLocaleString() + " درهم";
+      }
+      if (document.getElementById("payGateRev-cod")) {
+        document.getElementById("payGateRev-cod").innerText = pendingRev.toLocaleString() + " درهم";
+      }
+      if (document.getElementById("payGateRev-bank")) {
+        document.getElementById("payGateRev-bank").innerText = confirmedRev.toLocaleString() + " درهم";
+      }
+      if (document.getElementById("paymentsCountText")) {
+        document.getElementById("paymentsCountText").innerText = `${orders.length} طلبات (${paidOrders.length} مدفوعة PayPal)`;
+      }
 
       if (orders.length === 0) {
         tbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-slate-400 font-bold">لا توجد معاملات مسجلة حتى الآن</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = orders.map((o, idx) => {
+      tbody.innerHTML = orders.map((o) => {
         const num = o.order_number || `#ESP-${(o.id || "").slice(0, 6)}`;
-        const name = o.customer_name || o.customerName || "عميل";
-        const plan = o.plan_tier || o.planTitle || "المتجر القياسي";
+        const name = o.customer_name || o.customerName || "تاجر";
+        const pkg = identifyPackage(o);
         const price = getOrderPrice(o);
-        const method = o.payment_method || "بطاقة بنكية (CMI/Visa)";
-        const status = o.status === "completed" || o.status === "paid"
-          ? `<span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">مدفوع ومؤكد 🟢</span>`
-          : `<span class="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black">بانتظار التأكيد 🟡</span>`;
+        const isPaid = o.payment_status === "paid";
+        const method = isPaid ? "PayPal (Webhook مؤكد)" : "PayPal (بانتظار التحصيل)";
+        const status = isPaid
+          ? `<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black flex items-center gap-1 w-fit"><i data-lucide="check-circle" class="w-3 h-3 text-emerald-600"></i><span>مدفوع PayPal ✅</span></span>`
+          : `<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-[10px] font-black flex items-center gap-1 w-fit"><i data-lucide="clock" class="w-3 h-3 text-amber-600"></i><span>معلق ⏳</span></span>`;
         const date = o.created_at ? new Date(o.created_at).toLocaleString("ar-MA") : "مؤخراً";
 
         return `
           <tr class="hover:bg-blue-50/50 transition-colors">
             <td class="p-3.5 font-mono font-black text-blue-700">TXN-${num}</td>
             <td class="p-3.5 font-black text-slate-900">${name}</td>
-            <td class="p-3.5">${plan}</td>
+            <td class="p-3.5 font-bold">${pkg.name}</td>
             <td class="p-3.5 font-mono font-black text-emerald-600">${price.toLocaleString()} د.م</td>
             <td class="p-3.5">${method}</td>
             <td class="p-3.5">${status}</td>
@@ -2106,23 +2467,24 @@
       lucide.createIcons();
     }
 
-    // 6. RENDER REPORTS TAB
+    // 6. RENDER REPORTS TAB (Confirmed PayPal Revenue)
     function renderReportsTab() {
-      const totalRev = orders.reduce((sum, o) => sum + getOrderPrice(o), 0);
-      const completedCount = orders.filter(o => o.status === "completed" || o.status === "paid").length;
-      const pendingCount = orders.filter(o => o.status === "pending" || !o.status).length;
+      const paidOrders = orders.filter(o => o.payment_status === "paid");
+      const pendingOrders = orders.filter(o => o.payment_status !== "paid");
+      const confirmedRev = paidOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
+      const pendingRev = pendingOrders.reduce((sum, o) => sum + getOrderPrice(o), 0);
 
-      document.getElementById("repTotalRev").innerText = totalRev.toLocaleString() + " د.م";
-      document.getElementById("repCompletedCount").innerText = completedCount;
-      document.getElementById("repPendingCount").innerText = pendingCount;
+      document.getElementById("repTotalRev").innerText = confirmedRev.toLocaleString() + " د.م";
+      document.getElementById("repCompletedCount").innerText = paidOrders.length;
+      document.getElementById("repPendingCount").innerText = pendingOrders.length;
 
       const tbody = document.getElementById("reportsMonthlyTable");
       tbody.innerHTML = `
         <tr class="hover:bg-slate-50 transition-colors">
           <td class="p-3 font-black text-slate-900">أكتوبر 2026 (الشهر الحالي)</td>
-          <td class="p-3 font-mono font-black text-blue-700">${orders.length} طلبات</td>
-          <td class="p-3 font-mono font-black text-emerald-600">${totalRev.toLocaleString()} درهم</td>
-          <td class="p-3 font-mono text-slate-600">${orders.length > 0 ? Math.round(totalRev / orders.length).toLocaleString() : 0} درهم</td>
+          <td class="p-3 font-mono font-black text-blue-700">${orders.length} طلبات (${paidOrders.length} مدفوعة PayPal)</td>
+          <td class="p-3 font-mono font-black text-emerald-600">${confirmedRev.toLocaleString()} درهم (مؤكدة)</td>
+          <td class="p-3 font-mono text-amber-600 font-bold">${pendingRev.toLocaleString()} درهم (معلقة)</td>
           <td class="p-3"><span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black">نشط ومستمر 🟢</span></td>
         </tr>
       `;
@@ -3340,6 +3702,80 @@
       renderOrdersTab();
     }
 
+    // Toggle / Update Payment Status (PayPal Webhook simulation or manual confirmation)
+    async function toggleOrderPaymentPaid(orderId, makePaid) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      const newPaymentStatus = makePaid ? "paid" : "pending";
+      o.payment_status = newPaymentStatus;
+      if (makePaid && o.status !== "completed") {
+        o.status = "completed";
+      }
+
+      // Local disk
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(p)) {
+            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }
+
+      // Local API
+      try {
+        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
+          },
+          body: JSON.stringify({ id: orderId, payment_status: newPaymentStatus, status: o.status })
+        });
+      } catch (e) {}
+
+      playOrderChime();
+      triggerToast(makePaid ? "تم تأكيد استلام الدفع بنجاح واحتسابه في الأرباح المؤكدة ✅" : "تم تعديل حالة الدفع إلى معلق ⏳");
+      renderActiveTab();
+    }
+
+    // Purge Database and reset all counters to 0
+    async function purgeAllOrders() {
+      if (!confirm("⚠️ هل أنت متأكد من تطهير قاعدة البيانات وحذف جميع الطلبات الوهمية وإعادة ضبط العدادات إلى 0 نهائياً؟")) return;
+      try {
+        if (typeof window !== "undefined" && window.require) {
+          try {
+            const fs = window.require("fs");
+            const path = window.require("path");
+            const pOrders = path.join(__dirname, "..", "data", "orders.json");
+            const pDel = path.join(__dirname, "..", "data", "deleted_orders.json");
+            if (fs.existsSync(pOrders)) fs.writeFileSync(pOrders, "[]", "utf-8");
+            if (fs.existsSync(pDel)) fs.writeFileSync(pDel, "[]", "utf-8");
+          } catch (e) {}
+        }
+        await fetch("http://localhost:3000/api/orders?purgeAll=true", {
+          method: "DELETE",
+          headers: {
+            "x-admin-token": "ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b",
+            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
+          }
+        });
+        orders = [];
+        deletedOrderIds = new Set();
+        localStorage.removeItem("esp_deleted_order_ids");
+        renderActiveTab();
+        playOrderChime();
+        triggerToast("تم تطهير جميع الطلبات وتصفير العدادات إلى 0 بنجاح 🧹");
+      } catch (err) {
+        console.error("Purge error:", err);
+        triggerToast("تم تصفير العدادات محلياً");
+        orders = [];
+        renderActiveTab();
+      }
+    }
+
     // ========================================================
     // 📝 MODAL 4: NEW ORDER (تسجيل تاجر وطلب جديد)
     // ========================================================
@@ -3353,6 +3789,9 @@
       document.getElementById("inputNewOrderOrderPhone").value = "";
       document.getElementById("inputNewOrderImages").value = "";
       document.getElementById("inputNewOrderNotes").value = "";
+      if (document.getElementById("inputNewOrderWhiteLabel")) {
+        document.getElementById("inputNewOrderWhiteLabel").checked = false;
+      }
       document.getElementById("newOrderModal").classList.remove("hidden");
       document.getElementById("newOrderModal").classList.add("flex");
     }
@@ -3376,8 +3815,9 @@
       const storeName = (document.getElementById("inputNewOrderStoreName")?.value || "").trim();
       const productPrice = (document.getElementById("inputNewOrderProductPrice")?.value || "").trim();
       const orderPhone = (document.getElementById("inputNewOrderOrderPhone")?.value || "").trim();
-      const plan = document.getElementById("inputNewOrderPlan")?.value || "المتجر القياسي (1,500 MAD)";
-      const payment = document.getElementById("inputNewOrderPayment")?.value || "بطاقة بنكية";
+      const plan = document.getElementById("inputNewOrderPlan")?.value || "صفحة هبوط محلية (1,500 DH)";
+      const paymentStatus = document.getElementById("inputNewOrderPaymentStatus")?.value || "pending";
+      const isWhiteLabel = !!document.getElementById("inputNewOrderWhiteLabel")?.checked;
       const imagesRaw = (document.getElementById("inputNewOrderImages")?.value || "").trim();
       const notes = (document.getElementById("inputNewOrderNotes")?.value || "").trim();
 
@@ -3392,10 +3832,12 @@
         product_price: productPrice,
         order_phone: orderPhone,
         plan_tier: plan,
-        payment_method: payment,
+        payment_method: "PayPal",
+        payment_status: paymentStatus,
+        white_label: isWhiteLabel,
         product_images: productImages,
         product_notes: notes,
-        status: "pending"
+        status: paymentStatus === "paid" ? "completed" : "pending"
       };
 
       closeNewOrderModal();
@@ -3458,10 +3900,19 @@
       topNewBtn.onclick = openNewOrderModal;
     }
 
-    // Attach Refresh & Search
+    // Attach Refresh & Search & Filters
     document.getElementById("btnRefresh").onclick = fetchOrders;
     document.getElementById("searchInput").oninput = renderOrdersTab;
     document.getElementById("statusFilter").onchange = renderOrdersTab;
+    if (document.getElementById("paymentStatusFilter")) {
+      document.getElementById("paymentStatusFilter").onchange = renderOrdersTab;
+    }
+    if (document.getElementById("packageFilter")) {
+      document.getElementById("packageFilter").onchange = renderOrdersTab;
+    }
+    if (document.getElementById("whiteLabelFilter")) {
+      document.getElementById("whiteLabelFilter").onchange = renderOrdersTab;
+    }
 
     // Initialize
     (async () => {

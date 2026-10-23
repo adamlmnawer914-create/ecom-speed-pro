@@ -18,6 +18,7 @@ export interface Order {
   delivered_url: string | null;
   payment_method?: string;
   payment_status?: "paid" | "unpaid" | "pending" | string;
+  white_label?: boolean; // خيار إزالة الحقوق (White-label)
   product_notes?: string;
   product_images?: string[];
   created_at: string;
@@ -196,9 +197,11 @@ function readLocalOrders(): Order[] {
     product_price: item.product_price || item.productPrice || "",
     order_phone: item.order_phone || item.orderPhone || item.phone_number || item.customerPhone || "",
     plan_tier: item.plan_tier || item.planTitle || item.plan || "المتجر القياسي (1,500 MAD)",
-    status: (item.status === "paid" || item.status === "completed") ? "completed" : (item.status === "in_progress" ? "in_progress" : "pending"),
+    status: item.status || "pending",
     delivered_url: item.delivered_url || item.deliveredUrl || null,
     payment_method: item.payment_method || item.paymentMethod || "بطاقة بنكية",
+    payment_status: item.payment_status || (item.status === "completed" || item.status === "paid" ? "paid" : "pending"),
+    white_label: Boolean(item.white_label ?? item.is_white_label ?? item.whiteLabel ?? false),
     product_notes: item.product_notes || item.productNotes || "",
     product_images: item.product_images || item.productImages || [],
     created_at: item.created_at || item.createdAt || new Date().toISOString(),
@@ -416,6 +419,8 @@ export async function createOrder(data: Partial<Order>): Promise<Order> {
     status: data.status || "pending",
     delivered_url: data.delivered_url || null,
     payment_method: data.payment_method || "بطاقة بنكية",
+    payment_status: data.payment_status || "pending",
+    white_label: Boolean(data.white_label ?? false),
     product_notes: data.product_notes || "",
     product_images: data.product_images || [],
     created_at: data.created_at || new Date().toISOString(),
@@ -496,6 +501,36 @@ export async function deleteOrder(id: string): Promise<boolean> {
       await supabase.from("orders").delete().eq("id", targetId);
     } catch (err) {
       console.warn("Supabase delete failed:", err);
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Purge and wipe all orders and reset database to 0
+ */
+export async function purgeAllOrders(): Promise<boolean> {
+  globalThis.__ECOM_ORDERS_CACHE__ = [];
+  globalThis.__ECOM_DELETED_CACHE__ = new Set();
+
+  writeLocalOrders([]);
+
+  try {
+    ensureDir(TMP_DELETED_FILE);
+    fs.writeFileSync(TMP_DELETED_FILE, "[]", "utf-8");
+  } catch (e) {}
+
+  try {
+    ensureDir(LOCAL_DELETED_FILE);
+    fs.writeFileSync(LOCAL_DELETED_FILE, "[]", "utf-8");
+  } catch (e) {}
+
+  if (supabase) {
+    try {
+      await supabase.from("orders").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+    } catch (err) {
+      console.warn("Supabase purge error:", err);
     }
   }
 

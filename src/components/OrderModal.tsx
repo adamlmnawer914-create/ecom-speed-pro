@@ -94,6 +94,7 @@ export default function OrderModal({
   const [orderPhone, setOrderPhone] = useState("");
   const [productImages, setProductImages] = useState<string[]>([]);
   const [productNotes, setProductNotes] = useState("");
+  const [whiteLabel, setWhiteLabel] = useState(false);
 
   const router = useRouter();
 
@@ -141,59 +142,73 @@ export default function OrderModal({
 
   if (!isOpen) return null;
 
-  // Plan visual characteristics & Market identification
+  // Plan visual characteristics & Market identification with Buyout Fees
   const getPlanDetails = () => {
     const p = (selectedPlan || "").toLowerCase();
     const pr = parseInt((selectedPrice || "").replace(/[^0-9]/g, ""), 10) || 0;
 
-    // 1. International Landing (4,500 DH)
-    if (p.includes("هبوط") && (p.includes("دولي") || p.includes("intl") || pr === 4500)) {
+    // 1. International Landing (4,500 DH base + 2,500 DH White-label = 7,000 DH)
+    if (p.includes("هبوط") && (p.includes("دولي") || p.includes("intl") || pr === 4500 || pr === 7000)) {
       return {
+        id: "landing-intl",
         title: "صفحة هبوط — السوق الدولي 🌐",
         subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
         image: "/images/international_landing_showcase.jpg",
         badgeColor: "from-emerald-500 to-teal-600 text-white",
         market: "🌐 US / CA / AU",
+        basePrice: 4500,
+        whiteLabelFee: 2500,
       };
     }
 
-    // 2. International Store (9,000 DH / VIP)
+    // 2. International Store (9,000 DH base + 5,000 DH White-label = 14,000 DH)
     if (
       (p.includes("متجر") && (p.includes("دولي") || p.includes("intl"))) ||
       p.includes("saas") ||
       p.includes("متقدمة") ||
+      p.includes("vip") ||
       pr === 9000 ||
+      pr === 14000 ||
       pr === 8500 ||
       pr === 10000 ||
       pr === 5000
     ) {
       return {
+        id: "store-intl",
         title: "متجر متكامل + لوحة تحكم — الدولي 🌐",
         subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
         image: "/images/international_store_showcase.jpg",
         badgeColor: "from-amber-400 to-yellow-500 text-slate-950",
         market: "🌐 US / CA / AU",
+        basePrice: 9000,
+        whiteLabelFee: 5000,
       };
     }
 
-    // 3. Local Store (3,000 DH)
+    // 3. Local Store (3,000 DH base + 1,500 DH White-label = 4,500 DH)
     if ((p.includes("متجر") && (p.includes("محلي") || p.includes("local"))) || pr === 3000) {
       return {
+        id: "store-local",
         title: "متجر متكامل + لوحة تحكم — المحلي 🇲🇦",
         subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
         image: "/images/morocco_store_showcase.jpg",
         badgeColor: "from-cyan-500 to-blue-600 text-white",
         market: "🇲🇦 المغرب",
+        basePrice: 3000,
+        whiteLabelFee: 1500,
       };
     }
 
-    // 4. Local Landing (1,500 DH) — default
+    // 4. Local Landing (1,500 DH base + 1,000 DH White-label = 2,500 DH) — default
     return {
+      id: "landing-local",
       title: "صفحة هبوط — السوق المحلي 🇲🇦",
       subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
       image: "/images/morocco_landing_showcase.jpg",
       badgeColor: "from-rose-500 to-purple-600 text-white",
       market: "🇲🇦 المغرب",
+      basePrice: 1500,
+      whiteLabelFee: 1000,
     };
   };
 
@@ -203,8 +218,8 @@ export default function OrderModal({
   const planImage = planDetails.image;
   const planBadgeColor = planDetails.badgeColor;
 
-  // Price formatting
-  const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 1500;
+  // Dynamic price calculation strictly considering White-label
+  const rawNumericPrice = planDetails.basePrice + (whiteLabel ? planDetails.whiteLabelFee : 0);
   const formattedPrice = `${rawNumericPrice.toLocaleString()} درهم`;
 
   // PayPal Payment Link Check
@@ -291,6 +306,7 @@ export default function OrderModal({
       payment_status: isPayPalPlan ? "unpaid" : "pending",
       product_images: productImages,
       product_notes: productNotes.trim(),
+      white_label: whiteLabel,
       status: isPayPalPlan ? "pending_payment" : "pending",
     };
 
@@ -1046,6 +1062,38 @@ export default function OrderModal({
                         onChange={(e) => setProductNotes(e.target.value)}
                         className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 placeholder-slate-400 outline-none focus:border-blue-600"
                       />
+                    </div>
+
+                    {/* ── خيار إزالة الحقوق (White-label Toggle - مطابق للتصميم المرفق) ── */}
+                    <div
+                      onClick={() => setWhiteLabel(!whiteLabel)}
+                      className={`w-full rounded-2xl p-3 sm:p-3.5 border transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-3 ${
+                        whiteLabel
+                          ? "bg-purple-50/90 border-purple-300 shadow-[0_4px_18px_rgba(168,85,247,0.18)] ring-1 ring-purple-400/40"
+                          : "bg-purple-50/30 border-purple-200/60 hover:bg-purple-50/60 hover:border-purple-300"
+                      }`}
+                    >
+                      {/* Left: Modern Pill Toggle Switch */}
+                      <div className="shrink-0">
+                        <div
+                          className={`w-11 h-6 rounded-full transition-colors duration-300 flex items-center px-0.5 cursor-pointer ${
+                            whiteLabel ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
+                          }`}
+                        >
+                          <div className="w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300" />
+                        </div>
+                      </div>
+
+                      {/* Right: Text Description */}
+                      <div className="text-right flex-1 min-w-0">
+                        <div className="flex items-center justify-end gap-1.5 text-xs sm:text-[13px] font-black text-purple-950">
+                          <span>طلب خيار إزالة الحقوق (White-label)</span>
+                          <span className="text-purple-600">🛡️</span>
+                        </div>
+                        <div className="text-[10px] sm:text-[11px] font-bold text-purple-700/85 leading-tight mt-0.5">
+                          تسليم المتجر كعلامة تجارية مستقلة للتاجر بدون أي شعار للمنصة (+{planDetails.whiteLabelFee.toLocaleString()} د.م)
+                        </div>
+                      </div>
                     </div>
 
                     {/* CTA — Save order & go to payment */}

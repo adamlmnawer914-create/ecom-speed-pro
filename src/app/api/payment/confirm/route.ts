@@ -26,12 +26,23 @@ export async function POST(req: Request) {
       );
     }
 
-    // Only update if still pending
+    // If this is a PayPal redirect initiate (not yet paid by webhook), do not mark as paid
+    const isPayPalInitiate = payment_method === "PayPal";
+
     if (existing.status === "pending") {
-      const updated = await updateOrder(orderId, {
-        status: "in_progress",
-        payment_method: payment_method || existing.payment_method || "YouCan Pay (بطاقة بنكية معتمدة)",
-      });
+      const updates: any = {
+        payment_method: payment_method || existing.payment_method || "YouCan Pay",
+      };
+
+      if (!isPayPalInitiate) {
+        updates.status = "in_progress";
+        updates.payment_status = "paid";
+      } else {
+        updates.status = "pending";
+        updates.payment_status = "pending";
+      }
+
+      const updated = await updateOrder(orderId, updates);
 
       if (updated) {
         broadcastOrderEvent({

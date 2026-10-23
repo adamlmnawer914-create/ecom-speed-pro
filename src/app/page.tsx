@@ -37,8 +37,14 @@ export default function Home() {
     }
   }, []);
 
-  const handleOpenOrder = (plan = "منصة التجارة المتقدمة (Advanced SaaS)", price = "5000 درهم") => {
-    router.push(`/checkout?plan=${encodeURIComponent(plan)}&price=${encodeURIComponent(price)}`);
+  const handleOpenOrder = (
+    plan = "متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (3,000 MAD)",
+    price = "3000 درهم",
+    whiteLabel = false
+  ) => {
+    router.push(
+      `/checkout?plan=${encodeURIComponent(plan)}&price=${encodeURIComponent(price)}&white_label=${whiteLabel ? "true" : "false"}`
+    );
   };
 
   const handleOpenPolicy = (type: "privacy" | "terms" | "guarantee") => {
@@ -70,7 +76,7 @@ export default function Home() {
       {/* Hero Section */}
       <HeroSection
         onOpenOrderModal={handleOpenOrder}
-        onOpenPackageSelect={() => handleOpenOrder()}
+        onOpenPackageSelect={() => setPackageSelectOpen(true)}
       />
 
       {/* Features Ribbon */}

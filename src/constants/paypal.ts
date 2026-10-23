@@ -7,18 +7,21 @@
  */
 
 export const PAYPAL_PLAN_LINKS: Record<number, string> = {
-  // 1. باقة صفحة الهبوط المغربية (1,500 DH)
+  // 1. باقة صفحة الهبوط المغربية (1,500 DH / مع White-Label: 2,500 DH)
   1500: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
+  2500: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
 
-  // 2. باقة المتجر المحلي المغربي (3,000 DH)
+  // 2. باقة المتجر المحلي المغربي (3,000 DH / مع White-Label: 4,500 DH)
   3000: "https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG",
 
-  // 3. باقة صفحة الهبوط الدولية (4,500 DH)
+  // 3. باقة صفحة الهبوط الدولية (4,500 DH / مع White-Label: 7,000 DH)
   4500: "https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN",
+  7000: "https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN",
 
-  // 4. باقة المتجر الدولي الكامل (9,000 DH / 8,500 DH)
+  // 4. باقة المتجر الدولي الكامل (9,000 DH / مع White-Label: 14,000 DH)
   9000: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
   8500: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
+  14000: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
 
   // Legacy fallbacks
   500: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",

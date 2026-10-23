@@ -15,6 +15,8 @@ class OrderItem {
   final String productNotes;
   String status; // 'new', 'in_progress', 'completed'
   String? deliveredUrl;
+  final bool whiteLabel;
+  String paymentStatus; // 'paid', 'pending', 'unpaid'
   final String createdAt;
 
   OrderItem({
@@ -34,6 +36,8 @@ class OrderItem {
     required this.productNotes,
     required this.status,
     this.deliveredUrl,
+    this.whiteLabel = false,
+    this.paymentStatus = 'pending',
     required this.createdAt,
   });
 
@@ -59,6 +63,8 @@ class OrderItem {
       productNotes: json['product_notes']?.toString() ?? json['productNotes']?.toString() ?? '',
       status: json['status']?.toString() ?? 'new',
       deliveredUrl: json['delivered_url']?.toString() ?? json['deliveredUrl']?.toString(),
+      whiteLabel: json['white_label'] == true || json['whiteLabel'] == true,
+      paymentStatus: json['payment_status']?.toString() ?? json['paymentStatus']?.toString() ?? 'pending',
       createdAt: json['created_at']?.toString() ?? json['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
     );
   }
@@ -93,6 +99,8 @@ class OrderItem {
       'status': status,
       'delivered_url': deliveredUrl,
       'deliveredUrl': deliveredUrl,
+      'white_label': whiteLabel,
+      'payment_status': paymentStatus,
       'created_at': createdAt,
       'createdAt': createdAt,
     };
@@ -111,6 +119,18 @@ class OrderItem {
         return 'تحويل بنكي / واتساب';
       default:
         return paymentMethod;
+    }
+  }
+
+  String get paymentStatusTitle {
+    switch (paymentStatus.toLowerCase()) {
+      case 'paid':
+        return 'مدفوع ومؤكد PayPal ✅';
+      case 'unpaid':
+        return 'غير مدفوع ❌';
+      case 'pending':
+      default:
+        return 'معلق بانتظار الدفع ⏳';
     }
   }
 

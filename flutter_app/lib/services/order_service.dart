@@ -6,58 +6,8 @@ import '../models/order_model.dart';
 class OrderService {
   static const String apiUrl = 'https://ecom-speed-pro.vercel.app/api/orders';
 
-  // In-memory cache for immediate responsiveness
-  static final List<OrderItem> _cachedOrders = [
-    OrderItem(
-      id: 'ESP-849201',
-      customerName: 'سفيان التازي (الدار البيضاء)',
-      customerPhone: '+212 661 24 58 90',
-      customerEmail: 'soufiane.tazi@luxury-watches.ma',
-      planTitle: 'المتجر القياسي (Standard Store)',
-      price: 1500,
-      formattedPrice: '1,500 درهم',
-      paymentMethod: 'youcan',
-      productImages: [
-        'assets/images/card_standard_new.webp',
-        'assets/images/card_landing_new.webp'
-      ],
-      productNotes: 'متجر ساعات واكسسوارات رجالية فاخرة كلاسيكية - نريد واجهة سوداء وذهبية أنيقة.',
-      status: 'in_progress',
-      createdAt: DateTime.now().subtract(const Duration(hours: 3)).toIso8601String(),
-    ),
-    OrderItem(
-      id: 'ESP-910442',
-      customerName: 'سلمى العمراني (مراكش)',
-      customerPhone: '+212 675 31 29 08',
-      customerEmail: 'salma.amrani@bio-cosmetics.ma',
-      planTitle: 'منصة التجارة المتقدمة (Advanced SaaS)',
-      price: 5000,
-      formattedPrice: '5,000 درهم',
-      paymentMethod: 'cmi',
-      productImages: [
-        'assets/images/card_saas_new.webp'
-      ],
-      productNotes: 'علامة تجارية لمستحضرات التجميل العضوية وزيت الأركان المغربي مع ربط الدفع الإلكتروني وفواتير PDF.',
-      status: 'new',
-      createdAt: DateTime.now().subtract(const Duration(hours: 7)).toIso8601String(),
-    ),
-    OrderItem(
-      id: 'ESP-732019',
-      customerName: 'ياسين بنجلون (طنجة)',
-      customerPhone: '+212 612 88 41 02',
-      customerEmail: 'yassine.benn@gadgetsmart.ma',
-      planTitle: 'صفحة الهبوط (Landing Page)',
-      price: 500,
-      formattedPrice: '500 درهم',
-      paymentMethod: 'card',
-      productImages: [
-        'assets/images/card_landing_new.webp'
-      ],
-      productNotes: 'صفحة هبوط سريعة لمنتج ذكي مبتكر لحامل الهاتف مع مضخم صوت للسيارات.',
-      status: 'completed',
-      createdAt: DateTime.now().subtract(const Duration(hours: 26)).toIso8601String(),
-    ),
-  ];
+  // In-memory cache for immediate responsiveness (starts completely clean at 0)
+  static final List<OrderItem> _cachedOrders = [];
 
   /// Fetch orders from live API, fallback to cache if offline
   static Future<List<OrderItem>> fetchOrders() async {
@@ -161,6 +111,41 @@ class OrderService {
     try {
       final response = await http.delete(
         Uri.parse('$apiUrl?id=$orderId'),
+      ).timeout(const Duration(seconds: 8));
+      return response.statusCode == 200;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  /// Update payment status (paid, pending, unpaid)
+  static Future<bool> updatePaymentStatus(String orderId, String paymentStatus) async {
+    final index = _cachedOrders.indexWhere((o) => o.id == orderId);
+    if (index != -1) {
+      _cachedOrders[index].paymentStatus = paymentStatus;
+    }
+
+    try {
+      final response = await http.patch(
+        Uri.parse(apiUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'id': orderId, 'payment_status': paymentStatus}),
+      ).timeout(const Duration(seconds: 8));
+      return response.statusCode == 200;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  /// Purge all orders completely and reset counters to 0
+  static Future<bool> purgeAllOrders() async {
+    _cachedOrders.clear();
+    try {
+      final response = await http.delete(
+        Uri.parse('$apiUrl?purgeAll=true'),
+        headers: {
+          'x-admin-token': 'ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b',
+        },
       ).timeout(const Duration(seconds: 8));
       return response.statusCode == 200;
     } catch (e) {

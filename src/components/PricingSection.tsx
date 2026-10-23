@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ShoppingCart, Check, Flame, Globe, Zap, Crown, Sparkles, Tag } from "lucide-react";
+import { ShoppingCart, Check, Flame, Globe, Zap, Crown, Sparkles, Tag, Shield } from "lucide-react";
 
 interface PricingSectionProps {
-  onSelectPlan: (planName: string, price: string) => void;
+  onSelectPlan: (planName: string, price: string, whiteLabel?: boolean) => void;
 }
 
 // ─── Local (Morocco) Plans ──────────────────────────────────────────────────
@@ -16,6 +16,8 @@ const LOCAL_PLANS = [
     market: "🇲🇦 المغرب",
     subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
     originalPrice: "2,000 DH",
+    basePrice: 1500,
+    whiteLabelFee: 1000,
     discountPrice: "1,500 DH",
     saveAmount: "وفر 500 DH",
     priceValue: "1500 درهم",
@@ -43,6 +45,8 @@ const LOCAL_PLANS = [
     market: "🇲🇦 المغرب",
     subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
     originalPrice: "3,500 DH",
+    basePrice: 3000,
+    whiteLabelFee: 1500,
     discountPrice: "3,000 DH",
     saveAmount: "وفر 500 DH",
     priceValue: "3000 درهم",
@@ -74,6 +78,8 @@ const INTERNATIONAL_PLANS = [
     market: "🌐 US / CA / AU",
     subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
     originalPrice: "5,500 DH",
+    basePrice: 4500,
+    whiteLabelFee: 2500,
     discountPrice: "4,500 DH",
     saveAmount: "وفر 1,000 DH",
     priceValue: "4500 درهم",
@@ -101,6 +107,8 @@ const INTERNATIONAL_PLANS = [
     market: "🌐 US / CA / AU",
     subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
     originalPrice: "10,000 DH",
+    basePrice: 9000,
+    whiteLabelFee: 5000,
     discountPrice: "9,000 DH",
     saveAmount: "وفر 1,000 DH",
     priceValue: "9000 درهم",
@@ -126,6 +134,20 @@ const INTERNATIONAL_PLANS = [
 
 export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
   const [activeMarket, setActiveMarket] = useState<"local" | "international">("local");
+  const [whiteLabelMap, setWhiteLabelMap] = useState<Record<string, boolean>>({
+    "landing-local": false,
+    "store-local": false,
+    "landing-intl": false,
+    "store-intl": false,
+  });
+
+  const toggleWhiteLabel = (id: string) => {
+    setWhiteLabelMap((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const activePlans = activeMarket === "local" ? LOCAL_PLANS : INTERNATIONAL_PLANS;
 
   return (
@@ -203,6 +225,11 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 lg:gap-7 items-stretch max-w-4xl mx-auto">
           {activePlans.map((plan) => {
             const BadgeIcon = plan.badge.icon;
+            const isWL = Boolean(whiteLabelMap[plan.id]);
+            const currentNumericPrice = isWL ? plan.basePrice + plan.whiteLabelFee : plan.basePrice;
+            const currentFormattedPrice = `${currentNumericPrice.toLocaleString()} DH`;
+            const currentPriceValue = `${currentNumericPrice} درهم`;
+
             return (
               <div
                 key={plan.id}
@@ -231,7 +258,7 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
                   <div>
                     <h3 className="text-xl sm:text-[22px] font-black text-[#0b1739] mb-1 leading-snug">{plan.name}</h3>
                     <p className="text-xs sm:text-[13px] text-[#475569] font-medium mb-4 leading-relaxed">{plan.subtitle}</p>
-                    <ul className="space-y-2.5 mb-5">
+                    <ul className="space-y-2.5 mb-4">
                       {plan.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-[13px] text-[#1e293b] font-bold leading-relaxed">
                           <span className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${plan.checkBg}`}>
@@ -243,6 +270,38 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
                     </ul>
                   </div>
 
+                  {/* ── White-Label Interactive Toggle (مطابق للتصميم المرفق) ── */}
+                  <div
+                    onClick={() => toggleWhiteLabel(plan.id)}
+                    className={`w-full rounded-2xl p-2.5 sm:p-3 border transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-3 mb-4 ${
+                      isWL
+                        ? "bg-purple-50/90 border-purple-300 shadow-[0_4px_18px_rgba(168,85,247,0.18)] ring-1 ring-purple-400/40"
+                        : "bg-purple-50/30 border-purple-200/60 hover:bg-purple-50/60 hover:border-purple-300"
+                    }`}
+                  >
+                    {/* Left: Modern Pill Toggle Switch */}
+                    <div className="shrink-0">
+                      <div
+                        className={`w-11 h-6 rounded-full transition-colors duration-300 flex items-center px-0.5 cursor-pointer ${
+                          isWL ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
+                        }`}
+                      >
+                        <div className="w-5 h-5 rounded-full bg-white shadow-md transition-all duration-300" />
+                      </div>
+                    </div>
+
+                    {/* Right: Text Description */}
+                    <div className="text-right flex-1 min-w-0">
+                      <div className="flex items-center justify-end gap-1.5 text-xs sm:text-[13px] font-black text-purple-950">
+                        <span>طلب خيار إزالة الحقوق (White-label)</span>
+                        <Shield className="w-3.5 h-3.5 text-purple-600 fill-purple-100" />
+                      </div>
+                      <div className="text-[10px] sm:text-[11px] font-bold text-purple-700/85 leading-tight mt-0.5">
+                        تسليم المتجر كعلامة تجارية مستقلة للتاجر بدون أي شعار للمنصة (+{plan.whiteLabelFee.toLocaleString()} د.م)
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Bottom: Price (strikethrough + luxury icon discount) + Order Button */}
                   <div className="pt-4 border-t border-slate-200/70 flex items-center justify-between gap-2.5 sm:gap-3">
                     {/* Price block */}
@@ -250,10 +309,16 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
                       {/* Original price + Savings badge */}
                       <div className="flex items-center gap-1.5 mb-1 px-1">
                         <span className="text-[11px] sm:text-xs text-slate-400 line-through font-bold decoration-rose-500/70 decoration-[1.5px]">
-                          {plan.originalPrice}
+                          {isWL ? `${(plan.basePrice + plan.whiteLabelFee + 500).toLocaleString()} DH` : plan.originalPrice}
                         </span>
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200 shadow-2xs">
-                          {plan.saveAmount}
+                        <span
+                          className={`text-[10px] font-black px-1.5 py-0.5 rounded-full border shadow-2xs ${
+                            isWL
+                              ? "bg-purple-100 text-purple-800 border-purple-200"
+                              : "bg-rose-50 text-rose-600 border-rose-200"
+                          }`}
+                        >
+                          {isWL ? `شامل إزالة الحقوق (+${plan.whiteLabelFee.toLocaleString()} د.م)` : plan.saveAmount}
                         </span>
                       </div>
 
@@ -267,14 +332,14 @@ export default function PricingSection({ onSelectPlan }: PricingSectionProps) {
                         </div>
                         {/* Price Text */}
                         <span className="text-sm sm:text-base font-black tracking-tight leading-none drop-shadow-xs">
-                          {plan.discountPrice}
+                          {currentFormattedPrice}
                         </span>
                       </div>
                     </div>
 
                     {/* Order button */}
                     <button
-                      onClick={() => onSelectPlan(plan.planTier, plan.priceValue)}
+                      onClick={() => onSelectPlan(plan.planTier, currentPriceValue, isWL)}
                       className={`flex-1 py-2.5 px-3 sm:px-4 rounded-full bg-gradient-to-r ${plan.buttonGradient} text-xs sm:text-sm md:text-[15px] font-black flex items-center justify-center gap-1.5 sm:gap-2 shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer`}
                     >
                       <ShoppingCart className="w-4 h-4" />

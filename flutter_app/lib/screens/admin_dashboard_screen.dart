@@ -64,16 +64,61 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     }).toList();
   }
 
-  double get totalRevenue {
-    return _orders.fold(0.0, (sum, item) => sum + item.price);
+  double get confirmedRevenue {
+    return _orders
+        .where((o) => o.paymentStatus == 'paid')
+        .fold(0.0, (sum, item) => sum + item.price);
+  }
+
+  double get pendingRevenue {
+    return _orders
+        .where((o) => o.paymentStatus != 'paid')
+        .fold(0.0, (sum, item) => sum + item.price);
+  }
+
+  int get paidOrdersCount {
+    return _orders.where((o) => o.paymentStatus == 'paid').length;
+  }
+
+  int get pendingOrdersCount {
+    return _orders.where((o) => o.paymentStatus != 'paid').length;
   }
 
   int get completedOrdersCount {
     return _orders.where((o) => o.status == 'completed').length;
   }
 
-  int get pendingOrdersCount {
-    return _orders.where((o) => o.status != 'completed').length;
+  Future<void> _confirmPurgeAll() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.bgCardSurface,
+        title: Text(
+          'تطهير العدادات نهائياً (0)',
+          style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        content: Text(
+          'هل أنت متأكد من رغبتك في حذف جميع الطلبات وإعادة ضبط كافة العدادات إلى 0؟',
+          style: GoogleFonts.cairo(color: AppTheme.textSecondary),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('إلغاء', style: GoogleFonts.cairo(color: Colors.white70)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.crimsonRed),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('تطهير (0)', style: GoogleFonts.cairo(color: Colors.white, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      await OrderService.purgeAllOrders();
+      _loadOrders();
+    }
   }
 
   void _showOrderDetailsBottomSheet(OrderItem order) {
@@ -151,6 +196,12 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                             icon: const Icon(Icons.refresh_rounded, color: AppTheme.neonCyan),
                             tooltip: 'تحديث البيانات',
                           ),
+                          const SizedBox(width: 4),
+                          IconButton(
+                            onPressed: _confirmPurgeAll,
+                            icon: const Icon(Icons.delete_sweep_rounded, color: AppTheme.crimsonRed),
+                            tooltip: 'تطهير العدادات نهائياً (0)',
+                          ),
                         ],
                       ),
                     ],
@@ -195,21 +246,21 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         children: [
                           Expanded(
                             child: _KpiCard(
-                              title: 'إجمالي المبيعات',
-                              value: '${totalRevenue.toStringAsFixed(0)} د.م',
-                              subtitle: '+34% مقارنة بالشهر السابق',
-                              icon: Icons.payments_rounded,
+                              title: 'المبيعات المؤكدة (PayPal)',
+                              value: '${confirmedRevenue.toStringAsFixed(0)} د.م',
+                              subtitle: '$paidOrdersCount طلبات مؤكدة السداد',
+                              icon: Icons.verified_rounded,
                               color: AppTheme.emeraldGreen,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: _KpiCard(
-                              title: 'الطلبات المكتملة',
-                              value: '$completedOrdersCount طلب',
-                              subtitle: 'تم التسليم بنجاح',
-                              icon: Icons.task_alt_rounded,
-                              color: AppTheme.neonCyan,
+                              title: 'مبيعات معلقة',
+                              value: '${pendingRevenue.toStringAsFixed(0)} د.م',
+                              subtitle: '$pendingOrdersCount طلبات بانتظار الدفع',
+                              icon: Icons.hourglass_top_rounded,
+                              color: AppTheme.luxuryGold,
                             ),
                           ),
                         ],
@@ -219,20 +270,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         children: [
                           Expanded(
                             child: _KpiCard(
-                              title: 'في انتظار المعالجة',
-                              value: '$pendingOrdersCount طلب',
-                              subtitle: 'مشاريع قيد البرمجة',
-                              icon: Icons.hourglass_top_rounded,
-                              color: AppTheme.luxuryGold,
+                              title: 'الطلبات المدفوعة',
+                              value: '$paidOrdersCount طلب',
+                              subtitle: 'مؤكدة عبر PayPal',
+                              icon: Icons.task_alt_rounded,
+                              color: AppTheme.neonCyan,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: _KpiCard(
-                              title: 'نسبة التحويل',
-                              value: '100%',
-                              subtitle: 'مضاعفة المبيعات',
-                              icon: Icons.auto_graph_rounded,
+                              title: 'إجمالي الطلبات',
+                              value: '${_orders.length} طلب',
+                              subtitle: 'الطلبات المسجلة',
+                              icon: Icons.shopping_bag_outlined,
                               color: AppTheme.fuchsiaPink,
                             ),
                           ),
@@ -757,6 +808,88 @@ class _OrderDetailsSheetState extends State<_OrderDetailsSheet> {
                 color: AppTheme.textSecondary,
               ),
             ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: [
+                // Payment Status Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: (order.paymentStatus == 'paid' ? AppTheme.emeraldGreen : AppTheme.luxuryGold).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: (order.paymentStatus == 'paid' ? AppTheme.emeraldGreen : AppTheme.luxuryGold)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        order.paymentStatus == 'paid' ? Icons.check_circle_rounded : Icons.hourglass_top_rounded,
+                        size: 14,
+                        color: order.paymentStatus == 'paid' ? AppTheme.emeraldGreen : AppTheme.luxuryGold,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        order.paymentStatus == 'paid' ? 'مدفوع مؤكد (PayPal)' : 'معلق (بانتظار السداد)',
+                        style: GoogleFonts.cairo(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: order.paymentStatus == 'paid' ? AppTheme.emeraldGreen : AppTheme.luxuryGold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // White-label Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: (order.whiteLabel ? AppTheme.fuchsiaPink : Colors.white10).withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: order.whiteLabel ? AppTheme.fuchsiaPink : Colors.white24),
+                  ),
+                  child: Text(
+                    order.whiteLabel ? '🏷️ إزالة الحقوق (White-label)' : 'مع حقوق Ecom Speed Pro',
+                    style: GoogleFonts.cairo(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: order.whiteLabel ? AppTheme.fuchsiaPink : AppTheme.textSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (order.paymentStatus != 'paid') ...[
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await OrderService.updatePaymentStatus(order.id, 'paid');
+                  setState(() {
+                    order.paymentStatus = 'paid';
+                  });
+                  widget.onStatusUpdated('in_progress');
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('تم تأكيد دفع الطلب بنجاح وإدراجه ضمن الأرباح المؤكدة ✓'),
+                        backgroundColor: AppTheme.emeraldGreen,
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.verified_rounded, size: 16, color: Colors.white),
+                label: Text(
+                  'تأكيد استلام دفع PayPal (تحويل إلى مدفوع)',
+                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 12, color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.emeraldGreen,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                ),
+              ),
+            ],
             const SizedBox(height: 16),
 
             // ==========================================

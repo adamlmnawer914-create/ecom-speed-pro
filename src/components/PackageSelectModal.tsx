@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { X, Sparkles, Check, ShoppingCart, ArrowDown, Flame, Zap, Crown, Globe } from "lucide-react";
+import { X, Sparkles, Check, ShoppingCart, ArrowDown, Flame, Zap, Crown, Globe, Shield } from "lucide-react";
 
 interface PackageSelectModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectPlan: (planName: string, price: string) => void;
+  onSelectPlan: (planName: string, price: string, whiteLabel?: boolean) => void;
 }
 
 export default function PackageSelectModal({
@@ -15,6 +15,20 @@ export default function PackageSelectModal({
   onClose,
   onSelectPlan,
 }: PackageSelectModalProps) {
+  const [whiteLabelMap, setWhiteLabelMap] = useState<Record<string, boolean>>({
+    "landing-local": false,
+    "store-local": false,
+    "landing-intl": false,
+    "store-intl": false,
+  });
+
+  const toggleWhiteLabel = (id: string) => {
+    setWhiteLabelMap((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   // Prevent background body scrolling when modal is open
   useEffect(() => {
     if (isOpen) {
@@ -42,10 +56,10 @@ export default function PackageSelectModal({
     }, 150);
   };
 
-  const handlePick = (planName: string, price: string) => {
+  const handlePick = (planName: string, price: string, whiteLabel = false) => {
     onClose();
     setTimeout(() => {
-      onSelectPlan(planName, price);
+      onSelectPlan(planName, price, whiteLabel);
     }, 150);
   };
 
@@ -56,6 +70,8 @@ export default function PackageSelectModal({
       name: "صفحة هبوط — السوق المحلي",
       market: "🇲🇦 المغرب",
       subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
+      basePrice: 1500,
+      whiteLabelFee: 1000,
       price: "1,500 DH",
       planTier: "صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)",
       image: "/images/morocco_landing_showcase.jpg",
@@ -85,6 +101,8 @@ export default function PackageSelectModal({
       name: "متجر متكامل + لوحة تحكم — المحلي",
       market: "🇲🇦 المغرب",
       subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
+      basePrice: 3000,
+      whiteLabelFee: 1500,
       price: "3,000 DH",
       planTier: "متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (3,000 MAD)",
       image: "/images/morocco_store_showcase.jpg",
@@ -114,6 +132,8 @@ export default function PackageSelectModal({
       name: "صفحة هبوط — السوق الدولي",
       market: "🌐 US / CA / AU",
       subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
+      basePrice: 4500,
+      whiteLabelFee: 2500,
       price: "4,500 DH",
       planTier: "صفحة هبوط — السوق الدولي 🌐 (4,500 MAD)",
       image: "/images/international_landing_showcase.jpg",
@@ -142,6 +162,8 @@ export default function PackageSelectModal({
       name: "متجر متكامل + لوحة تحكم — الدولي",
       market: "🌐 US / CA / AU",
       subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
+      basePrice: 9000,
+      whiteLabelFee: 5000,
       price: "9,000 DH",
       planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (9,000 MAD)",
       image: "/images/international_store_showcase.jpg",
@@ -213,6 +235,10 @@ export default function PackageSelectModal({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 items-stretch">
             {plans.map((plan) => {
               const BadgeIcon = plan.badge.icon;
+              const isWL = Boolean(whiteLabelMap[plan.id]);
+              const currentNumericPrice = isWL ? plan.basePrice + plan.whiteLabelFee : plan.basePrice;
+              const currentFormattedPrice = `${currentNumericPrice.toLocaleString()} DH`;
+              const currentPriceValue = `${currentNumericPrice} درهم`;
               return (
                 <div
                   key={plan.id}
@@ -265,16 +291,47 @@ export default function PackageSelectModal({
                       </ul>
                     </div>
 
+                    {/* ── White-Label Toggle ────────────────────────── */}
+                    <div
+                      onClick={(e) => { e.stopPropagation(); toggleWhiteLabel(plan.id); }}
+                      className={`w-full rounded-xl p-2 border transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-2 mb-3 ${
+                        isWL
+                          ? "bg-purple-50/90 border-purple-300 shadow-[0_3px_14px_rgba(168,85,247,0.18)] ring-1 ring-purple-400/40"
+                          : "bg-purple-50/30 border-purple-200/60 hover:bg-purple-50/60 hover:border-purple-300"
+                      }`}
+                    >
+                      {/* Pill Toggle Switch */}
+                      <div className="shrink-0">
+                        <div
+                          className={`w-9 h-5 rounded-full transition-colors duration-300 flex items-center px-0.5 ${
+                            isWL ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
+                          }`}
+                        >
+                          <div className="w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300" />
+                        </div>
+                      </div>
+                      {/* Text */}
+                      <div className="text-right flex-1 min-w-0">
+                        <div className="flex items-center justify-end gap-1 text-[11px] font-black text-purple-950">
+                          <span>إزالة الحقوق (White-label)</span>
+                          <Shield className="w-3 h-3 text-purple-600 fill-purple-100" />
+                        </div>
+                        <div className="text-[9px] font-bold text-purple-700/85 leading-tight mt-0.5">
+                          بدون شعار المنصة (+{plan.whiteLabelFee.toLocaleString()} د.م)
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Bottom Action Area: Price Capsule + Order CTA Button */}
-                    <div className="pt-3.5 border-t border-slate-200/70 flex items-center justify-between gap-2.5">
+                    <div className="pt-3 border-t border-slate-200/70 flex items-center justify-between gap-2.5">
                       {/* Price Capsule */}
-                      <div className={`px-3.5 py-1.5 rounded-full bg-gradient-to-r ${plan.priceGradient} text-xs sm:text-sm font-black flex items-center justify-center shrink-0`}>
-                        <span>{plan.price}</span>
+                      <div className={`px-3 py-1.5 rounded-full bg-gradient-to-r ${plan.priceGradient} text-xs font-black flex items-center justify-center shrink-0 transition-all duration-300`}>
+                        <span>{currentFormattedPrice}</span>
                       </div>
 
                       {/* Order Button */}
                       <button
-                        onClick={() => handlePick(plan.planTier, plan.price)}
+                        onClick={() => handlePick(plan.planTier, currentPriceValue, isWL)}
                         className={`flex-1 py-2 px-3 rounded-full bg-gradient-to-r ${plan.buttonGradient} text-xs sm:text-sm font-black flex items-center justify-center gap-1.5 shadow-md transition-all duration-300 hover:scale-[1.03] active:scale-[0.97] cursor-pointer`}
                       >
                         <ShoppingCart className="w-3.5 h-3.5" />

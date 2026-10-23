@@ -45,6 +45,8 @@ export async function POST(req: Request) {
       product_images,
       amount, // numeric MAD amount (e.g. 1500)
       currency = "MAD",
+      white_label,
+      whiteLabel,
     } = body;
 
     // ─── 1. Validate required fields ─────────────────────────
@@ -69,6 +71,7 @@ export async function POST(req: Request) {
       order_phone: order_phone?.trim() || phone_number.trim(),
       plan_tier: plan_tier || "المتجر القياسي (1,500 MAD)",
       payment_method: "YouCan Pay",
+      white_label: Boolean(white_label ?? whiteLabel ?? false),
       product_notes: product_notes?.trim() || "",
       product_images: Array.isArray(product_images) ? product_images : [],
       status: "pending",

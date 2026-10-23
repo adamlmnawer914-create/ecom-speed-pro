@@ -8,6 +8,7 @@ import {
   deleteOrder,
   deleteCustomerOrders,
   getDeletedIds,
+  purgeAllOrders,
   Order,
 } from "@/lib/db";
 import { isAuthorizedDesktopRequest } from "@/lib/security";
@@ -89,6 +90,8 @@ export async function POST(req: Request) {
       status: body.status || "pending",
       delivered_url: body.delivered_url || null,
       payment_method: body.payment_method || body.paymentMethod || "بطاقة بنكية",
+      payment_status: body.payment_status || "pending",
+      white_label: Boolean(body.white_label ?? body.is_white_label ?? false),
       product_notes: body.product_notes || body.productNotes || "",
       product_images: body.product_images || body.productImages || [],
     };
@@ -128,7 +131,7 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
-    const { id, status, delivered_url, customer_name, customer_city, phone_number, store_name, product_price, order_phone, product_notes, product_images } = body;
+    const { id, status, delivered_url, customer_name, customer_city, phone_number, store_name, product_price, order_phone, product_notes, product_images, payment_status, payment_method, white_label, plan_tier } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -148,6 +151,10 @@ export async function PATCH(req: Request) {
     if (order_phone !== undefined) updates.order_phone = order_phone;
     if (product_notes !== undefined) updates.product_notes = product_notes;
     if (product_images !== undefined) updates.product_images = product_images;
+    if (payment_status !== undefined) updates.payment_status = payment_status;
+    if (payment_method !== undefined) updates.payment_method = payment_method;
+    if (white_label !== undefined) updates.white_label = Boolean(white_label);
+    if (plan_tier !== undefined) updates.plan_tier = plan_tier;
 
     const updated = await updateOrder(id, updates);
     if (!updated) {
@@ -189,6 +196,16 @@ export async function DELETE(req: Request) {
     const id = searchParams.get("id");
     const phone = searchParams.get("phone");
     const customer = searchParams.get("customer");
+    const purgeAll = searchParams.get("purgeAll") === "true";
+
+    if (purgeAll) {
+      await purgeAllOrders();
+      broadcastOrderEvent({
+        type: "ORDER_DELETED",
+        timestamp: Date.now(),
+      });
+      return NextResponse.json({ success: true, message: "تم تطهير قاعدة البيانات وتصفير العدادات بنجاح" });
+    }
 
     if (!id && !phone && !customer) {
       return NextResponse.json(
