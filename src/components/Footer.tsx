@@ -22,6 +22,7 @@ import {
   Flame,
   Zap,
   Crown,
+  Globe,
   ArrowLeft,
 } from "lucide-react";
 import Logo from "@/components/Logo";
@@ -543,42 +544,55 @@ export default function Footer({
 
             {/* Horizontal Package Action Pills with Glowing Badges */}
             <div className="flex items-center gap-2.5 flex-wrap justify-center">
-              {/* Package 1 */}
+              {/* Package 1: Local Landing */}
               <button
                 type="button"
-                onClick={() => onOpenOrderModal?.("صفحة الهبوط (Landing Page)", "500 درهم")}
-                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-rose-950/70 via-red-900/60 to-rose-950/70 hover:from-rose-900 hover:to-red-800 border border-rose-500/50 hover:border-rose-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.25)] hover:shadow-[0_0_25px_rgba(244,63,94,0.55)] hover:scale-105 active:scale-95 group"
+                onClick={() => onOpenOrderModal?.("صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)", "1500 درهم")}
+                className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-rose-950/70 via-red-900/60 to-rose-950/70 hover:from-rose-900 hover:to-red-800 border border-rose-500/50 hover:border-rose-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.25)] hover:shadow-[0_0_25px_rgba(244,63,94,0.55)] hover:scale-105 active:scale-95 group"
               >
                 <Flame className="w-3.5 h-3.5 text-rose-400 group-hover:scale-115 transition-transform" />
-                <span>صفحة الهبوط</span>
+                <span>صفحة هبوط محلية</span>
                 <span className="px-2 py-0.5 rounded-lg bg-rose-500/30 text-rose-300 font-mono text-[11px] font-black border border-rose-400/30">
-                  500 د.م
+                  1,500 د.م
                 </span>
               </button>
 
-              {/* Package 2 */}
+              {/* Package 2: Local Store */}
               <button
                 type="button"
-                onClick={() => onOpenOrderModal?.("المتجر القياسي (Standard Store)", "1500 درهم")}
-                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-cyan-950/70 via-blue-900/60 to-cyan-950/70 hover:from-cyan-900 hover:to-blue-800 border border-cyan-500/50 hover:border-cyan-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.25)] hover:shadow-[0_0_25px_rgba(6,182,212,0.55)] hover:scale-105 active:scale-95 group"
+                onClick={() => onOpenOrderModal?.("متجر متكامل + لوحة تحكم — السوق المحلي 🇲🇦 (3,000 MAD)", "3000 درهم")}
+                className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-cyan-950/70 via-blue-900/60 to-cyan-950/70 hover:from-cyan-900 hover:to-blue-800 border border-cyan-500/50 hover:border-cyan-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(6,182,212,0.25)] hover:shadow-[0_0_25px_rgba(6,182,212,0.55)] hover:scale-105 active:scale-95 group"
               >
                 <Zap className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-115 transition-transform" />
-                <span>المتجر القياسي</span>
+                <span>متجر محلي متكامل</span>
                 <span className="px-2 py-0.5 rounded-lg bg-cyan-500/30 text-cyan-200 font-mono text-[11px] font-black border border-cyan-400/30">
-                  1500 د.م
+                  3,000 د.م
                 </span>
               </button>
 
-              {/* Package 3 */}
+              {/* Package 3: International Landing */}
               <button
                 type="button"
-                onClick={() => onOpenOrderModal?.("منصة التجارة المتقدمة (Advanced SaaS)", "5000 درهم")}
-                className="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-950/70 via-yellow-950/60 to-amber-950/70 hover:from-amber-900 hover:to-yellow-800 border border-amber-500/50 hover:border-amber-400 text-xs font-black text-amber-100 transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_18px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 group"
+                onClick={() => onOpenOrderModal?.("صفحة هبوط — السوق الدولي 🌐 (4,500 MAD)", "4500 درهم")}
+                className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-emerald-950/70 via-teal-900/60 to-emerald-950/70 hover:from-emerald-900 hover:to-teal-800 border border-emerald-500/50 hover:border-emerald-400 text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_15px_rgba(16,185,129,0.25)] hover:shadow-[0_0_25px_rgba(16,185,129,0.55)] hover:scale-105 active:scale-95 group"
+              >
+                <Globe className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-115 transition-transform" />
+                <span>صفحة هبوط دولية</span>
+                <span className="px-2 py-0.5 rounded-lg bg-emerald-500/30 text-emerald-200 font-mono text-[11px] font-black border border-emerald-400/30">
+                  4,500 د.م
+                </span>
+              </button>
+
+              {/* Package 4: International Store */}
+              <button
+                type="button"
+                onClick={() => onOpenOrderModal?.("متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (9,000 MAD)", "9000 درهم")}
+                className="px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-950/70 via-yellow-950/60 to-amber-950/70 hover:from-amber-900 hover:to-yellow-800 border border-amber-500/50 hover:border-amber-400 text-xs font-black text-amber-100 transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_18px_rgba(245,158,11,0.3)] hover:shadow-[0_0_30px_rgba(245,158,11,0.6)] hover:scale-105 active:scale-95 group"
               >
                 <Crown className="w-3.5 h-3.5 text-amber-400 group-hover:scale-115 transition-transform" />
-                <span>منصة SaaS VIP</span>
+                <span>متجر دولي VIP</span>
                 <span className="px-2 py-0.5 rounded-lg bg-amber-400 text-slate-950 font-mono text-[11px] font-black shadow-sm">
-                  5000 د.م
+                  9,000 د.م
                 </span>
               </button>
 

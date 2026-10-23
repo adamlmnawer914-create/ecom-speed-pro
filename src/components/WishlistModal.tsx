@@ -17,20 +17,20 @@ export default function WishlistModal({
 }: WishlistModalProps) {
   const [items, setItems] = useState([
     {
-      id: "saas",
-      name: "منصة التجارة المتقدمة (Advanced SaaS)",
-      price: "5000 درهم",
+      id: "store-intl",
+      name: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (9,000 MAD)",
+      price: "9000 درهم",
       badge: "VIP الخيار الأقوى 👑",
       desc: "نظام متكامل بلوحة تحكم، ربط الدفع الإلكتروني، وتطبيق ويب فائق السرعة",
-      image: "/images/card_saas_new.png",
+      image: "/images/international_store_showcase.jpg",
     },
     {
-      id: "standard",
-      name: "المتجر القياسي متعدد المنتجات (Standard Store)",
+      id: "landing-local",
+      name: "صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)",
       price: "1500 درهم",
-      badge: "الأكثر مبيعاً ⚡",
-      desc: "متجر احترافي لعرض وإدارة كافة المنتجات وتتبع المبيعات",
-      image: "/images/card_standard_new.png",
+      badge: "الأكثر طلباً 🔥",
+      desc: "صفحة هبوط احترافية مخصصة لمنتج رابح بمعدل تحويل مرتفع في السوق المغربي",
+      image: "/images/morocco_landing_showcase.jpg",
     },
   ]);
 

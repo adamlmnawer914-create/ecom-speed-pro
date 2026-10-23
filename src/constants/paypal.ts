@@ -7,21 +7,36 @@
  */
 
 export const PAYPAL_PLAN_LINKS: Record<number, string> = {
-  // باقة صفحة الهبوط Landing Page (500 MAD)
-  500: "https://www.paypal.com/ncp/payment/Y3XY2UHJXNPNQ",
+  // 1. باقة صفحة الهبوط المغربية (1,500 DH)
+  1500: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
 
-  // باقة المتجر القياسي Standard Store (1,500 MAD)
-  1500: "https://www.paypal.com/ncp/payment/F9LVZY4SZ69YS",
+  // 2. باقة المتجر المحلي المغربي (3,000 DH)
+  3000: "https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG",
 
-  // باقة منصة التجارة المتقدمة Advanced SaaS / VIP (5,000 MAD)
-  5000: "https://www.paypal.com/ncp/payment/SQST993PM5JW2",
+  // 3. باقة صفحة الهبوط الدولية (4,500 DH)
+  4500: "https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN",
+
+  // 4. باقة المتجر الدولي الكامل (9,000 DH / 8,500 DH)
+  9000: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
+  8500: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
+
+  // Legacy fallbacks
+  500: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
+  5000: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
 };
 
 export const PAYPAL_SLUG_LINKS: Record<string, string> = {
-  landing: "https://www.paypal.com/ncp/payment/Y3XY2UHJXNPNQ",
-  standard: "https://www.paypal.com/ncp/payment/F9LVZY4SZ69YS",
-  saas: "https://www.paypal.com/ncp/payment/SQST993PM5JW2",
-  vip: "https://www.paypal.com/ncp/payment/SQST993PM5JW2",
+  // 🇲🇦 السوق المحلي
+  "landing-local": "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
+  landing: "https://www.paypal.com/ncp/payment/79PH2FAVN728E",
+  "store-local": "https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG",
+  standard: "https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG",
+
+  // 🌐 السوق الدولي
+  "landing-intl": "https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN",
+  "store-intl": "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
+  saas: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
+  vip: "https://www.paypal.com/ncp/payment/PNG5TW29Q96P6",
 };
 
 /**
@@ -31,7 +46,49 @@ export function getPayPalPaymentLink(
   amount?: number | string | null,
   planSlugOrTitle?: string | null
 ): string | null {
-  // 1. فحص بالسعر الرقمي
+  // 1. فحص دقيق بالاسم أو المعرف
+  if (planSlugOrTitle) {
+    const slug = planSlugOrTitle.toLowerCase().trim();
+
+    // صفحة هبوط محلية (1,500 DH)
+    if (
+      slug.includes("landing-local") ||
+      (slug.includes("هبوط") && slug.includes("محلي")) ||
+      (slug.includes("landing") && (slug.includes("local") || slug.includes("morocco") || slug.includes("مغرب")))
+    ) {
+      return PAYPAL_SLUG_LINKS["landing-local"];
+    }
+
+    // متجر محلي (3,000 DH)
+    if (
+      slug.includes("store-local") ||
+      (slug.includes("متجر") && slug.includes("محلي")) ||
+      (slug.includes("store") && (slug.includes("local") || slug.includes("morocco")))
+    ) {
+      return PAYPAL_SLUG_LINKS["store-local"];
+    }
+
+    // صفحة هبوط دولية (4,500 DH)
+    if (
+      slug.includes("landing-intl") ||
+      (slug.includes("هبوط") && (slug.includes("دولي") || slug.includes("intl")))
+    ) {
+      return PAYPAL_SLUG_LINKS["landing-intl"];
+    }
+
+    // متجر دولي (9,000 DH / VIP)
+    if (
+      slug.includes("store-intl") ||
+      (slug.includes("متجر") && (slug.includes("دولي") || slug.includes("intl"))) ||
+      slug.includes("saas") ||
+      slug.includes("متقدمة") ||
+      slug.includes("vip")
+    ) {
+      return PAYPAL_SLUG_LINKS["store-intl"];
+    }
+  }
+
+  // 2. فحص بالسعر الرقمي
   if (amount !== undefined && amount !== null) {
     const num = typeof amount === "number" ? amount : parseInt(String(amount).replace(/[^0-9]/g, ""), 10);
     if (!isNaN(num) && PAYPAL_PLAN_LINKS[num] && PAYPAL_PLAN_LINKS[num].trim() !== "") {
@@ -39,17 +96,17 @@ export function getPayPalPaymentLink(
     }
   }
 
-  // 2. فحص بالمعرّف أو اسم الباقة
+  // 3. فحص عام بالمعرّف أو اسم الباقة
   if (planSlugOrTitle) {
     const slug = planSlugOrTitle.toLowerCase().trim();
-    if (slug.includes("landing") || slug.includes("هبوط") || slug === "500") {
-      return PAYPAL_PLAN_LINKS[500];
+    if (slug.includes("landing") || slug.includes("هبوط")) {
+      return PAYPAL_SLUG_LINKS["landing-local"];
     }
-    if (slug.includes("standard") || slug.includes("قياسي") || slug.includes("1500")) {
-      return PAYPAL_PLAN_LINKS[1500] || null;
+    if (slug.includes("standard") || slug.includes("قياسي")) {
+      return PAYPAL_SLUG_LINKS["store-local"];
     }
-    if (slug.includes("saas") || slug.includes("متقدمة") || slug.includes("vip") || slug.includes("5000")) {
-      return PAYPAL_PLAN_LINKS[5000] || null;
+    if (slug.includes("saas") || slug.includes("متقدمة") || slug.includes("vip")) {
+      return PAYPAL_SLUG_LINKS["store-intl"];
     }
   }
 

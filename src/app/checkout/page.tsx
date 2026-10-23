@@ -111,39 +111,73 @@ function CheckoutContent() {
     setPolicyModalOpen(true);
   };
 
-  // Plan visual characteristics
-  const isLanding = selectedPlan.includes("الهبوط") || selectedPlan.includes("Landing");
-  const isSaaS = selectedPlan.includes("المتقدمة") || selectedPlan.includes("SaaS");
+  // Plan visual characteristics & Market identification
+  const getPlanDetails = () => {
+    const p = (selectedPlan || "").toLowerCase();
+    const pr = parseInt((selectedPrice || "").replace(/[^0-9]/g, ""), 10) || 0;
 
-  const planTitle = isLanding
-    ? "صفحة الهبوط (Landing Page)"
-    : isSaaS
-    ? "منصة التجارة المتقدمة (Advanced SaaS)"
-    : "المتجر القياسي (Standard Store)";
+    // 1. International Landing (4,500 DH)
+    if (p.includes("هبوط") && (p.includes("دولي") || p.includes("intl") || pr === 4500)) {
+      return {
+        title: "صفحة هبوط — السوق الدولي 🌐",
+        subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
+        image: "/images/international_landing_showcase.jpg",
+        badgeColor: "from-emerald-500 to-teal-600 text-white",
+        market: "🌐 US / CA / AU",
+      };
+    }
 
-  const planSubtitle = isLanding
-    ? "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح"
-    : isSaaS
-    ? "حل برمجي VIP متكامل لكبار التجار والشركات التوسعية"
-    : "متجر متكامل متعدد المنتجات للعلامات التجارية الطموحة";
+    // 2. International Store (9,000 DH / VIP)
+    if (
+      (p.includes("متجر") && (p.includes("دولي") || p.includes("intl"))) ||
+      p.includes("saas") ||
+      p.includes("متقدمة") ||
+      pr === 9000 ||
+      pr === 8500 ||
+      pr === 10000 ||
+      pr === 5000
+    ) {
+      return {
+        title: "متجر متكامل + لوحة تحكم — الدولي 🌐",
+        subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
+        image: "/images/international_store_showcase.jpg",
+        badgeColor: "from-amber-400 to-yellow-500 text-slate-950",
+        market: "🌐 US / CA / AU",
+      };
+    }
 
-  const planImage = isLanding
-    ? "/images/card_landing_new.webp"
-    : isSaaS
-    ? "/images/card_saas_new.webp"
-    : "/images/card_standard_new.webp";
+    // 3. Local Store (3,000 DH)
+    if ((p.includes("متجر") && (p.includes("محلي") || p.includes("local"))) || pr === 3000) {
+      return {
+        title: "متجر متكامل + لوحة تحكم — المحلي 🇲🇦",
+        subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
+        image: "/images/morocco_store_showcase.jpg",
+        badgeColor: "from-cyan-500 to-blue-600 text-white",
+        market: "🇲🇦 المغرب",
+      };
+    }
 
-  const planBadgeColor = isLanding
-    ? "from-rose-500 to-purple-600 text-white"
-    : isSaaS
-    ? "from-amber-400 to-yellow-500 text-slate-950"
-    : "from-cyan-500 to-blue-600 text-white";
+    // 4. Local Landing (1,500 DH) — default
+    return {
+      title: "صفحة هبوط — السوق المحلي 🇲🇦",
+      subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
+      image: "/images/morocco_landing_showcase.jpg",
+      badgeColor: "from-rose-500 to-purple-600 text-white",
+      market: "🇲🇦 المغرب",
+    };
+  };
+
+  const planDetails = getPlanDetails();
+  const planTitle = planDetails.title;
+  const planSubtitle = planDetails.subtitle;
+  const planImage = planDetails.image;
+  const planBadgeColor = planDetails.badgeColor;
 
   // Price formatting
-  const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 500;
+  const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 1500;
   const formattedPrice = `${rawNumericPrice.toLocaleString()} درهم`;
 
-  // PayPal Payment Link Check (باقة 500 درهم أو أي باقة متوفر لها رابط PayPal)
+  // PayPal Payment Link Check (باقة صفحة الهبوط المحلية المغربية 1500 درهم أو أي باقة متوفر لها رابط PayPal)
   const paypalUrl = getPayPalPaymentLink(rawNumericPrice, selectedPlan);
   const isPayPalPlan = Boolean(paypalUrl);
 
@@ -316,14 +350,6 @@ function CheckoutContent() {
     setOrderId(savedOrder.order_number || orderId);
     setIsProcessing(false);
 
-    // إذا كانت الباقة مدعومة برابط دفع PayPal (مثل باقة 500 درهم)، يتم فتح الرابط مباشرة للعميل
-    if (paypalUrl) {
-      const opened = window.open(paypalUrl, "_blank");
-      if (!opened || opened.closed || typeof opened.closed === "undefined") {
-        window.location.href = paypalUrl;
-      }
-    }
-
     try {
       const existing = localStorage.getItem("ecom_speed_pro_orders");
       const list = existing ? JSON.parse(existing) : [];
@@ -352,6 +378,15 @@ function CheckoutContent() {
       localStorage.setItem("ecom_speed_pro_orders", JSON.stringify([legacyItem, ...list]));
     } catch (err) {
       console.warn("Storage warning:", err);
+    }
+
+    // إذا كانت الباقة مدعومة برابط دفع PayPal (مثل صفحة الهبوط المحلية المغربية 1500 درهم)، يتم فتح الرابط والتوجيه مباشرة للعميل
+    if (paypalUrl) {
+      const targetUrl = paypalUrl.trim();
+      const opened = window.open(targetUrl, "_blank");
+      if (!opened || opened.closed || typeof opened.closed === "undefined") {
+        window.location.href = targetUrl;
+      }
     }
   };
 
@@ -1038,24 +1073,61 @@ function CheckoutContent() {
                         </button>
                       </div>
 
-                      <YouCanPayEmbed
-                        createdOrderId={createdOrder?.id || ""}
-                        amount={rawNumericPrice}
-                        currency="MAD"
-                        customerName={customerName}
-                        customerEmail={customerEmail}
-                        customerPhone={customerPhone}
-                        customerCity={customerCity}
-                        planTitle={planTitle}
-                        formattedPrice={formattedPrice}
-                        isProcessing={isProcessing}
-                        onProcessingChange={setIsProcessing}
-                        onSuccess={(order: any) => {
-                          setCreatedOrder(order);
-                          setOrderId(order.order_number || order.id);
-                          setIsSuccess(true);
-                        }}
-                      />
+                      {isPayPalPlan ? (
+                        <div className="p-6 rounded-3xl bg-gradient-to-b from-blue-50/90 via-white to-blue-50/50 border-2 border-blue-200 shadow-lg text-center flex flex-col items-center gap-4">
+                          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#003087] to-[#0079C1] p-[3px] shadow-lg shadow-blue-900/25 flex items-center justify-center">
+                            <PayPalIcon size={34} className="text-white" />
+                          </div>
+
+                          <div>
+                            <h4 className="text-base sm:text-lg font-black text-slate-900 mb-1">
+                              تم تسجيل وتأكيد طلبك بنجاح!
+                            </h4>
+                            <p className="text-xs sm:text-sm text-slate-600 font-bold max-w-md mx-auto leading-relaxed">
+                              رقم طلبك الرسمي: <strong className="font-mono text-blue-700">{createdOrder?.order_number || orderId}</strong>.
+                              <br />
+                              اضغط بالأسفل للمتابعة وإتمام الدفع الآمن فوراً عبر PayPal.
+                            </p>
+                          </div>
+
+                          <a
+                            href={paypalUrl || "https://www.paypal.com/ncp/payment/79PH2FAVN728E"}
+                            className="w-full max-w-md py-4 px-6 rounded-full bg-gradient-to-r from-[#003087] via-[#0079C1] to-[#00457C] hover:from-[#002569] hover:via-[#00629c] text-white font-black text-sm sm:text-base shadow-xl shadow-blue-900/30 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2.5 cursor-pointer"
+                          >
+                            <PayPalIcon size={22} className="text-white" />
+                            <span>المتابعة إلى صفحة PayPal لإتمام الدفع ({formattedPrice}) ←</span>
+                          </a>
+
+                          {createdOrder?.id && (
+                            <Link
+                              href={`/order/${createdOrder.id}`}
+                              className="text-xs text-blue-600 hover:text-blue-800 font-bold underline underline-offset-4 flex items-center gap-1.5"
+                            >
+                              <Lock className="w-3.5 h-3.5" />
+                              <span>رابطك السري المخصص لمتابعة حالة متجرك واستلامه</span>
+                            </Link>
+                          )}
+                        </div>
+                      ) : (
+                        <YouCanPayEmbed
+                          createdOrderId={createdOrder?.id || ""}
+                          amount={rawNumericPrice}
+                          currency="MAD"
+                          customerName={customerName}
+                          customerEmail={customerEmail}
+                          customerPhone={customerPhone}
+                          customerCity={customerCity}
+                          planTitle={planTitle}
+                          formattedPrice={formattedPrice}
+                          isProcessing={isProcessing}
+                          onProcessingChange={setIsProcessing}
+                          onSuccess={(order: any) => {
+                            setCreatedOrder(order);
+                            setOrderId(order.order_number || order.id);
+                            setIsSuccess(true);
+                          }}
+                        />
+                      )}
 
                       {/* Safety WhatsApp link */}
                       <div className="text-center pt-1">
@@ -1063,7 +1135,7 @@ function CheckoutContent() {
                           <span>واجهتك مشكلة في الدفع؟</span>
                           <a
                             href={`https://wa.me/212762357491?text=${encodeURIComponent(
-                              `مرحباً، أود المساعدة في إتمام الدفع عبر YouCan Pay للباقة: ${planTitle} (${formattedPrice}).`
+                              `مرحباً، أود المساعدة في إتمام الدفع للباقة: ${planTitle} (${formattedPrice}).`
                             )}`}
                             target="_blank"
                             rel="noopener noreferrer"

@@ -141,33 +141,67 @@ export default function OrderModal({
 
   if (!isOpen) return null;
 
-  // Plan visual characteristics
-  const isLanding = selectedPlan.includes("الهبوط") || selectedPlan.includes("Landing");
-  const isSaaS = selectedPlan.includes("المتقدمة") || selectedPlan.includes("SaaS");
+  // Plan visual characteristics & Market identification
+  const getPlanDetails = () => {
+    const p = (selectedPlan || "").toLowerCase();
+    const pr = parseInt((selectedPrice || "").replace(/[^0-9]/g, ""), 10) || 0;
 
-  const planTitle = isLanding
-    ? "صفحة الهبوط (Landing Page)"
-    : isSaaS
-    ? "منصة التجارة المتقدمة (Advanced SaaS)"
-    : "المتجر القياسي (Standard Store)";
+    // 1. International Landing (4,500 DH)
+    if (p.includes("هبوط") && (p.includes("دولي") || p.includes("intl") || pr === 4500)) {
+      return {
+        title: "صفحة هبوط — السوق الدولي 🌐",
+        subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
+        image: "/images/international_landing_showcase.jpg",
+        badgeColor: "from-emerald-500 to-teal-600 text-white",
+        market: "🌐 US / CA / AU",
+      };
+    }
 
-  const planSubtitle = isLanding
-    ? "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح"
-    : isSaaS
-    ? "حل برمجي VIP متكامل لكبار التجار والشركات التوسعية"
-    : "متجر متكامل متعدد المنتجات للعلامات التجارية الطموحة";
+    // 2. International Store (9,000 DH / VIP)
+    if (
+      (p.includes("متجر") && (p.includes("دولي") || p.includes("intl"))) ||
+      p.includes("saas") ||
+      p.includes("متقدمة") ||
+      pr === 9000 ||
+      pr === 8500 ||
+      pr === 10000 ||
+      pr === 5000
+    ) {
+      return {
+        title: "متجر متكامل + لوحة تحكم — الدولي 🌐",
+        subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
+        image: "/images/international_store_showcase.jpg",
+        badgeColor: "from-amber-400 to-yellow-500 text-slate-950",
+        market: "🌐 US / CA / AU",
+      };
+    }
 
-  const planImage = isLanding
-    ? "/images/card_landing_new.webp"
-    : isSaaS
-    ? "/images/card_saas_new.webp"
-    : "/images/card_standard_new.webp";
+    // 3. Local Store (3,000 DH)
+    if ((p.includes("متجر") && (p.includes("محلي") || p.includes("local"))) || pr === 3000) {
+      return {
+        title: "متجر متكامل + لوحة تحكم — المحلي 🇲🇦",
+        subtitle: "متجر متكامل متعدد المنتجات مع لوحة تحكم للعلامات التجارية في المغرب",
+        image: "/images/morocco_store_showcase.jpg",
+        badgeColor: "from-cyan-500 to-blue-600 text-white",
+        market: "🇲🇦 المغرب",
+      };
+    }
 
-  const planBadgeColor = isLanding
-    ? "from-rose-500 to-purple-600 text-white"
-    : isSaaS
-    ? "from-amber-400 to-yellow-500 text-slate-950"
-    : "from-cyan-500 to-blue-600 text-white";
+    // 4. Local Landing (1,500 DH) — default
+    return {
+      title: "صفحة هبوط — السوق المحلي 🇲🇦",
+      subtitle: "تصميم مخصص لتحقيق أعلى معدل تحويل لمنتج رابح في السوق المغربي",
+      image: "/images/morocco_landing_showcase.jpg",
+      badgeColor: "from-rose-500 to-purple-600 text-white",
+      market: "🇲🇦 المغرب",
+    };
+  };
+
+  const planDetails = getPlanDetails();
+  const planTitle = planDetails.title;
+  const planSubtitle = planDetails.subtitle;
+  const planImage = planDetails.image;
+  const planBadgeColor = planDetails.badgeColor;
 
   // Price formatting
   const rawNumericPrice = parseInt(selectedPrice.replace(/[^0-9]/g, ""), 10) || 1500;

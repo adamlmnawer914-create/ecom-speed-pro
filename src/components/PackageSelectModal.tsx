@@ -116,7 +116,7 @@ export default function PackageSelectModal({
       subtitle: "صفحة هبوط احترافية مخصصة للأسواق الدولية بمعدل تحويل مرتفع",
       price: "4,500 DH",
       planTier: "صفحة هبوط — السوق الدولي 🌐 (4,500 MAD)",
-      image: "/images/card_landing_new.webp",
+      image: "/images/international_landing_showcase.jpg",
       badge: {
         text: "مميز دولياً",
         icon: Globe,
@@ -142,9 +142,9 @@ export default function PackageSelectModal({
       name: "متجر متكامل + لوحة تحكم — الدولي",
       market: "🌐 US / CA / AU",
       subtitle: "حل برمجي VIP متكامل للأسواق الدولية مع بوابات دفع عالمية",
-      price: "8,500 DH",
-      planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (8,500 MAD)",
-      image: "/images/card_saas_new.webp",
+      price: "9,000 DH",
+      planTier: "متجر متكامل + لوحة تحكم — السوق الدولي 🌐 (9,000 MAD)",
+      image: "/images/international_store_showcase.jpg",
       badge: {
         text: "الخيار الأقوى",
         icon: Crown,

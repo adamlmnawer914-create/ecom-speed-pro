@@ -27,12 +27,12 @@ export default function CartModal({
 }: CartModalProps) {
   const [items, setItems] = useState<CartItem[]>([
     {
-      id: "standard",
-      name: "المتجر القياسي متعدد المنتجات (Standard Store)",
+      id: "landing-local",
+      name: "صفحة هبوط — السوق المحلي 🇲🇦 (1,500 MAD)",
       price: "1500 درهم",
       priceNum: 1500,
-      badge: "الأكثر مبيعاً ⚡",
-      image: "/images/card_standard_new.png",
+      badge: "الأكثر طلباً 🔥",
+      image: "/images/morocco_landing_showcase.jpg",
     },
   ]);
 
