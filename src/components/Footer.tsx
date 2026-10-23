@@ -380,7 +380,7 @@ export default function Footer({
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-1">
                   <h4 className="text-base sm:text-lg font-black text-white tracking-tight">
-                    دفع إلكتروني آمن وتشفير بنكي 100%
+                    دفع إلكتروني آمن وتشفير 100%
                   </h4>
                   <span className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/60 text-emerald-300 text-[11px] font-black shadow-[0_0_12px_rgba(16,185,129,0.35)]">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
@@ -390,55 +390,50 @@ export default function Footer({
                 </div>
                 <p className="text-xs sm:text-sm text-blue-200/90 font-bold flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
-                  <span>حماية شاملة لبيانات الدفع وبوابات رسمية معتمدة بالمغرب وعالمياً 🇲🇦</span>
+                  <span>حماية كاملة ومعالجة فورية للمدفوعات عبر PayPal والبطاقات البنكية العالمية</span>
                 </p>
               </div>
             </div>
 
-            {/* Part 2: Official Payment Providers (NO BANK TRANSFER) */}
+            {/* Part 2: Official Payment Providers */}
             <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3 py-1">
-              {/* YouCan Pay Badge */}
-              <div
-                className="px-4 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-emerald-400/40 hover:border-emerald-300/80 shadow-[0_4px_16px_rgba(16,185,129,0.18)] hover:shadow-[0_0_20px_rgba(16,185,129,0.35)] flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
-                title="YouCan Pay - بوابة الدفع الإلكتروني المغربية المعتمدة"
-              >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span className="text-xs font-black text-white tracking-wide">YouCan Pay</span>
-                <span className="text-[10px] font-bold text-emerald-300 bg-emerald-500/20 px-1.5 py-0.5 rounded-md">المغرب 🇲🇦</span>
-              </div>
 
-              {/* CMI Badge */}
+              {/* PayPal Badge */}
               <div
-                className="px-4 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-blue-400/40 hover:border-blue-300/80 shadow-[0_4px_16px_rgba(59,130,246,0.18)] hover:shadow-[0_0_20px_rgba(59,130,246,0.35)] flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
-                title="CMI - المركز النقدي المغربي Centre Monétique Interbancaire"
+                className="px-4 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-blue-400/40 hover:border-blue-300/80 shadow-[0_4px_16px_rgba(0,112,240,0.25)] hover:shadow-[0_0_22px_rgba(0,112,240,0.5)] flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
+                title="PayPal - البوابة الإلكترونية الأساسية"
               >
-                <span className="text-xs font-black text-cyan-300 tracking-wider">CMI</span>
-                <span className="text-[10px] font-bold text-blue-200">المركز النقدي</span>
+                {/* PayPal P icon */}
+                <span className="w-5 h-5 rounded-full bg-[#003087] border border-[#009cde]/60 flex items-center justify-center text-[11px] font-black text-[#009cde] shadow-inner">P</span>
+                <span className="text-xs font-black text-[#009cde] tracking-wide">PayPal</span>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                </span>
               </div>
 
               {/* VISA Badge */}
               <div
                 className="px-4 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-indigo-400/40 hover:border-indigo-300/80 shadow-[0_4px_16px_rgba(99,102,241,0.18)] hover:shadow-[0_0_20px_rgba(99,102,241,0.35)] flex items-center gap-1.5 transition-all hover:scale-105 cursor-pointer"
-                title="بطاقات Visa العالمية المعتمدة"
+                title="بطاقات Visa مدعومة عبر PayPal"
               >
-                <span className="text-xs font-black tracking-widest text-amber-300">VISA</span>
-                <span className="text-[10px] font-bold text-slate-300">Verified</span>
+                <span className="text-xs font-black tracking-widest text-white italic">VISA</span>
+                <span className="text-[10px] font-bold text-indigo-300">via PayPal</span>
               </div>
 
               {/* Mastercard Badge */}
               <div
                 className="px-4 py-2 rounded-2xl bg-[#071a45]/90 hover:bg-[#0c2763] border border-amber-400/40 hover:border-amber-300/80 shadow-[0_4px_16px_rgba(245,158,11,0.18)] hover:shadow-[0_0_20px_rgba(245,158,11,0.35)] flex items-center gap-2 transition-all hover:scale-105 cursor-pointer"
-                title="بطاقات Mastercard العالمية المعتمدة"
+                title="بطاقات Mastercard مدعومة عبر PayPal"
               >
                 <div className="flex -space-x-1.5">
                   <span className="w-3.5 h-3.5 rounded-full bg-[#eb001b] inline-block opacity-90 shadow-sm" />
                   <span className="w-3.5 h-3.5 rounded-full bg-[#f79e1b] inline-block opacity-90 shadow-sm" />
                 </div>
                 <span className="text-[11px] font-black text-slate-100">mastercard</span>
+                <span className="text-[10px] font-bold text-amber-300/80">via PayPal</span>
               </div>
+
             </div>
 
             {/* Part 3: Luxurious 3D Emblem Jewels for Privacy & Terms & Guarantee */}
