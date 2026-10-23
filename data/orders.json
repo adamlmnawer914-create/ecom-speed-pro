@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "c9bb0bdd-abac-4d4a-9b89-921b69eb9f30",
+    "order_number": "#ESP-45615",
+    "customer_name": "ابراهيم",
+    "customer_city": "الدار البيضاء (Casablanca)",
+    "phone_number": "0764647393",
+    "customer_email": "adamlmnawer914@gmail.com",
+    "store_name": "متجر",
+    "product_price": "349",
+    "order_phone": "0764647393",
+    "plan_tier": "متجر متكامل + لوحة تحكم — المحلي 🇲🇦",
+    "status": "completed",
+    "delivered_url": null,
+    "payment_method": "YouCan Pay",
+    "payment_status": "paid",
+    "white_label": false,
+    "product_notes": "",
+    "product_images": [],
+    "created_at": "2026-10-23T19:51:45.674Z"
+  }
+]

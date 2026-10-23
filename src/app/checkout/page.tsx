@@ -662,39 +662,8 @@ function CheckoutContent() {
                     </div>
                   </div>
 
-                  {/* ── White-Label Interactive Toggle (إزالة الحقوق) ── */}
-                  <div
-                    onClick={() => setWhiteLabel((prev) => !prev)}
-                    className={`w-full rounded-2xl p-2.5 sm:p-3 border transition-all duration-300 cursor-pointer select-none flex items-center justify-between gap-2.5 mt-3 ${
-                      whiteLabel
-                        ? "bg-purple-50/95 border-purple-300 shadow-[0_3px_15px_rgba(168,85,247,0.18)] ring-1 ring-purple-400/40"
-                        : "bg-purple-50/30 border-purple-200/70 hover:bg-purple-50/60 hover:border-purple-300"
-                    }`}
-                  >
-                    {/* Modern Pill Switch */}
-                    <div className="shrink-0">
-                      <div
-                        className={`w-10 h-5.5 rounded-full transition-colors duration-300 flex items-center px-0.5 ${
-                          whiteLabel ? "bg-purple-600 justify-end" : "bg-slate-300 justify-start"
-                        }`}
-                      >
-                        <div className="w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300" />
-                      </div>
-                    </div>
-                    {/* Text info */}
-                    <div className="text-right flex-1 min-w-0">
-                      <div className="flex items-center justify-end gap-1 text-xs font-black text-purple-950">
-                        <span>إزالة الحقوق (White-Label)</span>
-                        <Shield className="w-3.5 h-3.5 text-purple-600 fill-purple-100" />
-                      </div>
-                      <div className="text-[10px] font-bold text-purple-700/85 leading-tight mt-0.5">
-                        بدون شعار المنصة (+{planDetails.whiteLabelFee.toLocaleString()} د.م)
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Price Banner Ribbon + Breakdown */}
-                  <div className="mt-3.5 pt-3 border-t border-slate-200 space-y-2">
+                  <div className="mt-4 pt-3 border-t border-slate-200 space-y-2">
                     {whiteLabel && (
                       <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 px-1">
                         <span>سعر الباقة الأساسي:</span>
