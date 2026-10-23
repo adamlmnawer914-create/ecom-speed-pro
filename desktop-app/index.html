@@ -392,7 +392,7 @@
 
           <!-- ORDERS TABLE CONTAINER -->
           <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
-            <table class="w-full min-w-[1550px] text-right text-xs">
+            <table class="w-full min-w-[1240px] text-right text-xs table-auto">
               <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                 <tr>
                   <th class="p-3.5 whitespace-nowrap">الطلب</th>
@@ -410,7 +410,7 @@
                     </div>
                   </th>
                   <th class="p-3.5 whitespace-nowrap">رابط المتجر</th>
-                  <th class="p-3.5 text-center min-w-[360px] whitespace-nowrap">إجراءات</th>
+                  <th class="p-3 text-center min-w-[240px] whitespace-nowrap">إجراءات</th>
                 </tr>
               </thead>
               <tbody id="ordersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
@@ -765,8 +765,19 @@
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط أوتوماتيكي لبوابات الدفع والدومين</li>
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> سرعة تحميل فائقة وتوافق تام مع الهواتف</li>
                 </ul>
-                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
-                  https://www.paypal.com/ncp/payment/79PH2FAVN728E
+                <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+                  <span class="flex-1 text-[11px] font-mono text-blue-700 truncate text-left" dir="ltr">
+                    https://www.paypal.com/ncp/payment/79PH2FAVN728E
+                  </span>
+                  <button
+                    type="button"
+                    onclick="copyPayPalLink('https://www.paypal.com/ncp/payment/79PH2FAVN728E', this)"
+                    class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                    title="نسخ رابط الدفع المباشر عبر PayPal"
+                  >
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>نسخ</span>
+                  </button>
                 </div>
               </div>
               <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
@@ -805,8 +816,19 @@
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط بوابات الدفع الإلكتروني المحلية (PayPal, CMI)</li>
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> واجهة متجاوبة 100% وسهلة الإدارة والتحديث</li>
                 </ul>
-                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
-                  https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG
+                <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+                  <span class="flex-1 text-[11px] font-mono text-blue-700 truncate text-left" dir="ltr">
+                    https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG
+                  </span>
+                  <button
+                    type="button"
+                    onclick="copyPayPalLink('https://www.paypal.com/ncp/payment/7XSF6ZSN9BSYG', this)"
+                    class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                    title="نسخ رابط الدفع المباشر عبر PayPal"
+                  >
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>نسخ</span>
+                  </button>
                 </div>
               </div>
               <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
@@ -845,8 +867,19 @@
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> ربط مباشر مع Stripe و PayPal الدولي</li>
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> بنية سحابية فائقة السرعة على خوادم عالمية</li>
                 </ul>
-                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
-                  https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN
+                <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+                  <span class="flex-1 text-[11px] font-mono text-blue-700 truncate text-left" dir="ltr">
+                    https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN
+                  </span>
+                  <button
+                    type="button"
+                    onclick="copyPayPalLink('https://www.paypal.com/ncp/payment/J9ZQCGQ7J2PJN', this)"
+                    class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                    title="نسخ رابط الدفع المباشر عبر PayPal"
+                  >
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>نسخ</span>
+                  </button>
                 </div>
               </div>
               <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
@@ -885,8 +918,19 @@
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> نظام مؤتمت للفواتير، وتتبع الشحنات، ونقاط البيع</li>
                   <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500 shrink-0"></i> مدير حساب خاص ودعم فني متواصل مدار الساعة</li>
                 </ul>
-                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200 text-[11px] font-mono text-blue-700 truncate" dir="ltr">
-                  https://www.paypal.com/ncp/payment/PNG5TW29Q96P6
+                <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200">
+                  <span class="flex-1 text-[11px] font-mono text-blue-700 truncate text-left" dir="ltr">
+                    https://www.paypal.com/ncp/payment/PNG5TW29Q96P6
+                  </span>
+                  <button
+                    type="button"
+                    onclick="copyPayPalLink('https://www.paypal.com/ncp/payment/PNG5TW29Q96P6', this)"
+                    class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1 shrink-0 transition-all cursor-pointer shadow-xs"
+                    title="نسخ رابط الدفع المباشر عبر PayPal"
+                  >
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>نسخ</span>
+                  </button>
                 </div>
               </div>
               <div class="mt-6 pt-4 border-t border-slate-100 space-y-2">
@@ -1482,6 +1526,8 @@
     let deletedIds = new Set(); // IDs to filter out from fetch results
     let currentTab = "orders";
     let pageZoom = 0.80;
+    let isFetchingOrders = false; // Guard to prevent overlapping fetches
+    let lastRenderedStateKey = ""; // Change-detection fingerprint to skip unnecessary re-renders
 
     // Persist deletedIds to localStorage for cross-session survival
     function loadDeletedIds() {
@@ -1540,6 +1586,27 @@
       text.innerText = msg;
       toast.classList.remove("hidden");
       setTimeout(() => toast.classList.add("hidden"), 3000);
+    }
+
+    // Copy PayPal payment link to clipboard
+    function copyPayPalLink(url, btn) {
+      navigator.clipboard.writeText(url).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i><span>تم ✓</span>';
+        btn.classList.remove("bg-blue-600", "hover:bg-blue-500");
+        btn.classList.add("bg-emerald-600");
+        lucide.createIcons();
+        playOrderChime();
+        triggerToast("تم نسخ رابط PayPal بنجاح ✅");
+        setTimeout(() => {
+          btn.innerHTML = originalHTML;
+          btn.classList.remove("bg-emerald-600");
+          btn.classList.add("bg-blue-600", "hover:bg-blue-500");
+          lucide.createIcons();
+        }, 2000);
+      }).catch(() => {
+        triggerToast("تعذّر النسخ — انقر بزر الماوس الأيمن وانسخ يدوياً");
+      });
     }
 
     // Determine Backend URL
@@ -1669,19 +1736,44 @@
 
     // Fetch Orders with Multi-Source Redundancy
     async function fetchOrders() {
-      let combined = [];
-      const seenIds = new Set();
+      // 🔒 Prevent overlapping fetch calls (e.g. from 3-second interval + SSE + file watcher)
+      if (isFetchingOrders) return;
+      isFetchingOrders = true;
 
-      // 1. Electron local filesystem read
-      if (typeof window !== "undefined" && window.require) {
+      try {
+        let combined = [];
+        const seenIds = new Set();
+
+        // 1. Electron local filesystem read
+        if (typeof window !== "undefined" && window.require) {
+          try {
+            const fs = window.require("fs");
+            const path = window.require("path");
+            const p = path.join(__dirname, "..", "data", "orders.json");
+            if (fs.existsSync(p)) {
+              const fileData = JSON.parse(fs.readFileSync(p, "utf-8"));
+              if (Array.isArray(fileData)) {
+                fileData.forEach(o => {
+                  if (o && o.id && !seenIds.has(o.id)) {
+                    seenIds.add(o.id);
+                    combined.push(o);
+                  }
+                });
+              }
+            }
+          } catch (e) {}
+        }
+
+        // 2. Local Next.js API
         try {
-          const fs = window.require("fs");
-          const path = window.require("path");
-          const p = path.join(__dirname, "..", "data", "orders.json");
-          if (fs.existsSync(p)) {
-            const fileData = JSON.parse(fs.readFileSync(p, "utf-8"));
-            if (Array.isArray(fileData)) {
-              fileData.forEach(o => {
+          const res = await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}&t=${Date.now()}`, {
+            headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
+            signal: AbortSignal.timeout(2000)
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && data.success && Array.isArray(data.orders)) {
+              data.orders.forEach(o => {
                 if (o && o.id && !seenIds.has(o.id)) {
                   seenIds.add(o.id);
                   combined.push(o);
@@ -1690,86 +1782,76 @@
             }
           }
         } catch (e) {}
-      }
 
-      // 2. Local Next.js API
-      try {
-        const res = await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}&t=${Date.now()}`, {
-          headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
-          signal: AbortSignal.timeout(1500)
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.success && Array.isArray(data.orders)) {
-            data.orders.forEach(o => {
-              if (o && o.id && !seenIds.has(o.id)) {
-                seenIds.add(o.id);
-                combined.push(o);
-              }
-            });
-          }
-        }
-      } catch (e) {}
-
-      // 3. Vercel Cloud API
-      try {
-        const resCloud = await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}&t=${Date.now()}`, {
-          headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
-          signal: AbortSignal.timeout(2500)
-        });
-        if (resCloud.ok) {
-          const dataCloud = await resCloud.json();
-          if (dataCloud && dataCloud.success && Array.isArray(dataCloud.orders)) {
-            dataCloud.orders.forEach(o => {
-              if (o && o.id && !seenIds.has(o.id)) {
-                seenIds.add(o.id);
-                combined.push(o);
-              }
-            });
-          }
-        }
-      } catch (e) {}
-
-      // Filter out deleted IDs
-      const filteredCombined = combined.filter(o => !deletedIds.has(o.id));
-
-      // Sort newest first
-      filteredCombined.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
-
-      // Detect newly arrived order
-      if (orders.length > 0 && filteredCombined.length > orders.length) {
-        const newest = filteredCombined[0];
-        const existingIds = new Set(orders.map(o => o.id));
-        if (newest && !existingIds.has(newest.id)) {
-          playOrderChime();
-          showLiveBanner(newest);
-          triggerToast(`وصل طلب جديد الآن: ${newest.customer_name || "عميل"} (${newest.plan_tier || ""})`);
-        }
-      }
-
-      orders = filteredCombined;
-
-      // Sync cloud/local to local disk if running in Electron
-      if (typeof window !== "undefined" && window.require) {
+        // 3. Vercel Cloud API
         try {
-          const fs = window.require("fs");
-          const path = window.require("path");
-          const p = path.join(__dirname, "..", "data", "orders.json");
-          const currentContent = fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "";
-          const newContent = JSON.stringify(filteredCombined, null, 2);
-          if (currentContent !== newContent) {
-            fs.writeFileSync(p, newContent, "utf-8");
+          const resCloud = await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}&t=${Date.now()}`, {
+            headers: { "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
+            signal: AbortSignal.timeout(3000)
+          });
+          if (resCloud.ok) {
+            const dataCloud = await resCloud.json();
+            if (dataCloud && dataCloud.success && Array.isArray(dataCloud.orders)) {
+              dataCloud.orders.forEach(o => {
+                if (o && o.id && !seenIds.has(o.id)) {
+                  seenIds.add(o.id);
+                  combined.push(o);
+                }
+              });
+            }
           }
         } catch (e) {}
+
+        // Filter out deleted IDs
+        const filteredCombined = combined.filter(o => !deletedIds.has(o.id));
+
+        // Sort newest first
+        filteredCombined.sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+
+        // 🔔 Detect newly arrived order
+        if (orders.length > 0 && filteredCombined.length > orders.length) {
+          const newest = filteredCombined[0];
+          const existingIds = new Set(orders.map(o => o.id));
+          if (newest && !existingIds.has(newest.id)) {
+            playOrderChime();
+            showLiveBanner(newest);
+            triggerToast(`وصل طلب جديد الآن: ${newest.customer_name || "عميل"} (${newest.plan_tier || ""})`);
+          }
+        }
+
+        orders = filteredCombined;
+
+        // 💾 Async disk sync (non-blocking - write after releasing lock)
+        if (typeof window !== "undefined" && window.require) {
+          const newContent = JSON.stringify(filteredCombined, null, 2);
+          setTimeout(() => {
+            try {
+              const fs = window.require("fs");
+              const path = window.require("path");
+              const p = path.join(__dirname, "..", "data", "orders.json");
+              const currentContent = fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "";
+              if (currentContent !== newContent) {
+                fs.writeFileSync(p, newContent, "utf-8");
+              }
+            } catch (e) {}
+          }, 0);
+        }
+
+        // Update Header Stats (Confirmed Revenue PayPal Only)
+        const totalCount = orders.length;
+        const confirmedRev = orders.filter(o => o.payment_status === "paid").reduce((sum, o) => sum + getOrderPrice(o), 0);
+        document.getElementById("headerOrdersCount").innerText = `${totalCount} طلبات مسجلة`;
+        document.getElementById("headerRevenueCount").innerText = `${confirmedRev.toLocaleString()} د.م أرباح مؤكدة`;
+
+        // ⚡ Only re-render if data actually changed (prevents 3s DOM destroy/rebuild loop)
+        const stateKey = JSON.stringify(orders.map(o => `${o.id}|${o.status}|${o.payment_status}|${o.white_label}|${o.delivered_url}`));
+        if (stateKey !== lastRenderedStateKey) {
+          lastRenderedStateKey = stateKey;
+          renderActiveTab();
+        }
+      } finally {
+        isFetchingOrders = false;
       }
-
-      // Update Header Stats (Confirmed Revenue PayPal Only)
-      const totalCount = orders.length;
-      const confirmedRev = orders.filter(o => o.payment_status === "paid").reduce((sum, o) => sum + getOrderPrice(o), 0);
-      document.getElementById("headerOrdersCount").innerText = `${totalCount} طلبات مسجلة`;
-      document.getElementById("headerRevenueCount").innerText = `${confirmedRev.toLocaleString()} د.م أرباح مؤكدة`;
-
-      renderActiveTab();
     }
 
     // ========================================================
@@ -2073,7 +2155,7 @@
             </td>
 
             <!-- Col 10: Distinct Actions -->
-            <td class="p-3.5 text-center min-w-[380px]" onclick="event.stopPropagation();">
+            <td class="p-2.5 text-center min-w-[240px]" onclick="event.stopPropagation();">
               <div class="flex items-center justify-center gap-1.5 whitespace-nowrap">
                 <!-- Action: Toggle Payment Status -->
                 <button onclick="toggleOrderPaymentPaid('${id}', ${!isPaid})" class="px-2.5 py-1.5 rounded-xl ${isPaid ? 'bg-slate-100 text-slate-700 hover:bg-amber-50 hover:text-amber-700' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'} font-bold text-[10.5px] flex items-center gap-1 transition-all cursor-pointer shrink-0" title="تأكيد أو إلغاء احتساب الدفع عبر PayPal">
@@ -2755,8 +2837,8 @@
         } catch (err) {}
       }
 
-      // Fast Heartbeat polling every 1.5 seconds for instant arrival
-      setInterval(fetchOrders, 1500);
+      // Heartbeat polling every 3 seconds (reduced from 1.5s to prevent DOM thrashing)
+      setInterval(fetchOrders, 3000);
     }
 
     function showLiveBanner(order) {
@@ -3686,135 +3768,105 @@
     }
 
     // Inline Quick Order Status update (Direct from table, no modal required!)
-    async function updateOrderStatusQuick(orderId, newStatus) {
+    // ⚡ OPTIMISTIC: Instant UI update, background API sync
+    function updateOrderStatusQuick(orderId, newStatus) {
       const o = orders.find(x => x.id === orderId);
       if (!o) return;
       o.status = newStatus;
 
-      // Local disk update for Electron
-      if (typeof window !== "undefined" && window.require) {
-        try {
-          const fs = window.require("fs");
-          const path = window.require("path");
-          const p = path.join(__dirname, "..", "data", "orders.json");
-          if (fs.existsSync(p)) {
-            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
-          }
-        } catch (e) {}
-      }
-
-      // Local API
-      try {
-        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
-          },
-          body: JSON.stringify({ id: orderId, status: newStatus })
-        });
-      } catch (e) {}
-
-      // Cloud API
-      try {
-        await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
-          },
-          body: JSON.stringify({ id: orderId, status: newStatus })
-        });
-      } catch (e) {}
-
-      playOrderChime();
+      // Instant re-render (synchronous, no awaiting)
+      lastRenderedStateKey = ""; // Force re-render
+      renderActiveTab();
 
       const statusLabels = {
         pending: "قيد المراجعة 🟡",
         in_progress: "جاري التجهيز 🔵",
         completed: "مكتمل ومسلّم 🟢"
       };
+      playOrderChime();
       triggerToast(`تم تحديث حالة الطلب إلى: ${statusLabels[newStatus] || newStatus}`);
-      renderOrdersTab();
+
+      // Background API sync (non-blocking)
+      const body = JSON.stringify({ id: orderId, status: newStatus });
+      const headers = { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET };
+      fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, { method: "PATCH", headers, body }).catch(() => {});
+      fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, { method: "PATCH", headers, body }).catch(() => {});
+
+      // Async disk sync
+      setTimeout(() => {
+        try {
+          if (typeof window !== "undefined" && window.require) {
+            const fs = window.require("fs");
+            const path = window.require("path");
+            const p = path.join(__dirname, "..", "data", "orders.json");
+            if (fs.existsSync(p)) fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }, 0);
     }
 
-    // Toggle / Update Payment Status (PayPal Webhook simulation or manual confirmation)
-    async function toggleOrderPaymentPaid(orderId, makePaid) {
+    // ⚡ OPTIMISTIC: Toggle Payment Status — instant UI, background API sync
+    function toggleOrderPaymentPaid(orderId, makePaid) {
       const o = orders.find(x => x.id === orderId);
       if (!o) return;
       const newPaymentStatus = makePaid ? "paid" : "pending";
       o.payment_status = newPaymentStatus;
-      if (makePaid && o.status !== "completed") {
-        o.status = "completed";
-      }
+      if (makePaid && o.status !== "completed") o.status = "completed";
 
-      // Local disk
-      if (typeof window !== "undefined" && window.require) {
-        try {
-          const fs = window.require("fs");
-          const path = window.require("path");
-          const p = path.join(__dirname, "..", "data", "orders.json");
-          if (fs.existsSync(p)) {
-            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
-          }
-        } catch (e) {}
-      }
-
-      // Local API
-      try {
-        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
-          },
-          body: JSON.stringify({ id: orderId, payment_status: newPaymentStatus, status: o.status })
-        });
-      } catch (e) {}
-
+      // Instant re-render
+      lastRenderedStateKey = ""; // Force re-render
+      renderActiveTab();
       playOrderChime();
       triggerToast(makePaid ? "تم تأكيد استلام الدفع بنجاح واحتسابه في الأرباح المؤكدة ✅" : "تم تعديل حالة الدفع إلى معلق ⏳");
-      renderActiveTab();
+
+      // Background API sync (non-blocking)
+      const body = JSON.stringify({ id: orderId, payment_status: newPaymentStatus, status: o.status });
+      const headers = { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET };
+      fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, { method: "PATCH", headers, body }).catch(() => {});
+      fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, { method: "PATCH", headers, body }).catch(() => {});
+
+      // Async disk sync
+      setTimeout(() => {
+        try {
+          if (typeof window !== "undefined" && window.require) {
+            const fs = window.require("fs");
+            const path = window.require("path");
+            const p = path.join(__dirname, "..", "data", "orders.json");
+            if (fs.existsSync(p)) fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }, 0);
     }
 
-    // Toggle / Update White-Label Option
-    async function toggleOrderWhiteLabel(orderId, isWL) {
+    // ⚡ OPTIMISTIC: Toggle White-Label — instant UI, background API sync
+    function toggleOrderWhiteLabel(orderId, isWL) {
       const o = orders.find(x => x.id === orderId);
       if (!o) return;
       o.white_label = isWL;
 
-      // Local disk
-      if (typeof window !== "undefined" && window.require) {
-        try {
-          const fs = window.require("fs");
-          const path = window.require("path");
-          const p = path.join(__dirname, "..", "data", "orders.json");
-          if (fs.existsSync(p)) {
-            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
-          }
-        } catch (e) {}
-      }
-
-      // Local & Cloud API
-      const patchPayload = JSON.stringify({ id: orderId, white_label: isWL });
-      try {
-        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
-          body: patchPayload
-        });
-      } catch (e) {}
-      try {
-        await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
-          body: patchPayload
-        });
-      } catch (e) {}
-
+      // Instant re-render
+      lastRenderedStateKey = ""; // Force re-render
+      renderActiveTab();
       playOrderChime();
       triggerToast(isWL ? "تم تفعيل خيار إزالة الحقوق (White-Label) بنجاح 🛡️" : "تم إلغاء خيار إزالة الحقوق");
-      renderActiveTab();
+
+      // Background API sync (non-blocking)
+      const patchPayload = JSON.stringify({ id: orderId, white_label: isWL });
+      const headers = { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET };
+      fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, { method: "PATCH", headers, body: patchPayload }).catch(() => {});
+      fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, { method: "PATCH", headers, body: patchPayload }).catch(() => {});
+
+      // Async disk sync
+      setTimeout(() => {
+        try {
+          if (typeof window !== "undefined" && window.require) {
+            const fs = window.require("fs");
+            const path = window.require("path");
+            const p = path.join(__dirname, "..", "data", "orders.json");
+            if (fs.existsSync(p)) fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }, 0);
     }
 
     // Purge Database and reset all counters to 0
