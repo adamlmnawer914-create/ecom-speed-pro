@@ -392,20 +392,25 @@
 
           <!-- ORDERS TABLE CONTAINER -->
           <div class="overflow-x-auto rounded-2xl border border-blue-100 bg-white shadow-sm">
-            <table class="w-full min-w-[1350px] text-right text-xs">
+            <table class="w-full min-w-[1550px] text-right text-xs">
               <thead class="bg-slate-50 text-slate-600 font-bold border-b border-slate-100">
                 <tr>
-                  <th class="p-3.5">الطلب</th>
-                  <th class="p-3.5">التاجر والمدينة</th>
-                  <th class="p-3.5">المتجر والمنتج</th>
-                  <th class="p-3.5">الباقة</th>
-                  <th class="p-3.5">المبلغ</th>
-                  <th class="p-3.5">بوابة الدفع</th>
-                  <th class="p-3.5">هاتف استقبال الطلبات</th>
-                  <th class="p-3.5">الحالة</th>
-                  <th class="p-3.5">إزالة الحقوق (White-Label)</th>
-                  <th class="p-3.5">رابط المتجر</th>
-                  <th class="p-3.5 text-center min-w-[360px]">إجراءات</th>
+                  <th class="p-3.5 whitespace-nowrap">الطلب</th>
+                  <th class="p-3.5 whitespace-nowrap">التاجر والمدينة</th>
+                  <th class="p-3.5 whitespace-nowrap">المتجر والمنتج</th>
+                  <th class="p-3.5 whitespace-nowrap">الباقة</th>
+                  <th class="p-3.5 whitespace-nowrap">المبلغ</th>
+                  <th class="p-3.5 whitespace-nowrap">بوابة الدفع</th>
+                  <th class="p-3.5 whitespace-nowrap">هاتف استقبال الطلبات</th>
+                  <th class="p-3.5 whitespace-nowrap">الحالة</th>
+                  <th class="p-3.5 min-w-[220px] text-center whitespace-nowrap bg-purple-50/70 text-purple-950 border-x border-purple-100">
+                    <div class="flex items-center justify-center gap-1.5">
+                      <i data-lucide="shield" class="w-4 h-4 text-purple-600"></i>
+                      <span>إزالة الحقوق (White-Label)</span>
+                    </div>
+                  </th>
+                  <th class="p-3.5 whitespace-nowrap">رابط المتجر</th>
+                  <th class="p-3.5 text-center min-w-[360px] whitespace-nowrap">إجراءات</th>
                 </tr>
               </thead>
               <tbody id="ordersTableBody" class="divide-y divide-slate-100 font-bold text-slate-700">
@@ -1744,6 +1749,20 @@
 
       orders = filteredCombined;
 
+      // Sync cloud/local to local disk if running in Electron
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          const currentContent = fs.existsSync(p) ? fs.readFileSync(p, "utf-8") : "";
+          const newContent = JSON.stringify(filteredCombined, null, 2);
+          if (currentContent !== newContent) {
+            fs.writeFileSync(p, newContent, "utf-8");
+          }
+        } catch (e) {}
+      }
+
       // Update Header Stats (Confirmed Revenue PayPal Only)
       const totalCount = orders.length;
       const confirmedRev = orders.filter(o => o.payment_status === "paid").reduce((sum, o) => sum + getOrderPrice(o), 0);
@@ -2034,16 +2053,17 @@
             </td>
 
             <!-- Col 9: White-Label Check (إزالة حقوق المطور) -->
-            <td class="p-3.5" onclick="event.stopPropagation();">
+            <td class="p-3.5 min-w-[220px] text-center whitespace-nowrap bg-purple-50/20 border-x border-purple-100/50" onclick="event.stopPropagation();">
               ${isWhiteLabel ? `
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black bg-purple-100 text-purple-900 border border-purple-300 shadow-2xs">
-                  <i data-lucide="shield" class="w-3.5 h-3.5 text-purple-700"></i>
-                  <span>بدون حقوق (White-label)</span>
-                </span>
+                <button onclick="toggleOrderWhiteLabel('${id}', false)" class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[11px] font-black bg-purple-100 hover:bg-purple-200 text-purple-900 border border-purple-300 shadow-xs transition-all cursor-pointer whitespace-nowrap" title="انقر لتعديل الخيار إلى عادي">
+                  <i data-lucide="shield" class="w-3.5 h-3.5 text-purple-700 fill-purple-200"></i>
+                  <span>🛡️ بدون حقوق (White-label)</span>
+                </button>
               ` : `
-                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">
+                <button onclick="toggleOrderWhiteLabel('${id}', true)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-600 border border-slate-200 transition-all cursor-pointer whitespace-nowrap" title="انقر لتفعيل إزالة الحقوق (White-label)">
+                  <i data-lucide="shield-off" class="w-3.5 h-3.5 text-slate-400"></i>
                   <span>مع حقوق Ecom Speed Pro</span>
-                </span>
+                </button>
               `}
             </td>
 
@@ -2699,7 +2719,7 @@
       renderTrashTab();
     }
 
-    // Real-Time SSE
+    // Real-Time SSE & Instant Live Updates
     function startRealtimeStream() {
       try {
         const sse = new EventSource(`${apiBase}/api/orders/realtime?token=${DESKTOP_AUTH_SECRET}`);
@@ -2719,8 +2739,24 @@
         console.warn("SSE error:", e);
       }
 
-      // Fast Heartbeat polling every 3 seconds
-      setInterval(fetchOrders, 3000);
+      // Local filesystem instant file watcher (0ms instant update when orders.json changes)
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const ordersFile = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(ordersFile)) {
+            fs.watch(ordersFile, (eventType) => {
+              if (eventType === "change" || eventType === "rename") {
+                fetchOrders();
+              }
+            });
+          }
+        } catch (err) {}
+      }
+
+      // Fast Heartbeat polling every 1.5 seconds for instant arrival
+      setInterval(fetchOrders, 1500);
     }
 
     function showLiveBanner(order) {
@@ -3741,6 +3777,46 @@
       renderActiveTab();
     }
 
+    // Toggle / Update White-Label Option
+    async function toggleOrderWhiteLabel(orderId, isWL) {
+      const o = orders.find(x => x.id === orderId);
+      if (!o) return;
+      o.white_label = isWL;
+
+      // Local disk
+      if (typeof window !== "undefined" && window.require) {
+        try {
+          const fs = window.require("fs");
+          const path = window.require("path");
+          const p = path.join(__dirname, "..", "data", "orders.json");
+          if (fs.existsSync(p)) {
+            fs.writeFileSync(p, JSON.stringify(orders, null, 2), "utf-8");
+          }
+        } catch (e) {}
+      }
+
+      // Local & Cloud API
+      const patchPayload = JSON.stringify({ id: orderId, white_label: isWL });
+      try {
+        await fetch(`http://localhost:3000/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
+          body: patchPayload
+        });
+      } catch (e) {}
+      try {
+        await fetch(`https://ecom-speed-pro.vercel.app/api/orders?token=${DESKTOP_AUTH_SECRET}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json", "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET },
+          body: patchPayload
+        });
+      } catch (e) {}
+
+      playOrderChime();
+      triggerToast(isWL ? "تم تفعيل خيار إزالة الحقوق (White-Label) بنجاح 🛡️" : "تم إلغاء خيار إزالة الحقوق");
+      renderActiveTab();
+    }
+
     // Purge Database and reset all counters to 0
     async function purgeAllOrders() {
       if (!confirm("⚠️ هل أنت متأكد من تطهير قاعدة البيانات وحذف جميع الطلبات الوهمية وإعادة ضبط العدادات إلى 0 نهائياً؟")) return;
@@ -3762,6 +3838,15 @@
             "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
           }
         });
+        try {
+          await fetch(`https://ecom-speed-pro.vercel.app/api/orders?purgeAll=true&token=${DESKTOP_AUTH_SECRET}`, {
+            method: "DELETE",
+            headers: {
+              "x-admin-token": "ESP_SECURE_DESKTOP_TOKEN_2026_9f8d1c7a4b",
+              "X-Desktop-Auth-Token": DESKTOP_AUTH_SECRET
+            }
+          });
+        } catch (e) {}
         orders = [];
         deletedOrderIds = new Set();
         localStorage.removeItem("esp_deleted_order_ids");
